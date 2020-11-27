@@ -101,6 +101,10 @@ procedure TWinControlHandleR(Self: TWinControl; var T: Longint); begin T := Self
 {$ENDIF}
 procedure TWinControlShowingR(Self: TWinControl; var T: Boolean); begin T := Self.Showing; end;
 
+procedure TWinControlDoubleBufferedR(Self: TWinControl; var T: Boolean); begin T := Self.DoubleBuffered; end;
+procedure TWinControlDoubleBufferedW(Self: TWinControl; T: Boolean); begin Self.DoubleBuffered := T; end;
+procedure TWinControlParentDoubleBufferedR(Self: TWinControl; var T: Boolean); begin T := Self.ParentDoubleBuffered; end;
+procedure TWinControlParentDoubleBufferedW(Self: TWinControl; T: Boolean); begin Self.ParentDoubleBuffered := T; end;
 
 procedure TWinControlTabOrderR(Self: TWinControl; var T: Longint); begin T := Self.TabOrder; end;
 procedure TWinControlTabOrderW(Self: TWinControl; T: Longint); begin Self.TabOrder:= T; end;
@@ -127,6 +131,10 @@ begin
     RegisterPropertyHelper(@TWINCONTROLCONTROLCOUNT_R, nil, 'ControlCount');
     {$IFNDEF PS_MINIVCL}
     RegisterMethod(@TWinControl.HandleAllocated, 'HandleAllocated');
+
+    RegisterPropertyHelper(@TWinControlDoubleBufferedR, @TWinControlDoubleBufferedW, 'DoubleBuffered');
+    RegisterPropertyHelper(@TWinControlParentDoubleBufferedR, @TWinControlParentDoubleBufferedW, 'ParentDoubleBuffered');
+
     RegisterMethod(@TWinControl.HandleNeeded, 'HandleNeeded');
     RegisterMethod(@TWinControl.EnableAlign, 'EnableAlign');
 		RegisterMethod(@TWinControl.RemoveControl, 'RemoveControl');

@@ -57,6 +57,8 @@ begin
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -73,6 +75,7 @@ begin
     RegisterProperty('Center', 'Boolean', iptrw);
     RegisterProperty('Picture', 'TPicture', iptrw);
     RegisterProperty('Stretch', 'Boolean', iptrw);
+    RegisterProperty('Transparent', 'Boolean', iptrw);
     RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
     RegisterProperty('OnDblClick', 'TNotifyEvent', iptrw);
 
@@ -88,6 +91,8 @@ begin
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -120,6 +125,8 @@ begin
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -197,6 +204,8 @@ begin
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnResize', 'TNotifyEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -242,6 +251,8 @@ begin
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;

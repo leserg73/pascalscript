@@ -16,7 +16,12 @@ procedure SIRegisterTBRUSH(Cl: TPSPascalCompiler);
 procedure SIRegisterTCanvas(cl: TPSPascalCompiler);
 procedure SIRegisterTGraphic(CL: TPSPascalCompiler);
 procedure SIRegisterTBitmap(CL: TPSPascalCompiler; Streams: Boolean);
-procedure SIRegisterTPicture(CL: TPSPascalCompiler);
+procedure SIRegisterTPicture(CL: TPSPascalCompiler; Streams: Boolean);
+
+{$IFNDEF PS_MINIVCL}
+  procedure SIRegisterTIcon(CL: TPSPascalCompiler; Streams: Boolean);
+  procedure SIRegisterTPngImage(CL: TPSPascalCompiler; Streams: Boolean);
+{$ENDIF}
 
 procedure SIRegister_Graphics(Cl: TPSPascalCompiler; Streams: Boolean);
 
@@ -207,6 +212,9 @@ begin
 {$IFNDEF CLX}
   cl.addTypeS('HBITMAP', 'Integer');
   cl.addTypeS('HPALETTE', 'Integer');
+{$IFNDEF PS_MINIVCL}
+  cl.addTypeS('HICON', 'Integer');
+{$ENDIF}
 {$ENDIF}
 end;
 
@@ -234,38 +242,130 @@ begin
       RegisterMethod('procedure SaveToStream(Stream: TStream)');
     end;
     RegisterProperty('Canvas', 'TCanvas', iptr);
-{$IFNDEF CLX}
-    RegisterProperty('Handle', 'HBITMAP', iptrw);
-{$ENDIF}
+    {$IFNDEF CLX}
+      RegisterProperty('Handle', 'HBITMAP', iptrw);
+    {$ENDIF}
 
-    {$IFNDEF IFPS_MINIVCL}
-    RegisterMethod('procedure Dormant');
-    RegisterMethod('procedure FreeImage');
-{$IFNDEF CLX}
-    RegisterMethod('procedure LoadFromClipboardFormat(AFormat: Word; AData: THandle; APalette: HPALETTE)');
-{$ENDIF}
-    RegisterMethod('procedure LoadFromResourceName(Instance: THandle; const ResName: string)');
-    RegisterMethod('procedure LoadFromResourceID(Instance: THandle; ResID: Integer)');
-{$IFNDEF CLX}
-    RegisterMethod('function ReleaseHandle: HBITMAP');
-    RegisterMethod('function ReleasePalette: HPALETTE');
-    RegisterMethod('procedure SaveToClipboardFormat(var Format: Word; var Data: THandle; var APalette: HPALETTE)');
-    RegisterProperty('Monochrome', 'Boolean', iptrw);
-    RegisterProperty('Palette', 'HPALETTE', iptrw);
-    RegisterProperty('IgnorePalette', 'Boolean', iptrw);
-{$ENDIF}
-    RegisterProperty('TransparentColor', 'TColor', iptr);
+    {$IFNDEF PS_MINIVCL}
+      RegisterMethod('procedure Dormant');
+      RegisterMethod('procedure FreeImage');
+      {$IFNDEF CLX}
+        RegisterMethod('procedure LoadFromClipboardFormat(AFormat: Word; AData: THandle; APalette: HPALETTE)');
+      {$ENDIF}
+      RegisterMethod('procedure LoadFromResourceName(Instance: THandle; const ResName: string)');
+      RegisterMethod('procedure LoadFromResourceID(Instance: THandle; ResID: Integer)');
+      {$IFNDEF CLX}
+        RegisterMethod('function ReleaseHandle: HBITMAP');
+        RegisterMethod('function ReleasePalette: HPALETTE');
+        RegisterMethod('procedure SaveToClipboardFormat(var Format: Word; var Data: THandle; var APalette: HPALETTE)');
+        RegisterProperty('Monochrome', 'Boolean', iptrw);
+        RegisterProperty('Palette', 'HPALETTE', iptrw);
+        RegisterProperty('IgnorePalette', 'Boolean', iptrw);
+      {$ENDIF}
+      RegisterProperty('TransparentColor', 'TColor', iptr);
     {$ENDIF}
   end;
 end;
 
-procedure SIRegisterTPicture(CL: TPSPascalCompiler);
+{ TPicture }
+procedure SIRegisterTPicture(CL: TPSPascalCompiler; Streams: Boolean);
 begin
   with CL.AddClassN(CL.FindClass('TPersistent'),'TPicture') do
   begin
-    RegisterProperty('Bitmap','TBitmap',iptrw);
+  {$IFNDEF PS_MINIVCL}
+    if Streams then begin
+      RegisterMethod('procedure LoadFromStream(Stream: TStream)');
+      RegisterMethod('procedure SaveToStream(Stream: TStream)');
+    end;
+    RegisterMethod('Constructor Create');
+    RegisterMethod('Procedure LoadFromFile(const Filename: string)');
+    RegisterMethod('Procedure SaveToFile(const Filename: string)');
+    //RegisterMethod('Procedure LoadFromClipboardFormat( AFormat : Word; AData : THandle; APalette : HPALETTE)');
+    //RegisterMethod('Procedure SaveToClipboardFormat( var AFormat : Word; var AData : THandle; var APalette : HPALETTE)');
+    //RegisterMethod('Function SupportsClipboardFormat( AFormat : Word) : Boolean');
+    //RegisterMethod('Procedure RegisterFileFormat( const AExtension, ADescription : string; AGraphicClass : TGraphicClass)');
+    //RegisterMethod('Procedure RegisterFileFormatRes( const AExtension : String; ADescriptionResID : Integer; AGraphicClass : TGraphicClass)');
+    //RegisterMethod('Procedure RegisterClipboardFormat( AFormat : Word; AGraphicClass : TGraphicClass)');
+    //RegisterMethod('Procedure UnregisterGraphicClass( AClass : TGraphicClass)');
+  {$ENDIF}
+    RegisterProperty('Bitmap', 'TBitmap', iptrw);
+  {$IFNDEF PS_MINIVCL}
+    RegisterProperty('Graphic', 'TGraphic', iptrw);
+    //RegisterProperty('PictureAdapter', 'IChangeNotifier', iptrw);
+    RegisterProperty('Height', 'Integer', iptr);
+    RegisterProperty('Icon', 'TIcon', iptrw);
+    RegisterProperty('Metafile', 'TMetafile', iptrw);
+    RegisterProperty('Width', 'Integer', iptr);
+    RegisterProperty('OnChange', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnProgress', 'TProgressEvent', iptrw);
+  {$ENDIF}
   end;
 end;
+
+{$IFNDEF PS_MINIVCL}
+{ TIcon }
+procedure SIRegisterTIcon(CL: TPSPascalCompiler; Streams: Boolean);
+begin
+  //with RegClassS(CL,'TGraphic', 'TIcon') do
+  with CL.AddClassN(CL.FindClass('TGraphic'), 'TIcon') do
+  begin
+    if Streams then begin
+      RegisterMethod('procedure LoadFromStream(Stream: TStream)');
+      RegisterMethod('procedure SaveToStream(Stream: TStream)');
+    end;
+//    RegisterMethod('Function HandleAllocated : Boolean');
+    RegisterMethod('Function ReleaseHandle : HICON');
+    RegisterMethod('Procedure LoadFromResourceName(Instance : THandle; const ResName: String)');
+    RegisterMethod('Procedure LoadFromResourceID(Instance : THandle; ResID: Integer)');
+    RegisterProperty('Handle', 'HICON', iptrw);
+  end;
+end;
+
+{ TPngImage }
+procedure SIRegisterTPngImage(CL: TPSPascalCompiler; Streams: Boolean);
+begin
+  //with RegClassS(CL,'TGraphic', 'TPngImage') do
+  with CL.AddClassN(CL.FindClass('TGraphic'),'TPngImage') do
+  begin
+    if Streams then begin
+      RegisterMethod('procedure LoadFromStream(Stream: TStream)');
+      RegisterMethod('procedure SaveToStream(Stream: TStream)');
+    end;
+    RegisterMethod('Constructor Create');
+    //RegisterMethod('Constructor CreateBlank( ColorType, Bitdepth : Cardinal; cx, cy : Integer)');
+    //RegisterMethod('Procedure AddtEXt( const Keyword, Text : AnsiString)');
+    //RegisterMethod('Procedure AddzTXt( const Keyword, Text : AnsiString)');
+    //RegisterMethod('Procedure AssignHandle( Handle : HBitmap; Transparent : Boolean; TransparentColor : ColorRef)');
+    //RegisterMethod('Procedure CreateAlpha');
+    //RegisterMethod('Procedure DrawUsingPixelInformation( Canvas : TCanvas; Point : TPoint)');
+    RegisterMethod('Procedure LoadFromFile(const Filename: String)');
+    RegisterMethod('Procedure LoadFromResourceID(Instance: THandle; ResID: Integer)');
+    RegisterMethod('Procedure LoadFromResourceName(Instance: THandle; const Name: String)');
+    //RegisterMethod('Procedure RaiseError( ExceptionClass : ExceptClass; Text : String)');
+    //RegisterMethod('Procedure RemoveTransparency');
+    RegisterMethod('Procedure Resize(const CX, CY: Integer)');
+    //RegisterMethod('Procedure SaveToFile( const Filename : String)');
+    //RegisterProperty('AlphaScanline', 'pByteArray Integer', iptr);
+    RegisterProperty('Canvas', 'TCanvas', iptr);
+    //RegisterProperty('Chunks', 'TPngList', iptr);
+    //RegisterProperty('CompressionLevel', 'TCompressionLevel', iptrw);
+    RegisterProperty('Empty', 'Boolean', iptr);
+    //RegisterProperty('Filters', 'TFilters', iptrw);
+    //RegisterProperty('Header', 'TChunkIHDR', iptr);
+    RegisterProperty('Height', 'Integer', iptr);
+    //RegisterProperty('InterlaceMethod', 'TInterlaceMethod', iptrw);
+    //RegisterProperty('MaxIdatSize', 'Integer', iptrw);
+    RegisterProperty('Palette', 'HPalette', iptrw);
+    //RegisterProperty('PixelInformation', 'TChunkpHYs', iptr);
+    //RegisterProperty('Pixels', 'TColor Integer Integer', iptrw);
+    //RegisterProperty('Scanline', 'Pointer Integer', iptr);
+    //RegisterProperty('TransparencyMode', 'TPNGTransparencyMode', iptr);
+    RegisterProperty('TransparentColor', 'TColor', iptrw);
+    //RegisterProperty('Version', 'String', iptr);
+    RegisterProperty('Width', 'Integer', iptr);
+  end;
+end;
+{$ENDIF}
 
 procedure SIRegister_Graphics(Cl: TPSPascalCompiler; Streams: Boolean);
 begin
@@ -277,7 +377,11 @@ begin
   SIRegisterTBRUSH(cl);
   SIRegisterTCanvas(cl);
   SIRegisterTBitmap(Cl, Streams);
-  SIRegisterTPicture(cl);
+  SIRegisterTPicture(Cl, Streams);
+{$IFNDEF PS_MINIVCL}
+  SIRegisterTIcon(Cl, Streams);
+  SIRegisterTPngImage(Cl, Streams);
+{$ENDIF}
 end;
 
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)

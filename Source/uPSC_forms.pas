@@ -15,6 +15,10 @@ procedure SIRegisterTSCROLLBOX(Cl: TPSPascalCompiler);
 procedure SIRegisterTFORM(Cl: TPSPascalCompiler);
 procedure SIRegisterTAPPLICATION(Cl: TPSPascalCompiler);
 
+{$IFNDEF PS_MINIVCL}
+  procedure SIRegisterTSCREEN(Cl: TPSPascalCompiler);
+{$ENDIF}
+
 procedure SIRegister_Forms(Cl: TPSPascalCompiler);
 
 implementation
@@ -77,6 +81,8 @@ begin
     RegisterProperty('OnMouseDown', 'TMouseEvent', iptrw);
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -167,6 +173,8 @@ begin
     RegisterProperty('OnMouseMove', 'TMouseMoveEvent', iptrw);
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnPaint', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -208,6 +216,7 @@ begin
     RegisterProperty('OnMinimize', 'TNotifyEvent', iptrw);
     RegisterProperty('OnRestore', 'TNotifyEvent', iptrw);
 
+
     {$IFNDEF PS_MINIVCL}
     RegisterMethod('procedure ControlDestroyed(Control: TControl)');
     RegisterMethod('procedure CancelHint');
@@ -236,13 +245,89 @@ begin
     RegisterProperty('HintHidePause', 'Integer', iptrw);
     RegisterProperty('Icon', 'TIcon', iptrw);
     RegisterProperty('OnHelp', 'THelpEvent', iptrw);
+
+    RegisterProperty('OnMessage', 'TMessageEvent', iptrw);
+
     {$ENDIF}
   end;
 end;
 
-procedure SIRegister_Forms_TypesAndConsts(Cl: TPSPascalCompiler);
+
+{$IFNDEF PS_MINIVCL}
+procedure SIRegisterTSCREEN(CL: TPSPascalCompiler);
 begin
-  Cl.AddTypeS('TIdleEvent', 'procedure (Sender: TObject; var Done: Boolean)');
+  //with RegClassS(CL,'TComponent', 'TScreen') do
+  with CL.AddClassN(cl.FindClass('TComponent'), 'TScreen') do
+  begin
+//    RegisterMethod('Procedure DisableAlign');
+//    RegisterMethod('Procedure EnableAlign');
+//    RegisterMethod('Function MonitorFromPoint( const Point : TPoint; MonitorDefault : TMonitorDefaultTo) : TMonitor');
+//    RegisterMethod('Function MonitorFromRect( const Rect : TRect; MonitorDefault : TMonitorDefaultTo) : TMonitor');
+//    RegisterMethod('Function MonitorFromWindow( const Handle : THandle; MonitorDefault : TMonitorDefaultTo) : TMonitor');
+//    RegisterMethod('Procedure Realign');
+//    RegisterMethod('Procedure ResetFonts');
+    RegisterProperty('ActiveControl', 'TWinControl', iptr);
+//    RegisterProperty('ActiveCustomForm', 'TCustomForm', iptr);
+    RegisterProperty('ActiveForm', 'TForm', iptr);
+//    RegisterProperty('CustomFormCount', 'Integer', iptr);
+//    RegisterProperty('CustomForms', 'TCustomForm Integer', iptr);
+//    RegisterProperty('CursorCount', 'Integer', iptr);
+    RegisterProperty('Cursor', 'TCursor', iptrw);
+    RegisterProperty('Cursors', 'HCURSOR Integer', iptrw);
+//    RegisterProperty('DataModules', 'TDataModule Integer', iptr);
+//    RegisterProperty('DataModuleCount', 'Integer', iptr);
+//    RegisterProperty('FocusedForm', 'TCustomForm', iptrw);
+//    RegisterProperty('SaveFocusedList', 'TList', iptr);
+//    RegisterProperty('MonitorCount', 'Integer', iptr);
+//    RegisterProperty('Monitors', 'TMonitor Integer', iptr);
+//    RegisterProperty('DesktopRect', 'TRect', iptr);
+//    RegisterProperty('DesktopHeight', 'Integer', iptr);
+//    RegisterProperty('DesktopLeft', 'Integer', iptr);
+//    RegisterProperty('DesktopTop', 'Integer', iptr);
+//    RegisterProperty('DesktopWidth', 'Integer', iptr);
+//    RegisterProperty('WorkAreaRect', 'TRect', iptr);
+//    RegisterProperty('WorkAreaHeight', 'Integer', iptr);
+//    RegisterProperty('WorkAreaLeft', 'Integer', iptr);
+//    RegisterProperty('WorkAreaTop', 'Integer', iptr);
+//    RegisterProperty('WorkAreaWidth', 'Integer', iptr);
+//    RegisterProperty('HintFont', 'TFont', iptrw);
+//    RegisterProperty('IconFont', 'TFont', iptrw);
+//    RegisterProperty('MenuFont', 'TFont', iptrw);
+//    RegisterProperty('MessageFont', 'TFont', iptrw);
+//    RegisterProperty('CaptionFont', 'TFont', iptrw);
+    RegisterProperty('Fonts', 'TStrings', iptr);
+    RegisterProperty('FormCount', 'Integer', iptr);
+    RegisterProperty('Forms', 'TForm Integer', iptr);
+//    RegisterProperty('Imes', 'TStrings', iptr);
+//    RegisterProperty('DefaultIme', 'string', iptr);
+//    RegisterProperty('DefaultKbLayout', 'HKL', iptr);
+    RegisterProperty('Height', 'Integer', iptr);
+    RegisterProperty('PixelsPerInch', 'Integer', iptr);
+//    RegisterProperty('PrimaryMonitor', 'TMonitor', iptr);
+    RegisterProperty('Width', 'Integer', iptr);
+    RegisterProperty('OnActiveControlChange', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnActiveFormChange', 'TNotifyEvent', iptrw);
+//    RegisterProperty('UpdatingAllFonts', 'Boolean', iptr);
+  end;
+end;
+{$ENDIF}
+
+
+procedure SIRegister_Forms_TypesAndConsts(cl: TPSPascalCompiler);
+begin
+  {$IFNDEF PS_MINIVCL}
+//  cl.AddType('TMsg', btRecord); // don't work
+    cl.AddTypeS('TMsg', 'record hwnd: HWND; message: LongWord; wParam: LongInt; lParam: LongInt; time: LongWord; pt: TPoint; end');
+    cl.AddTypeS('TMessageEvent', 'procedure (var Msg: TMsg; var Handled: Boolean)');
+
+    { TScreen }
+    cl.AddTypes('HCURSOR', 'Cardinal');
+//  cl.AddTypeS('PCursorRec', '^TCursorRec // will not work');
+//  cl.AddTypeS('TCursorRec', 'record Next : PCursorRec; Index : Integer; Handle : Cardinal; end');
+//  cl.AddTypeS('TCursorRecType', 'PCursorRec');
+//  cl.AddTypeS('TMonitorDefaultTo', '( mdNearest, mdNull, mdPrimary )');
+  {$ENDIF}
+  cl.AddTypeS('TIdleEvent', 'procedure (Sender: TObject; var Done: Boolean)');
   cl.AddTypeS('TScrollBarKind', '(sbHorizontal, sbVertical)');
   cl.AddTypeS('TScrollBarInc', 'SmallInt');
   cl.AddTypeS('TFormBorderStyle', '(bsNone, bsSingle, bsSizeable, bsDialog, bsToolWindow, bsSizeToolWin)');
@@ -252,9 +337,9 @@ begin
   cl.AddTypeS('TPosition', '(poDesigned, poDefault, poDefaultPosOnly, poDefaultSizeOnly, poScreenCenter, poDesktopCenter, poMainFormCenter, poOwnerFormCenter)');
   cl.AddTypeS('TPrintScale', '(poNone, poProportional, poPrintToFit)');
   cl.AddTypeS('TCloseAction', '(caNone, caHide, caFree, caMinimize)');
-  cl.AddTypeS('TCloseEvent' ,'procedure(Sender: TObject; var Action: TCloseAction)');
-  cl.AddTypeS('TCloseQueryEvent' ,'procedure(Sender: TObject; var CanClose: Boolean)');
-  cl.AddTypeS('TBorderIcon' ,'(biSystemMenu, biMinimize, biMaximize, biHelp)');
+  cl.AddTypeS('TCloseEvent', 'procedure(Sender: TObject; var Action: TCloseAction)');
+  cl.AddTypeS('TCloseQueryEvent', 'procedure(Sender: TObject; var CanClose: Boolean)');
+  cl.AddTypeS('TBorderIcon', '(biSystemMenu, biMinimize, biMaximize, biHelp)');
   cl.AddTypeS('TBorderIcons', 'set of TBorderIcon');
   cl.AddTypeS('THelpContext', 'LongInt');
 end;
@@ -264,20 +349,19 @@ begin
   SIRegister_Forms_TypesAndConsts(cl);
 
   {$IFNDEF PS_MINIVCL}
-  SIRegisterTCONTROLSCROLLBAR(cl);
+    SIRegisterTCONTROLSCROLLBAR(Cl);
   {$ENDIF}
-  SIRegisterTScrollingWinControl(cl);
+  SIRegisterTSCROLLINGWINCONTROL(Cl);
   {$IFNDEF PS_MINIVCL}
-  SIRegisterTSCROLLBOX(cl);
+    SIRegisterTSCROLLBOX(Cl);
   {$ENDIF}
-  SIRegisterTForm(Cl);
+  SIRegisterTFORM(Cl);
   {$IFNDEF PS_MINIVCL}
-  SIRegisterTApplication(Cl);
+    SIRegisterTAPPLICATION(Cl);
+    SIRegisterTSCREEN(CL);
   {$ENDIF}
 end;
 
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
 
-
 end.
-

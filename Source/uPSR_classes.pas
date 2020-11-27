@@ -7,25 +7,25 @@ uses
   uPSRuntime, uPSUtils;
 
 
-procedure RIRegisterTStrings(cl: TPSRuntimeClassImporter; Streams: Boolean);
-procedure RIRegisterTStringList(cl: TPSRuntimeClassImporter);
+procedure RIRegisterTStrings(Cl: TPSRuntimeClassImporter; Streams: Boolean);
+procedure RIRegisterTStringList(Cl: TPSRuntimeClassImporter);
 {$IFNDEF PS_MINIVCL}
-procedure RIRegisterTBITS(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTBITS(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 procedure RIRegisterTSTREAM(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTHANDLESTREAM(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFILESTREAM(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTSTRINGSTREAM(Cl: TPSRuntimeClassImporter);
 {$IFNDEF PS_MINIVCL}
-procedure RIRegisterTCUSTOMMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTRESOURCESTREAM(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTPARSER(Cl: TPSRuntimeClassImporter);
-{$IFDEF DELPHI3UP}
-procedure RIRegisterTOWNEDCOLLECTION(Cl: TPSRuntimeClassImporter);
-{$ENDIF}
-procedure RIRegisterTCOLLECTION(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTCOLLECTIONITEM(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTCUSTOMMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTRESOURCESTREAM(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTPARSER(Cl: TPSRuntimeClassImporter);
+  {$IFDEF DELPHI3UP}
+    procedure RIRegisterTOWNEDCOLLECTION(Cl: TPSRuntimeClassImporter);
+  {$ENDIF}
+  procedure RIRegisterTCOLLECTION(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTCOLLECTIONITEM(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 
 procedure RIRegister_Classes(Cl: TPSRuntimeClassImporter; Streams: Boolean{$IFDEF D4PLUS}=True{$ENDIF});
@@ -39,8 +39,8 @@ procedure TStringsCapacityW(Self: TStrings; T: Longint); begin Self.Capacity := 
 procedure TStringsDelimiterR(Self: TStrings; var T: char); begin T := Self.Delimiter; end;
 procedure TStringsDelimiterW(Self: TStrings; T: char); begin Self.Delimiter:= T; end;
 {$IFDEF DELPHI2006UP}
-procedure TStringsStrictDelimiterR(Self: TStrings; var T: boolean); begin T := Self.StrictDelimiter; end;
-procedure TStringsStrictDelimiterW(Self: TStrings; T: boolean); begin Self.StrictDelimiter:= T; end;
+  procedure TStringsStrictDelimiterR(Self: TStrings; var T: boolean); begin T := Self.StrictDelimiter; end;
+  procedure TStringsStrictDelimiterW(Self: TStrings; T: boolean); begin Self.StrictDelimiter:= T; end;
 {$ENDIF}
 procedure TStringsDelimitedTextR(Self: TStrings; var T: string); begin T := Self.DelimitedText; end;
 procedure TStringsDelimitedTextW(Self: TStrings; T: string); begin Self.DelimitedText:= T; end;
@@ -97,7 +97,7 @@ begin
   Self.ValueFromIndex[I]:= T;
 end;
 
-procedure RIRegisterTStrings(cl: TPSRuntimeClassImporter; Streams: Boolean); // requires TPersistent
+procedure RIRegisterTStrings(Cl: TPSRuntimeClassImporter; Streams: Boolean); // requires TPersistent
 begin
   with Cl.Add(TStrings) do
   begin
@@ -186,20 +186,20 @@ begin
 end;
 
 {$IFNDEF PS_MINIVCL}
-procedure TBITSBITS_W(Self: TBITS; T: BOOLEAN; t1: INTEGER); begin Self.BITS[t1] := T; end;
-procedure TBITSBITS_R(Self: TBITS; var T: BOOLEAN; t1: INTEGER); begin T := Self.Bits[t1]; end;
-procedure TBITSSIZE_R(Self: TBITS; T: INTEGER); begin Self.SIZE := T; end;
-procedure TBITSSIZE_W(Self: TBITS; var T: INTEGER); begin T := Self.SIZE; end;
-
-procedure RIRegisterTBITS(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TBITS) do
+  procedure TBITSBITS_W(Self: TBITS; T: BOOLEAN; t1: INTEGER); begin Self.BITS[t1] := T; end;
+  procedure TBITSBITS_R(Self: TBITS; var T: BOOLEAN; t1: INTEGER); begin T := Self.Bits[t1]; end;
+  procedure TBITSSIZE_R(Self: TBITS; var T: INTEGER); begin T := Self.SIZE; end;
+  procedure TBITSSIZE_W(Self: TBITS; T: INTEGER); begin Self.SIZE := T; end;
+  
+  procedure RIRegisterTBITS(Cl: TPSRuntimeClassImporter);
   begin
-    RegisterMethod(@TBITS.OPENBIT, 'OpenBit');
-    RegisterPropertyHelper(@TBITSBITS_R, @TBITSBITS_W, 'Bits');
-    RegisterPropertyHelper(@TBITSSIZE_R, @TBITSSIZE_W, 'Size');
+    with Cl.Add(TBITS) do
+    begin
+      RegisterMethod(@TBITS.OPENBIT, 'OpenBit');
+      RegisterPropertyHelper(@TBITSBITS_R, @TBITSBITS_W, 'Bits');
+      RegisterPropertyHelper(@TBITSSIZE_R, @TBITSSIZE_W, 'Size');
+    end;
   end;
-end;
 {$ENDIF}
 
 procedure TSTREAMPOSITION_R(Self: TSTREAM; var T: LONGINT); begin t := Self.POSITION; end;
@@ -248,9 +248,9 @@ begin
   with Cl.Add(TFILESTREAM) do
   begin
     {$IFDEF FPC}
-    RegisterConstructor(@TFileStreamCreate, 'Create');
+      RegisterConstructor(@TFileStreamCreate, 'Create');
     {$ELSE}
-    RegisterConstructor(@TFILESTREAM.CREATE, 'Create');
+      RegisterConstructor(@TFILESTREAM.CREATE, 'Create');
     {$ENDIF}
   end;
 end;
@@ -277,170 +277,170 @@ begin
 end;
 
 {$IFNDEF PS_MINIVCL}
-procedure RIRegisterTCUSTOMMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TCUSTOMMEMORYSTREAM) do
+  procedure RIRegisterTCUSTOMMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
   begin
-    RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOSTREAM, 'SaveToStream');
-    RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOFILE, 'SaveToFile');
+    with Cl.Add(TCUSTOMMEMORYSTREAM) do
+    begin
+      RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOSTREAM, 'SaveToStream');
+      RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOFILE, 'SaveToFile');
+    end;
   end;
-end;
 
-procedure RIRegisterTMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TMEMORYSTREAM) do
+  procedure RIRegisterTMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
   begin
-    RegisterMethod(@TMEMORYSTREAM.CLEAR, 'Clear');
-    RegisterMethod(@TMEMORYSTREAM.LOADFROMSTREAM, 'LoadFromStream');
-    RegisterMethod(@TMEMORYSTREAM.LOADFROMFILE, 'LoadFromFile');
-    RegisterMethod(@TMEMORYSTREAM.SETSIZE, 'SetSize');
+    with Cl.Add(TMEMORYSTREAM) do
+    begin
+      RegisterMethod(@TMEMORYSTREAM.CLEAR, 'Clear');
+      RegisterMethod(@TMEMORYSTREAM.LOADFROMSTREAM, 'LoadFromStream');
+      RegisterMethod(@TMEMORYSTREAM.LOADFROMFILE, 'LoadFromFile');
+      RegisterMethod(@TMEMORYSTREAM.SETSIZE, 'SetSize');
+    end;
   end;
-end;
 
-procedure RIRegisterTRESOURCESTREAM(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TRESOURCESTREAM) do
+  procedure RIRegisterTRESOURCESTREAM(Cl: TPSRuntimeClassImporter);
   begin
-    RegisterConstructor(@TRESOURCESTREAM.CREATE, 'Create');
-    RegisterConstructor(@TRESOURCESTREAM.CREATEFROMID, 'CreateFromID');
+    with Cl.Add(TRESOURCESTREAM) do
+    begin
+      RegisterConstructor(@TRESOURCESTREAM.CREATE, 'Create');
+      RegisterConstructor(@TRESOURCESTREAM.CREATEFROMID, 'CreateFromID');
+    end;
   end;
-end;
 
-procedure TPARSERSOURCELINE_R(Self: TPARSER; var T: INTEGER); begin T := Self.SOURCELINE; end;
-procedure TPARSERTOKEN_R(Self: TPARSER; var T: CHAR); begin T := Self.TOKEN; end;
+  procedure TPARSERSOURCELINE_R(Self: TPARSER; var T: INTEGER); begin T := Self.SOURCELINE; end;
+  procedure TPARSERTOKEN_R(Self: TPARSER; var T: CHAR); begin T := Self.TOKEN; end;
 
-procedure RIRegisterTPARSER(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TPARSER) do
+  procedure RIRegisterTPARSER(Cl: TPSRuntimeClassImporter);
   begin
-    RegisterConstructor(@TPARSER.CREATE, 'Create');
-    RegisterMethod(@TPARSER.CHECKTOKEN, 'CheckToken');
-    RegisterMethod(@TPARSER.CHECKTOKENSYMBOL, 'CheckTokenSymbol');
-    RegisterMethod(@TPARSER.ERROR, 'Error');
-    RegisterMethod(@TPARSER.ERRORSTR, 'ErrorStr');
-    RegisterMethod(@TPARSER.HEXTOBINARY, 'HexToBinary');
-    RegisterMethod(@TPARSER.NEXTTOKEN, 'NextToken');
-    RegisterMethod(@TPARSER.SOURCEPOS, 'SourcePos');
-    RegisterMethod(@TPARSER.TOKENCOMPONENTIDENT, 'TokenComponentIdent');
-    RegisterMethod(@TPARSER.TOKENFLOAT, 'TokenFloat');
-    RegisterMethod(@TPARSER.TOKENINT, 'TokenInt');
-    RegisterMethod(@TPARSER.TOKENSTRING, 'TokenString');
-    RegisterMethod(@TPARSER.TOKENSYMBOLIS, 'TokenSymbolIs');
-    RegisterPropertyHelper(@TPARSERSOURCELINE_R, nil, 'SourceLine');
-    RegisterPropertyHelper(@TPARSERTOKEN_R, nil, 'Token');
+    with Cl.Add(TPARSER) do
+    begin
+      RegisterConstructor(@TPARSER.CREATE, 'Create');
+      RegisterMethod(@TPARSER.CHECKTOKEN, 'CheckToken');
+      RegisterMethod(@TPARSER.CHECKTOKENSYMBOL, 'CheckTokenSymbol');
+      RegisterMethod(@TPARSER.ERROR, 'Error');
+      RegisterMethod(@TPARSER.ERRORSTR, 'ErrorStr');
+      RegisterMethod(@TPARSER.HEXTOBINARY, 'HexToBinary');
+      RegisterMethod(@TPARSER.NEXTTOKEN, 'NextToken');
+      RegisterMethod(@TPARSER.SOURCEPOS, 'SourcePos');
+      RegisterMethod(@TPARSER.TOKENCOMPONENTIDENT, 'TokenComponentIdent');
+      RegisterMethod(@TPARSER.TOKENFLOAT, 'TokenFloat');
+      RegisterMethod(@TPARSER.TOKENINT, 'TokenInt');
+      RegisterMethod(@TPARSER.TOKENSTRING, 'TokenString');
+      RegisterMethod(@TPARSER.TOKENSYMBOLIS, 'TokenSymbolIs');
+      RegisterPropertyHelper(@TPARSERSOURCELINE_R, nil, 'SourceLine');
+      RegisterPropertyHelper(@TPARSERTOKEN_R, nil, 'Token');
+    end;
   end;
-end;
 
-procedure TCOLLECTIONITEMS_W(Self: TCOLLECTION; const T: TCOLLECTIONITEM; const t1: INTEGER);
-begin Self.ITEMS[t1] := T; end;
+  procedure TCOLLECTIONITEMS_W(Self: TCOLLECTION; const T: TCOLLECTIONITEM; const t1: INTEGER);
+  begin Self.ITEMS[t1] := T; end;
 
-procedure TCOLLECTIONITEMS_R(Self: TCOLLECTION; var T: TCOLLECTIONITEM; const t1: INTEGER);
-begin T := Self.ITEMS[t1]; end;
+  procedure TCOLLECTIONITEMS_R(Self: TCOLLECTION; var T: TCOLLECTIONITEM; const t1: INTEGER);
+  begin T := Self.ITEMS[t1]; end;
 
-{$IFDEF DELPHI3UP}
-procedure TCOLLECTIONITEMCLASS_R(Self: TCOLLECTION; var T: TCOLLECTIONITEMCLASS);
-begin T := Self.ITEMCLASS; end;
-{$ENDIF}
+  {$IFDEF DELPHI3UP}
+  procedure TCOLLECTIONITEMCLASS_R(Self: TCOLLECTION; var T: TCOLLECTIONITEMCLASS);
+  begin T := Self.ITEMCLASS; end;
+  {$ENDIF}
 
-procedure TCOLLECTIONCOUNT_R(Self: TCOLLECTION; var T: INTEGER);
-begin T := Self.COUNT; end;
+  procedure TCOLLECTIONCOUNT_R(Self: TCOLLECTION; var T: INTEGER);
+  begin T := Self.COUNT; end;
 
-{$IFDEF DELPHI3UP}
-procedure TCOLLECTIONITEMDISPLAYNAME_W(Self: TCOLLECTIONITEM; const T: STRING);
-begin Self.DISPLAYNAME := T; end;
-{$ENDIF}
+  {$IFDEF DELPHI3UP}
+  procedure TCOLLECTIONITEMDISPLAYNAME_W(Self: TCOLLECTIONITEM; const T: STRING);
+  begin Self.DISPLAYNAME := T; end;
+  {$ENDIF}
 
-{$IFDEF DELPHI3UP}
-procedure TCOLLECTIONITEMDISPLAYNAME_R(Self: TCOLLECTIONITEM; var T: STRING);
-begin T := Self.DISPLAYNAME; end;
-{$ENDIF}
+  {$IFDEF DELPHI3UP}
+  procedure TCOLLECTIONITEMDISPLAYNAME_R(Self: TCOLLECTIONITEM; var T: STRING);
+  begin T := Self.DISPLAYNAME; end;
+  {$ENDIF}
 
-procedure TCOLLECTIONITEMINDEX_W(Self: TCOLLECTIONITEM; const T: INTEGER);
-begin Self.INDEX := T; end;
+  procedure TCOLLECTIONITEMINDEX_W(Self: TCOLLECTIONITEM; const T: INTEGER);
+  begin Self.INDEX := T; end;
 
-procedure TCOLLECTIONITEMINDEX_R(Self: TCOLLECTIONITEM; var T: INTEGER);
-begin T := Self.INDEX; end;
+  procedure TCOLLECTIONITEMINDEX_R(Self: TCOLLECTIONITEM; var T: INTEGER);
+  begin T := Self.INDEX; end;
 
-{$IFDEF DELPHI3UP}
-procedure TCOLLECTIONITEMID_R(Self: TCOLLECTIONITEM; var T: INTEGER);
-begin T := Self.ID; end;
-{$ENDIF}
+  {$IFDEF DELPHI3UP}
+  procedure TCOLLECTIONITEMID_R(Self: TCOLLECTIONITEM; var T: INTEGER);
+  begin T := Self.ID; end;
+  {$ENDIF}
 
-procedure TCOLLECTIONITEMCOLLECTION_W(Self: TCOLLECTIONITEM; const T: TCOLLECTION);
-begin Self.COLLECTION := T; end;
+  procedure TCOLLECTIONITEMCOLLECTION_W(Self: TCOLLECTIONITEM; const T: TCOLLECTION);
+  begin Self.COLLECTION := T; end;
 
-procedure TCOLLECTIONITEMCOLLECTION_R(Self: TCOLLECTIONITEM; var T: TCOLLECTION);
-begin T := Self.COLLECTION; end;
+  procedure TCOLLECTIONITEMCOLLECTION_R(Self: TCOLLECTIONITEM; var T: TCOLLECTION);
+  begin T := Self.COLLECTION; end;
 
-{$IFDEF DELPHI3UP}
-procedure RIRegisterTOWNEDCOLLECTION(Cl: TPSRuntimeClassImporter);
-Begin
-with Cl.Add(TOWNEDCOLLECTION) do
-  begin
-  RegisterConstructor(@TOWNEDCOLLECTION.CREATE, 'Create');
+  {$IFDEF DELPHI3UP}
+  procedure RIRegisterTOWNEDCOLLECTION(Cl: TPSRuntimeClassImporter);
+  Begin
+  with Cl.Add(TOWNEDCOLLECTION) do
+    begin
+    RegisterConstructor(@TOWNEDCOLLECTION.CREATE, 'Create');
+    end;
   end;
-end;
-{$ENDIF}
+  {$ENDIF}
 
-procedure RIRegisterTCOLLECTION(Cl: TPSRuntimeClassImporter);
-Begin
-with Cl.Add(TCOLLECTION) do
-  begin
-  RegisterConstructor(@TCOLLECTION.CREATE, 'Create');
-{$IFDEF DELPHI6UP}  {$IFNDEF FPC} RegisterMethod(@TCOLLECTION.OWNER, 'Owner'); {$ENDIF} {$ENDIF} // no owner in FPC
-  RegisterMethod(@TCOLLECTION.ADD, 'Add');
-  RegisterVirtualMethod(@TCOLLECTION.BEGINUPDATE, 'BeginUpdate');
-  RegisterMethod(@TCOLLECTION.CLEAR, 'Clear');
-{$IFDEF DELPHI5UP}  RegisterMethod(@TCOLLECTION.DELETE, 'Delete'); {$ENDIF}
-  RegisterVirtualMethod(@TCOLLECTION.ENDUPDATE, 'EndUpdate');
-{$IFDEF DELPHI3UP}  RegisterMethod(@TCOLLECTION.FINDITEMID, 'FindItemID'); {$ENDIF}
-{$IFDEF DELPHI3UP}  RegisterMethod(@TCOLLECTION.INSERT, 'Insert'); {$ENDIF}
-  RegisterPropertyHelper(@TCOLLECTIONCOUNT_R,nil,'Count');
-{$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMCLASS_R,nil,'ItemClass'); {$ENDIF}
-  RegisterPropertyHelper(@TCOLLECTIONITEMS_R,@TCOLLECTIONITEMS_W,'Items');
+  procedure RIRegisterTCOLLECTION(Cl: TPSRuntimeClassImporter);
+  Begin
+  with Cl.Add(TCOLLECTION) do
+    begin
+    RegisterConstructor(@TCOLLECTION.CREATE, 'Create');
+  {$IFDEF DELPHI6UP}  {$IFNDEF FPC} RegisterMethod(@TCOLLECTION.OWNER, 'Owner'); {$ENDIF} {$ENDIF} // no owner in FPC
+    RegisterMethod(@TCOLLECTION.ADD, 'Add');
+    RegisterVirtualMethod(@TCOLLECTION.BEGINUPDATE, 'BeginUpdate');
+    RegisterMethod(@TCOLLECTION.CLEAR, 'Clear');
+  {$IFDEF DELPHI5UP}  RegisterMethod(@TCOLLECTION.DELETE, 'Delete'); {$ENDIF}
+    RegisterVirtualMethod(@TCOLLECTION.ENDUPDATE, 'EndUpdate');
+  {$IFDEF DELPHI3UP}  RegisterMethod(@TCOLLECTION.FINDITEMID, 'FindItemID'); {$ENDIF}
+  {$IFDEF DELPHI3UP}  RegisterMethod(@TCOLLECTION.INSERT, 'Insert'); {$ENDIF}
+    RegisterPropertyHelper(@TCOLLECTIONCOUNT_R,nil,'Count');
+  {$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMCLASS_R,nil,'ItemClass'); {$ENDIF}
+    RegisterPropertyHelper(@TCOLLECTIONITEMS_R,@TCOLLECTIONITEMS_W,'Items');
+    end;
   end;
-end;
 
-procedure RIRegisterTCOLLECTIONITEM(Cl: TPSRuntimeClassImporter);
-Begin
-with Cl.Add(TCOLLECTIONITEM) do
-  begin
-  RegisterVirtualConstructor(@TCOLLECTIONITEM.CREATE, 'Create');
-  RegisterPropertyHelper(@TCOLLECTIONITEMCOLLECTION_R,@TCOLLECTIONITEMCOLLECTION_W,'Collection');
-{$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMID_R,nil,'ID'); {$ENDIF}
-  RegisterPropertyHelper(@TCOLLECTIONITEMINDEX_R,@TCOLLECTIONITEMINDEX_W,'Index');
-{$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMDISPLAYNAME_R,@TCOLLECTIONITEMDISPLAYNAME_W,'DisplayName'); {$ENDIF}
+  procedure RIRegisterTCOLLECTIONITEM(Cl: TPSRuntimeClassImporter);
+  Begin
+  with Cl.Add(TCOLLECTIONITEM) do
+    begin
+    RegisterVirtualConstructor(@TCOLLECTIONITEM.CREATE, 'Create');
+    RegisterPropertyHelper(@TCOLLECTIONITEMCOLLECTION_R,@TCOLLECTIONITEMCOLLECTION_W,'Collection');
+  {$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMID_R,nil,'ID'); {$ENDIF}
+    RegisterPropertyHelper(@TCOLLECTIONITEMINDEX_R,@TCOLLECTIONITEMINDEX_W,'Index');
+  {$IFDEF DELPHI3UP}  RegisterPropertyHelper(@TCOLLECTIONITEMDISPLAYNAME_R,@TCOLLECTIONITEMDISPLAYNAME_W,'DisplayName'); {$ENDIF}
+    end;
   end;
-end;
 {$ENDIF}
 
 procedure RIRegister_Classes(Cl: TPSRuntimeClassImporter; Streams: Boolean);
 begin
   if Streams then
     RIRegisterTSTREAM(Cl);
-  RIRegisterTStrings(cl, Streams);
-  RIRegisterTStringList(cl);
+  RIRegisterTStrings(Cl, Streams);
+  RIRegisterTStringList(Cl);
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTBITS(cl);
+    RIRegisterTBITS(Cl);
   {$ENDIF}
   if Streams then
-  begin
-    RIRegisterTHANDLESTREAM(Cl);
-    RIRegisterTFILESTREAM(Cl);
-    RIRegisterTSTRINGSTREAM(Cl);
-    {$IFNDEF PS_MINIVCL}
-    RIRegisterTCUSTOMMEMORYSTREAM(Cl);
-    RIRegisterTMEMORYSTREAM(Cl);
-    RIRegisterTRESOURCESTREAM(Cl);
-    {$ENDIF}
-  end;
+    begin
+      RIRegisterTHANDLESTREAM(Cl);
+      RIRegisterTFILESTREAM(Cl);
+      RIRegisterTSTRINGSTREAM(Cl);
+      {$IFNDEF PS_MINIVCL}
+        RIRegisterTCUSTOMMEMORYSTREAM(Cl);
+        RIRegisterTMEMORYSTREAM(Cl);
+        RIRegisterTRESOURCESTREAM(Cl);
+      {$ENDIF}
+    end;
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTPARSER(Cl);
-  RIRegisterTCOLLECTIONITEM(Cl);
-  RIRegisterTCOLLECTION(Cl);
-  {$IFDEF DELPHI3UP}
-  RIRegisterTOWNEDCOLLECTION(Cl);
-  {$ENDIF}
+    RIRegisterTPARSER(Cl);
+    RIRegisterTCOLLECTIONITEM(Cl);
+    RIRegisterTCOLLECTION(Cl);
+    {$IFDEF DELPHI3UP}
+      RIRegisterTOWNEDCOLLECTION(Cl);
+    {$ENDIF}
   {$ENDIF}
 end;
 

@@ -114,6 +114,9 @@ begin
 
     RegisterProperty('Brush', 'TBrush', iptr);
     RegisterProperty('HelpContext', 'LongInt', iptrw);
+
+    RegisterProperty('DoubleBuffered', 'Boolean', iptRW);
+    RegisterProperty('ParentDoubleBuffered', 'Boolean', iptRW);
     {$ENDIF}
   end;
 end;

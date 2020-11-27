@@ -4,9 +4,7 @@ interface
 
 uses
   SysUtils, Classes, uPSRuntime, uPSDebugger, uPSUtils,
-  uPSCompiler,
-  {$IF DEFINED (MSWINDOWS) OR Defined (UNIX) OR Defined (fpc)} uPSC_dll, uPSR_dll,{$IFEND}
-  uPSPreProcessor;
+  uPSCompiler, uPSC_dll, uPSR_dll, uPSPreProcessor;
 
 const
   {alias to @link(ifps3.cdRegister)}
@@ -1149,17 +1147,12 @@ end;
 
 procedure TPSDllPlugin.CompOnUses;
 begin
-  CompExec.Comp.OnExternalProc := nil;
-  {$IF DEFINED (MSWINDOWS) OR Defined (UNIX) OR Defined (fpc)}
   CompExec.Comp.OnExternalProc := DllExternalProc;
-  {$IFEND}
 end;
 
 procedure TPSDllPlugin.ExecOnUses;
 begin
-  {$IF DEFINED (MSWINDOWS) OR Defined (UNIX) OR Defined (fpc)}
   RegisterDLLRuntime(CompExec.Exec);
-  {$IFEND}
 end;
 
 

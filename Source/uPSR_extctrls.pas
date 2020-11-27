@@ -44,12 +44,27 @@ begin
 end;
 
 procedure TIMAGECANVAS_R(Self: TIMAGE; var T: TCANVAS); begin T := Self.CANVAS; end;
+procedure TImageCenter_W(Self: TImage; const T: Boolean); begin Self.Center := T; end;
+procedure TImageCenter_R(Self: TImage; var T: Boolean); begin T := Self.Center; end;
+procedure TImageProportional_W(Self: TImage; const T: Boolean); begin Self.Proportional := T; end;
+procedure TImageProportional_R(Self: TImage; var T: Boolean); begin T := Self.Proportional; end;
+procedure TImagePicture_W(Self: TImage; const T: TPicture); begin Self.Picture := T; end;
+procedure TImagePicture_R(Self: TImage; var T: TPicture); begin T := Self.Picture; end;
+procedure TImageStretch_W(Self: TImage; const T: Boolean); begin Self.Stretch := T; end;
+procedure TImageStretch_R(Self: TImage; var T: Boolean); begin T := Self.Stretch; end;
+procedure TImageTransparent_W(Self: TImage; const T: Boolean); begin Self.Transparent := T; end;
+procedure TImageTransparent_R(Self: TImage; var T: Boolean); begin T := Self.Transparent; end;
 
 procedure RIRegisterTIMAGE(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TIMAGE) do
   begin
     RegisterPropertyHelper(@TIMAGECANVAS_R, nil, 'Canvas');
+    RegisterPropertyHelper(@TImageCenter_R,@TImageCenter_W,'Center');
+    RegisterPropertyHelper(@TImagePicture_R,@TImagePicture_W,'Picture');
+    RegisterPropertyHelper(@TImageProportional_R,@TImageProportional_W,'Proportional');
+    RegisterPropertyHelper(@TImageStretch_R,@TImageStretch_W,'Stretch');
+    RegisterPropertyHelper(@TImageTransparent_R,@TImageTransparent_W,'Transparent');
   end;
 end;
 

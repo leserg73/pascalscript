@@ -318,11 +318,10 @@ type
 {$IFDEF FPC}
   IPointer = PtrUInt;
 {$ELSE}
-  {$IFDEF DELPHI2009UP}
-    IPointer = NativeUInt;
+  {$IFDEF CPUX64}
+  IPointer = IntPtr;
   {$ELSE}
-    IPointer = Cardinal;
-  {$ENDIF}
+  {$IFDEF CPU64} IPointer = LongWord;{$ELSE}  IPointer = Cardinal;{$ENDIF}{$ENDIF}
 {$ENDIF}
   TPSCallingConvention = (cdRegister, cdPascal, cdCdecl, cdStdCall, cdSafeCall);
 
@@ -1153,17 +1152,17 @@ var
   function CheckReserved(Const S: ShortString; var CurrTokenId: TPSPasToken): Boolean;
   var
     L, H, I: LongInt;
-    J: SmallInt;
+    J: tbtChar;
     SName: ShortString;
   begin
     L := 0;
-    J := Length(S);
+    J := S[0];
     H := KEYWORD_COUNT-1;
     while L <= H do
     begin
       I := (L + H) shr 1;
       SName := LookupTable[i].Name;
-      if J = Length(SName) then
+      if J = SName[0] then
       begin
         if S = SName then
         begin
@@ -1729,6 +1728,5 @@ end;
 
 
 end.
-
 
 

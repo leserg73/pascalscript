@@ -25,7 +25,7 @@ Uses
   SysUtils, Classes, Controls, Menus, Graphics, LCLType, ImgList;
 {$ENDIF}
 {$ELSE}
-Uses {$IFNDEF FPC}WINDOWS,{$ELSE} LCLType,{$ENDIF} SYSUTILS, CLASSES, CONTNRS, MESSAGES, GRAPHICS, IMGLIST, ACTNLIST, Menus;
+Uses {$IFNDEF FPC}Windows,{$ELSE} LCLType,{$ENDIF} SysUtils, Classes, Controls, Messages, Graphics, ImgList, ActnList, Menus;
 {$ENDIF}
 
 
@@ -293,7 +293,7 @@ begin T := Self.COMMAND; end;
 procedure RIRegister_Menus_Routines(S: TPSExec);
 begin
   S.RegisterDelphiFunction(@SHORTCUT, 'ShortCut', cdRegister);
-	S.RegisterDelphiFunction(@SHORTCUTTOKEY, 'ShortCutToKey', cdRegister);
+  S.RegisterDelphiFunction(@SHORTCUTTOKEY, 'ShortCutToKey', cdRegister);
 {$IFNDEF FPC}
   S.RegisterDelphiFunction(@SHORTCUTTOTEXT, 'ShortCutToText', cdRegister);
   S.RegisterDelphiFunction(@TEXTTOSHORTCUT, 'TextToShortCut', cdRegister);
@@ -302,7 +302,7 @@ begin
   S.RegisterDelphiFunction(@NEWSUBMENU, 'NewSubMenu', cdRegister);
   S.RegisterDelphiFunction(@NEWITEM, 'NewItem', cdRegister);
   S.RegisterDelphiFunction(@NEWLINE, 'NewLine', cdRegister);
-	S.RegisterDelphiFunction(@DRAWMENUITEM, 'DrawMenuItem', cdRegister);
+  S.RegisterDelphiFunction(@DRAWMENUITEM, 'DrawMenuItem', cdRegister);
 {$ENDIF}	
 end;
 

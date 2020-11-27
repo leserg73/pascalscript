@@ -12,6 +12,10 @@ procedure RIRegisterTSCROLLBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFORM(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
 
+{$IFNDEF PS_MINIVCL}
+  procedure RIRegisterTSCREEN(Cl: TPSRuntimeClassImporter);
+{$ENDIF}
+
 procedure RIRegister_Forms(Cl: TPSRuntimeClassImporter);
 
 implementation
@@ -171,6 +175,14 @@ procedure TAPPLICATIONONMINIMIZE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin S
 
 procedure TAPPLICATIONONRESTORE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONRESTORE; end;
 procedure TAPPLICATIONONRESTORE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONRESTORE := T; end;
+
+{$IFNDEF PS_MINIVCL}
+procedure TAPPLICATIONONMESSAGE_R(Self: TAPPLICATION; var T: TMESSAGEEVENT); begin T := Self.ONMESSAGE; end;
+procedure TAPPLICATIONONMESSAGE_W(Self: TAPPLICATION; T: TMESSAGEEVENT); begin Self.ONMESSAGE := T; end;
+procedure TAPPLICATIONICON_W(Self: TAPPLICATION; const T: TICON); begin Self.ICON := T; end;
+procedure TAPPLICATIONICON_R(Self: TAPPLICATION; var T: TICON); begin T := Self.ICON; end;
+{$ENDIF}
+
 {$ENDIF}
 
 procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
@@ -185,6 +197,12 @@ begin
     RegisterPropertyHelper(@TAPPLICATIONONDEACTIVATE_R, @TAPPLICATIONONDEACTIVATE_W, 'OnDeactivate');
     RegisterPropertyHelper(@TAPPLICATIONONMINIMIZE_R, @TAPPLICATIONONMINIMIZE_W, 'OnMinimize');
     RegisterPropertyHelper(@TAPPLICATIONONRESTORE_R, @TAPPLICATIONONRESTORE_W, 'OnRestore');
+
+    {$IFNDEF PS_MINIVCL}
+    RegisterPropertyHelper(@TAPPLICATIONONMESSAGE_R, @TAPPLICATIONONMESSAGE_W, 'OnMessage');
+    RegisterPropertyHelper(@TAPPLICATIONICON_R,@TAPPLICATIONICON_W,'Icon');
+    {$ENDIF}
+
     RegisterPropertyHelper(@TAPPLICATIONDIALOGHANDLE_R, @TAPPLICATIONDIALOGHANDLE_W, 'DialogHandle');
     RegisterMethod(@TAPPLICATION.CREATEHANDLE, 'CreateHandle');
     RegisterMethod(@TAPPLICATION.NORMALIZETOPMOSTS, 'NormalizeTopMosts');
@@ -239,26 +257,132 @@ begin
   end;
 end;
 
+{$IFNDEF PS_MINIVCL}
+// procedure TScreenUpdatingAllFonts_R(Self: TScreen; var T: Boolean); begin T := Self.UpdatingAllFonts; end;
+procedure TScreenOnActiveFormChange_W(Self: TScreen; const T: TNotifyEvent); begin Self.OnActiveFormChange := T; end;
+procedure TScreenOnActiveFormChange_R(Self: TScreen; var T: TNotifyEvent); begin T := Self.OnActiveFormChange; end;
+procedure TScreenOnActiveControlChange_W(Self: TScreen; const T: TNotifyEvent); begin Self.OnActiveControlChange := T; end;
+procedure TScreenOnActiveControlChange_R(Self: TScreen; var T: TNotifyEvent); begin T := Self.OnActiveControlChange; end;
+procedure TScreenWidth_R(Self: TScreen; var T: Integer); begin T := Self.Width; end;
+// procedure TScreenPrimaryMonitor_R(Self: TScreen; var T: TMonitor); begin T := Self.PrimaryMonitor; end;
+procedure TScreenPixelsPerInch_R(Self: TScreen; var T: Integer); begin T := Self.PixelsPerInch; end;
+procedure TScreenHeight_R(Self: TScreen; var T: Integer); begin T := Self.Height; end;
+// procedure TScreenDefaultKbLayout_R(Self: TScreen; var T: HKL); begin T := Self.DefaultKbLayout; end;
+// procedure TScreenDefaultIme_R(Self: TScreen; var T: string); begin T := Self.DefaultIme; end;
+// procedure TScreenImes_R(Self: TScreen; var T: TStrings); begin T := Self.Imes; end;
+procedure TScreenForms_R(Self: TScreen; var T: TForm; const t1: Integer); begin T := Self.Forms[t1]; end;
+procedure TScreenFormCount_R(Self: TScreen; var T: Integer); begin T := Self.FormCount; end;
+procedure TScreenFonts_R(Self: TScreen; var T: TStrings); begin T := Self.Fonts; end;
+// procedure TScreenCaptionFont_W(Self: TScreen; const T: TFont); begin Self.CaptionFont := T; end;
+// procedure TScreenCaptionFont_R(Self: TScreen; var T: TFont); begin T := Self.CaptionFont; end;
+// procedure TScreenMessageFont_W(Self: TScreen; const T: TFont); begin Self.MessageFont := T; end;
+// procedure TScreenMessageFont_R(Self: TScreen; var T: TFont); begin T := Self.MessageFont; end;
+// procedure TScreenMenuFont_W(Self: TScreen; const T: TFont); begin Self.MenuFont := T; end;
+// procedure TScreenMenuFont_R(Self: TScreen; var T: TFont); begin T := Self.MenuFont; end;
+// procedure TScreenIconFont_W(Self: TScreen; const T: TFont); begin Self.IconFont := T; end;
+// procedure TScreenIconFont_R(Self: TScreen; var T: TFont); begin T := Self.IconFont; end;
+// procedure TScreenHintFont_W(Self: TScreen; const T: TFont); begin Self.HintFont := T; end;
+// procedure TScreenHintFont_R(Self: TScreen; var T: TFont); begin T := Self.HintFont; end;
+// procedure TScreenWorkAreaWidth_R(Self: TScreen; var T: Integer); begin T := Self.WorkAreaWidth; end;
+// procedure TScreenWorkAreaTop_R(Self: TScreen; var T: Integer); begin T := Self.WorkAreaTop; end;
+// procedure TScreenWorkAreaLeft_R(Self: TScreen; var T: Integer); begin T := Self.WorkAreaLeft; end;
+// procedure TScreenWorkAreaHeight_R(Self: TScreen; var T: Integer); begin T := Self.WorkAreaHeight; end;
+// procedure TScreenWorkAreaRect_R(Self: TScreen; var T: TRect); begin T := Self.WorkAreaRect; end;
+// procedure TScreenDesktopWidth_R(Self: TScreen; var T: Integer); begin T := Self.DesktopWidth; end;
+// procedure TScreenDesktopTop_R(Self: TScreen; var T: Integer); begin T := Self.DesktopTop; end;
+// procedure TScreenDesktopLeft_R(Self: TScreen; var T: Integer); begin T := Self.DesktopLeft; end;
+// procedure TScreenDesktopHeight_R(Self: TScreen; var T: Integer); begin T := Self.DesktopHeight; end;
+// procedure TScreenDesktopRect_R(Self: TScreen; var T: TRect); begin T := Self.DesktopRect; end;
+// procedure TScreenMonitors_R(Self: TScreen; var T: TMonitor; const t1: Integer); begin T := Self.Monitors[t1]; end;
+// procedure TScreenMonitorCount_R(Self: TScreen; var T: Integer); begin T := Self.MonitorCount; end;
+// procedure TScreenSaveFocusedList_R(Self: TScreen; var T: TList); begin T := Self.SaveFocusedList; end;
+// procedure TScreenFocusedForm_W(Self: TScreen; const T: TCustomForm); begin Self.FocusedForm := T; end;
+// procedure TScreenFocusedForm_R(Self: TScreen; var T: TCustomForm); begin T := Self.FocusedForm; end;
+// procedure TScreenDataModuleCount_R(Self: TScreen; var T: Integer); begin T := Self.DataModuleCount; end;
+// procedure TScreenDataModules_R(Self: TScreen; var T: TDataModule; const t1: Integer); begin T := Self.DataModules[t1]; end;
+procedure TScreenCursors_W(Self: TScreen; const T: Cardinal; const t1: Integer); begin Self.Cursors[t1] := T; end;
+procedure TScreenCursors_R(Self: TScreen; var T: Cardinal; const t1: Integer); begin T := Self.Cursors[t1]; end;
+procedure TScreenCursor_W(Self: TScreen; const T: TCursor); begin Self.Cursor := T; end;
+procedure TScreenCursor_R(Self: TScreen; var T: TCursor); begin T := Self.Cursor; end;
+// procedure TScreenCursorCount_R(Self: TScreen; var T: Integer); begin T := Self.CursorCount; end;
+// procedure TScreenCustomForms_R(Self: TScreen; var T: TCustomForm; const t1: Integer); begin T := Self.CustomForms[t1]; end;
+// procedure TScreenCustomFormCount_R(Self: TScreen; var T: Integer); begin T := Self.CustomFormCount; end;
+procedure TScreenActiveForm_R(Self: TScreen; var T: TForm); begin T := Self.ActiveForm; end;
+// procedure TScreenActiveCustomForm_R(Self: TScreen; var T: TCustomForm); begin T := Self.ActiveCustomForm; end;
+procedure TScreenActiveControl_R(Self: TScreen; var T: TWinControl); begin T := Self.ActiveControl; end;
+
+procedure RIRegisterTSCREEN(CL: TPSRuntimeClassImporter);
+begin
+  with CL.Add(TScreen) do
+  begin
+//    RegisterMethod(@TScreen.DisableAlign, 'DisableAlign');
+//    RegisterMethod(@TScreen.EnableAlign, 'EnableAlign');
+//    RegisterMethod(@TScreen.MonitorFromPoint, 'MonitorFromPoint');
+//    RegisterMethod(@TScreen.MonitorFromRect, 'MonitorFromRect');
+//    RegisterMethod(@TScreen.MonitorFromWindow, 'MonitorFromWindow');
+//    RegisterMethod(@TScreen.Realign, 'Realign');
+//    RegisterMethod(@TScreen.ResetFonts, 'ResetFonts');
+    RegisterPropertyHelper(@TScreenActiveControl_R,nil,'ActiveControl');
+//    RegisterPropertyHelper(@TScreenActiveCustomForm_R,nil,'ActiveCustomForm');
+    RegisterPropertyHelper(@TScreenActiveForm_R,nil,'ActiveForm');
+//    RegisterPropertyHelper(@TScreenCustomFormCount_R,nil,'CustomFormCount');
+//    RegisterPropertyHelper(@TScreenCustomForms_R,nil,'CustomForms');
+//    RegisterPropertyHelper(@TScreenCursorCount_R,nil,'CursorCount');
+    RegisterPropertyHelper(@TScreenCursor_R,@TScreenCursor_W,'Cursor');
+    RegisterPropertyHelper(@TScreenCursors_R,@TScreenCursors_W,'Cursors');
+//    RegisterPropertyHelper(@TScreenDataModules_R,nil,'DataModules');
+//    RegisterPropertyHelper(@TScreenDataModuleCount_R,nil,'DataModuleCount');
+//    RegisterPropertyHelper(@TScreenFocusedForm_R,@TScreenFocusedForm_W,'FocusedForm');
+//    RegisterPropertyHelper(@TScreenSaveFocusedList_R,nil,'SaveFocusedList');
+//    RegisterPropertyHelper(@TScreenMonitorCount_R,nil,'MonitorCount');
+//    RegisterPropertyHelper(@TScreenMonitors_R,nil,'Monitors');
+//    RegisterPropertyHelper(@TScreenDesktopRect_R,nil,'DesktopRect');
+//    RegisterPropertyHelper(@TScreenDesktopHeight_R,nil,'DesktopHeight');
+//    RegisterPropertyHelper(@TScreenDesktopLeft_R,nil,'DesktopLeft');
+//    RegisterPropertyHelper(@TScreenDesktopTop_R,nil,'DesktopTop');
+//    RegisterPropertyHelper(@TScreenDesktopWidth_R,nil,'DesktopWidth');
+//    RegisterPropertyHelper(@TScreenWorkAreaRect_R,nil,'WorkAreaRect');
+//    RegisterPropertyHelper(@TScreenWorkAreaHeight_R,nil,'WorkAreaHeight');
+//    RegisterPropertyHelper(@TScreenWorkAreaLeft_R,nil,'WorkAreaLeft');
+//    RegisterPropertyHelper(@TScreenWorkAreaTop_R,nil,'WorkAreaTop');
+//    RegisterPropertyHelper(@TScreenWorkAreaWidth_R,nil,'WorkAreaWidth');
+//    RegisterPropertyHelper(@TScreenHintFont_R,@TScreenHintFont_W,'HintFont');
+//    RegisterPropertyHelper(@TScreenIconFont_R,@TScreenIconFont_W,'IconFont');
+//    RegisterPropertyHelper(@TScreenMenuFont_R,@TScreenMenuFont_W,'MenuFont');
+//    RegisterPropertyHelper(@TScreenMessageFont_R,@TScreenMessageFont_W,'MessageFont');
+//    RegisterPropertyHelper(@TScreenCaptionFont_R,@TScreenCaptionFont_W,'CaptionFont');
+    RegisterPropertyHelper(@TScreenFonts_R,nil,'Fonts');
+    RegisterPropertyHelper(@TScreenFormCount_R,nil,'FormCount');
+    RegisterPropertyHelper(@TScreenForms_R,nil,'Forms');
+//    RegisterPropertyHelper(@TScreenImes_R,nil,'Imes');
+//    RegisterPropertyHelper(@TScreenDefaultIme_R,nil,'DefaultIme');
+//    RegisterPropertyHelper(@TScreenDefaultKbLayout_R,nil,'DefaultKbLayout');
+    RegisterPropertyHelper(@TScreenHeight_R,nil,'Height');
+    RegisterPropertyHelper(@TScreenPixelsPerInch_R,nil,'PixelsPerInch');
+//    RegisterPropertyHelper(@TScreenPrimaryMonitor_R,nil,'PrimaryMonitor');
+    RegisterPropertyHelper(@TScreenWidth_R,nil,'Width');
+    RegisterPropertyHelper(@TScreenOnActiveControlChange_R,@TScreenOnActiveControlChange_W,'OnActiveControlChange');
+    RegisterPropertyHelper(@TScreenOnActiveFormChange_R,@TScreenOnActiveFormChange_W,'OnActiveFormChange');
+//    RegisterPropertyHelper(@TScreenUpdatingAllFonts_R,nil,'UpdatingAllFonts');
+  end;
+end;
+{$ENDIF}
+
 procedure RIRegister_Forms(Cl: TPSRuntimeClassImporter);
 begin
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTCONTROLSCROLLBAR(cl);
-  RIRegisterTSCROLLBOX(cl);
+    RIRegisterTCONTROLSCROLLBAR(Cl);
+    RIRegisterTSCROLLBOX(Cl);
   {$ENDIF}
-{$IFNDEF FPC}  RIRegisterTScrollingWinControl(cl);{$ENDIF}
+{$IFNDEF FPC}  RIRegisterTScrollingWinControl(Cl);{$ENDIF}
   RIRegisterTForm(Cl);
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTApplication(Cl);
+    RIRegisterTApplication(Cl);
+    RIRegisterTScreen(CL);
   {$ENDIF}
 end;
-
 
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
 // FPC changes by Boguslaw brandys (brandys at o2 _dot_ pl)
 
 end.
-
-
-
-
-
