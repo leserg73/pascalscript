@@ -18,7 +18,7 @@ type
   TPSRuntimeAttributes = class;
   TPSRuntimeAttribute = class;
 
-  TPSError = (ErNoError, erCannotImport, erInvalidType, ErInternalError,
+  TPSErrors = (ErNoError, erCannotImport, erInvalidType, ErInternalError,
     erInvalidHeader, erInvalidOpcode, erInvalidOpcodeParameter, erNoMainProc,
     erOutOfGlobalVarsRange, erOutOfProcRange, ErOutOfRange, erOutOfStackRange,
     ErTypeMismatch, erUnexpectedEof, erVersionError, ErDivideByZero, ErMathError,
@@ -588,7 +588,7 @@ type
 
   TPSOnSpecialProcImport = function (Sender: TPSExec; p: TPSExternalProcRec; Tag: Pointer): Boolean;
 
-  TPSOnException = procedure (Sender: TPSExec; ExError: TPSError; const ExParam: tbtstring; ExObject: TObject; ProcNo, Position: Cardinal);
+  TPSOnException = procedure (Sender: TPSExec; ExError: TPSErrors; const ExParam: tbtstring; ExObject: TObject; ProcNo, Position: Cardinal);
 
   TPSExec = class(TObject)
   Private
@@ -660,7 +660,7 @@ type
 
     ExPos: Cardinal;
 
-    ExEx: TPSError;
+    ExEx: TPSErrors;
 
     ExParam: tbtstring;
 
@@ -672,20 +672,20 @@ type
 
     function ImportProc(const Name: ShortString; proc: TPSExternalProcRec): Boolean; Virtual;
 
-    procedure ExceptionProc(proc, Position: Cardinal; Ex: TPSError; const s: tbtstring; NewObject: TObject); Virtual;
+    procedure ExceptionProc(proc, Position: Cardinal; Ex: TPSErrors; const s: tbtstring; NewObject: TObject); Virtual;
 
     function FindSpecialProcImport(P: TPSOnSpecialProcImport): pointer;
   Public
-    function LastEx: TPSError;
+    function LastEx: TPSErrors;
     function LastExParam: tbtstring;
     function LastExProc: Integer;
     function LastExPos: Integer;
     function LastExObject: TObject;
-    procedure CMD_Err(EC: TPSError);
+    procedure CMD_Err(EC: TPSErrors);
 
-    procedure CMD_Err2(EC: TPSError; const Param: tbtstring);
+    procedure CMD_Err2(EC: TPSErrors; const Param: tbtstring);
 
-    procedure CMD_Err3(EC: TPSError; const Param: tbtstring; ExObject: TObject);
+    procedure CMD_Err3(EC: TPSErrors; const Param: tbtstring; ExObject: TObject);
 
     property Id: Pointer read FID write FID;
 
@@ -770,7 +770,7 @@ type
 
     property ExceptionPos: Cardinal Read ExPos;
 
-    property ExceptionCode: TPSError Read ExEx;
+    property ExceptionCode: TPSErrors Read ExEx;
 
     property ExceptionString: tbtstring read ExParam;
 
@@ -857,8 +857,8 @@ type
   end;
 
 
-function PSErrorToString(x: TPSError; const Param: tbtstring): tbtstring;
-function TIFErrorToString(x: TPSError; const Param: tbtstring): tbtstring;
+function PSErrorToString(x: TPSErrors; const Param: tbtstring): tbtstring;
+function TIFErrorToString(x: TPSErrors; const Param: tbtstring): tbtstring;
 function CreateHeapVariant(aType: TPSTypeRec): PPSVariant;
 procedure DestroyHeapVariant(v: PPSVariant);
 
@@ -1062,7 +1062,7 @@ function MkMethod(FSE: TPSExec; No: Cardinal): TMethod;
 
 type
   TIFInternalProcRec = TPSInternalProcRec;
-  TIFError = TPSError;
+  TIFError = TPSErrors;
   TIFStatus = TPSStatus;
   TIFPSExec = TPSExec;
   TIFPSStack = TPSStack;
@@ -1175,7 +1175,7 @@ type
     CurrProc: TPSInternalProcRec;
     BasePtr, StackSize: Cardinal;
     FinallyOffset, ExceptOffset, Finally2Offset, EndOfBlock: Cardinal;
-    ExceptionData: TPSError;
+    ExceptionData: TPSErrors;
     ExceptionObject: TObject;
     ExceptionParam: tbtString;
     destructor Destroy; override;
@@ -1660,12 +1660,12 @@ end;
 
 
 
-function TIFErrorToString(x: TPSError; const Param: tbtString): tbtString;
+function TIFErrorToString(x: TPSErrors; const Param: tbtString): tbtString;
 begin
   Result := PSErrorToString(x,param);
 end;
 
-function PSErrorToString(x: TPSError; const Param: tbtString): tbtString;
+function PSErrorToString(x: TPSErrors; const Param: tbtString): tbtString;
 begin
   case x of
     ErNoError: Result := tbtString(RPS_NoError);
@@ -2135,7 +2135,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TPSExec.ExceptionProc(proc, Position: Cardinal; Ex: TPSError; const s: tbtString; NewObject: TObject);
+procedure TPSExec.ExceptionProc(proc, Position: Cardinal; Ex: TPSErrors; const s: tbtString; NewObject: TObject);
 var
   d, l: Longint;
   pp: TPSExceptionHandler;
@@ -3051,7 +3051,7 @@ begin
     Result := False;
 end;
 
-procedure TPSExec.CMD_Err(EC: TPSError); // Error
+procedure TPSExec.CMD_Err(EC: TPSErrors); // Error
 begin
   CMD_Err3(ec, '', nil);
 end;
@@ -7467,7 +7467,7 @@ begin
     FOnRunLine(Self);
 end;
 
-procedure TPSExec.CMD_Err3(EC: TPSError; const Param: tbtString; ExObject: TObject);
+procedure TPSExec.CMD_Err3(EC: TPSErrors; const Param: tbtString; ExObject: TObject);
 var
   l: Longint;
   C: Cardinal;
@@ -8963,12 +8963,12 @@ begin
           end;
         end;
       end;
-    31: Caller.CMD_Err2(TPSError(Stack.GetInt(-1)), Stack.GetAnsiString(-2)); {RaiseExeption}
+    31: Caller.CMD_Err2(TPSErrors(Stack.GetInt(-1)), Stack.GetAnsiString(-2)); {RaiseExeption}
     32: Stack.SetInt(-1, Ord(Caller.LastEx)); {ExceptionType}
     33: Stack.SetAnsiString(-1, Caller.LastExParam); {ExceptionParam}
     34: Stack.SetInt(-1, Caller.LastExProc); {ExceptionProc}
     35: Stack.SetInt(-1, Caller.LastExPos); {ExceptionPos}
-    36: Stack.SetAnsiString(-1, PSErrorToString(TPSError(Stack.GetInt(-2)), Stack.GetAnsiString(-3))); {ExceptionToString}
+    36: Stack.SetAnsiString(-1, PSErrorToString(TPSErrors(Stack.GetInt(-2)), Stack.GetAnsiString(-3))); {ExceptionToString}
     37: Stack.SetAnsiString(-1, tbtString(AnsiUpperCase(string(Stack.GetAnsiString(-2))))); // AnsiUppercase
     38: Stack.SetAnsiString(-1, tbtString(AnsiLowercase(string(Stack.GetAnsiString(-2))))); // AnsiLowerCase
 {$IFNDEF PS_NOINT64}
@@ -11179,7 +11179,7 @@ begin
   raise EPSException.Create(PSErrorToString(ExceptionCode, ExceptionString), Self, ExProc, ExPos);
 end;
 
-procedure TPSExec.CMD_Err2(EC: TPSError; const Param: tbtString);
+procedure TPSExec.CMD_Err2(EC: TPSErrors; const Param: tbtString);
 begin
   CMD_Err3(EC, Param, Nil);
 end;
@@ -11282,7 +11282,7 @@ begin
   DisposePPSVariantIFCList(mylist);
 end;
 
-function TPSExec.LastEx: TPSError;
+function TPSExec.LastEx: TPSErrors;
 var
   pp: TPSExceptionHandler;
 begin

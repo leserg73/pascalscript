@@ -34,7 +34,7 @@ type
   {Base class for all plugins for the component}
   TPSOnCompCleanup = Function (Sender: TObject; aComp: TPSPascalCompiler):Boolean of object;
   TPSOnInsertProcedure = Procedure (Sender: TObject; aProc: tbtstring; OnTop: Boolean) of object;
-  TPSOnException = procedure (Sender: TPSExec; ExError: TPSError; const ExParam: tbtstring;
+  TPSOnException = procedure (Sender: TPSExec; ExError: TPSErrors; const ExParam: tbtstring;
                               ExObject: TObject; ProcNo, Position: Cardinal) of object;
 
   TMethodList = class;

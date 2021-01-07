@@ -273,10 +273,12 @@ begin
   with CL.AddClassN(CL.FindClass('TPersistent'),'TPicture') do
   begin
   {$IFNDEF PS_MINIVCL}
-    if Streams then begin
-      RegisterMethod('procedure LoadFromStream(Stream: TStream)');
-      RegisterMethod('procedure SaveToStream(Stream: TStream)');
-    end;
+    {$IFNDEF VER200}
+      if Streams then begin
+        RegisterMethod('procedure LoadFromStream(Stream: TStream)');
+        RegisterMethod('procedure SaveToStream(Stream: TStream)');
+      end;
+    {$ENDIF}
     RegisterMethod('Constructor Create');
     RegisterMethod('Procedure LoadFromFile(const Filename: string)');
     RegisterMethod('Procedure SaveToFile(const Filename: string)');

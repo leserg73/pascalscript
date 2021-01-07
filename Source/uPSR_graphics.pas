@@ -5,8 +5,6 @@ interface
 uses
   uPSRuntime, uPSUtils;
 
-
-
 procedure RIRegisterTGRAPHICSOBJECT(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFont(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTPEN(Cl: TPSRuntimeClassImporter);
@@ -26,7 +24,23 @@ procedure RIRegister_Graphics(Cl: TPSRuntimeClassImporter; Streams: Boolean);
 implementation
 {$IFNDEF FPC}
 uses
-  Classes{$IFDEF CLX}, QGraphics{$ELSE}, Windows, Graphics {$IFNDEF PS_MINIVCL}, Vcl.Imaging.pngimage, Vcl.Imaging.jpeg{$ENDIF}{$ENDIF}{$IFDEF DELPHI_TOKYO_UP}, UITypes {$ENDIF};
+  Classes
+  {$IFDEF CLX}
+    , QGraphics
+  {$ELSE}
+    , Windows, Graphics
+  {$IFNDEF PS_MINIVCL}
+    {$IFDEF VER200}
+      , pngimage, jpeg
+    {$ELSE}
+      , Imaging.pngimage, Imaging.jpeg
+    {$ENDIF}
+  {$ENDIF}
+  {$ENDIF}
+  {$IFDEF DELPHI_TOKYO_UP}
+    , UITypes
+  {$ENDIF};
+
 {$ELSE}
 uses
   Classes, Graphics, LCLType;
@@ -247,11 +261,13 @@ procedure RIRegisterTPicture(CL: TPSRuntimeClassImporter; Streams: Boolean);
 begin
   with CL.Add(TPicture) do
   begin
-  {$IFNDEF PS_MINIVCL}
-    if Streams then begin
-      RegisterMethod(@TPicture.LoadFromStream, 'LoadFromStream');
-      RegisterMethod(@TPicture.SaveToStream, 'SaveToStream');
-    end;
+  {$IFNDEF PS_MINIVCL} // on Delphi 2009 is Private
+    {$IFNDEF VER200}
+      if Streams then begin
+        RegisterMethod(@TPicture.LoadFromStream, 'LoadFromStream');
+        RegisterMethod(@TPicture.SaveToStream, 'SaveToStream');
+      end;
+    {$ENDIF}
     RegisterConstructor(@TPicture.Create, 'Create');
     RegisterMethod(@TPicture.LoadFromFile, 'LoadFromFile');
     RegisterMethod(@TPicture.SaveToFile, 'SaveToFile');
