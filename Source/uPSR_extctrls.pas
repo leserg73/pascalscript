@@ -1,13 +1,14 @@
-
+{ Runtime Extctrls support }
 unit uPSR_extctrls;
 
 {$I PascalScript.inc}
+
 interface
+
 uses
   uPSRuntime, uPSUtils;
 
-
-procedure RIRegister_ExtCtrls(cl: TPSRuntimeClassImporter);
+procedure RIRegister_ExtCtrls(Cl: TPSRuntimeClassImporter);
 
 procedure RIRegisterTSHAPE(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTIMAGE(Cl: TPSRuntimeClassImporter);
@@ -17,12 +18,18 @@ procedure RIRegisterTTIMER(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTCUSTOMPANEL(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTPANEL(Cl: TPSRuntimeClassImporter);
 {$IFNDEF CLX}
-procedure RIRegisterTPAGE(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTNOTEBOOK(Cl: TPSRuntimeClassImporter);
-{$IFNDEF FPC}procedure RIRegisterTHEADER(Cl: TPSRuntimeClassImporter);{$ENDIF}
+  procedure RIRegisterTPAGE(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTNOTEBOOK(Cl: TPSRuntimeClassImporter);
+  {$IFNDEF FPC}
+    procedure RIRegisterTHEADER(Cl: TPSRuntimeClassImporter);
+  {$ENDIF}
 {$ENDIF}
 procedure RIRegisterTCUSTOMRADIOGROUP(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTRADIOGROUP(Cl: TPSRuntimeClassImporter);
+{$IFNDEF PS_MINIVCL}
+  procedure RIRegister_TColorBox(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TCustomColorBox(Cl: TPSRuntimeClassImporter);
+{$ENDIF}
 
 implementation
 
@@ -33,6 +40,7 @@ uses
   ExtCtrls, Graphics;
   {$ENDIF}
 
+{ TShape --------------------------------------------------------------------- }
 procedure RIRegisterTSHAPE(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TSHAPE) do
@@ -43,6 +51,7 @@ begin
   end;
 end;
 
+{ TImage --------------------------------------------------------------------- }
 procedure TIMAGECANVAS_R(Self: TIMAGE; var T: TCANVAS); begin T := Self.CANVAS; end;
 procedure TImageCenter_W(Self: TImage; const T: Boolean); begin Self.Center := T; end;
 procedure TImageCenter_R(Self: TImage; var T: Boolean); begin T := Self.Center; end;
@@ -68,6 +77,7 @@ begin
   end;
 end;
 
+{ TPaintBox ------------------------------------------------------------------ }
 procedure TPAINTBOXCANVAS_R(Self: TPAINTBOX; var T: TCanvas); begin T := Self.CANVAS; end;
 
 procedure RIRegisterTPAINTBOX(Cl: TPSRuntimeClassImporter);
@@ -78,88 +88,137 @@ begin
   end;
 end;
 
+{ TBevel --------------------------------------------------------------------- }
 procedure RIRegisterTBEVEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TBEVEL);
 end;
 
+{ TTimer --------------------------------------------------------------------- }
 procedure RIRegisterTTIMER(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TTIMER);
 end;
 
+{ TCustomPanel --------------------------------------------------------------- }
 procedure RIRegisterTCUSTOMPANEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCUSTOMPANEL);
 end;
 
+{ TPanel --------------------------------------------------------------------- }
 procedure RIRegisterTPANEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TPANEL);
 end;
+
 {$IFNDEF CLX}
+{ TPage ---------------------------------------------------------------------- }
 procedure RIRegisterTPAGE(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TPAGE);
 end;
 
+{ TNotebook ------------------------------------------------------------------ }
 procedure RIRegisterTNOTEBOOK(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TNOTEBOOK);
 end;
 
-{$IFNDEF FPC}
-procedure THEADERSECTIONWIDTH_R(Self: THEADER; var T: INTEGER; t1: INTEGER); begin T := Self.SECTIONWIDTH[t1]; end;
-procedure THEADERSECTIONWIDTH_W(Self: THEADER; T: INTEGER; t1: INTEGER); begin Self.SECTIONWIDTH[t1] := T; end;
-
-procedure RIRegisterTHEADER(Cl: TPSRuntimeClassImporter);
-begin
-	with Cl.Add(THEADER) do
-	begin
-		RegisterPropertyHelper(@THEADERSECTIONWIDTH_R, @THEADERSECTIONWIDTH_W, 'SectionWidth');
-	end;
-end;
+  {$IFNDEF FPC}
+{ THeader -------------------------------------------------------------------- }
+  procedure THEADERSECTIONWIDTH_R(Self: THEADER; var T: INTEGER; t1: INTEGER); begin T := Self.SECTIONWIDTH[t1]; end;
+  procedure THEADERSECTIONWIDTH_W(Self: THEADER; T: INTEGER; t1: INTEGER); begin Self.SECTIONWIDTH[t1] := T; end;
+  
+  procedure RIRegisterTHEADER(Cl: TPSRuntimeClassImporter);
+  begin
+    with Cl.Add(THEADER) do
+    begin
+      RegisterPropertyHelper(@THEADERSECTIONWIDTH_R, @THEADERSECTIONWIDTH_W, 'SectionWidth');
+    end;
+  end;
+  {$ENDIF}
 {$ENDIF}
-{$ENDIF}
 
+{ TCustomRadioGroup ---------------------------------------------------------- }
 procedure RIRegisterTCUSTOMRADIOGROUP(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCUSTOMRADIOGROUP);
 end;
 
+{ TRadioGroup ---------------------------------------------------------------- }
 procedure RIRegisterTRADIOGROUP(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TRADIOGROUP);
 end;
 
-procedure RIRegister_ExtCtrls(cl: TPSRuntimeClassImporter);
+{$IFNDEF PS_MINIVCL}
+{ TColorBox ------------------------------------------------------------------ }
+procedure RIRegister_TColorBox(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TColorBox) do
+  begin
+  end;
+end;
+
+{ TCustomColorBox ------------------------------------------------------------ }
+procedure TCustomColorBoxOnGetColors_W(Self: TCustomColorBox; const T: TGetColorsEvent); begin Self.OnGetColors := T; end;
+procedure TCustomColorBoxOnGetColors_R(Self: TCustomColorBox; var T: TGetColorsEvent); begin T := Self.OnGetColors; end;
+procedure TCustomColorBoxNoneColorColor_W(Self: TCustomColorBox; const T: TColor); begin Self.NoneColorColor := T; end;
+procedure TCustomColorBoxNoneColorColor_R(Self: TCustomColorBox; var T: TColor); begin T := Self.NoneColorColor; end;
+procedure TCustomColorBoxDefaultColorColor_W(Self: TCustomColorBox; const T: TColor); begin Self.DefaultColorColor := T; end;
+procedure TCustomColorBoxDefaultColorColor_R(Self: TCustomColorBox; var T: TColor); begin T := Self.DefaultColorColor; end;
+procedure TCustomColorBoxSelected_W(Self: TCustomColorBox; const T: TColor); begin Self.Selected := T; end;
+procedure TCustomColorBoxSelected_R(Self: TCustomColorBox; var T: TColor); begin T := Self.Selected; end;
+procedure TCustomColorBoxColorNames_R(Self: TCustomColorBox; var T: string; const t1: Integer); begin T := Self.ColorNames[t1]; end;
+procedure TCustomColorBoxColors_R(Self: TCustomColorBox; var T: TColor; const t1: Integer); begin T := Self.Colors[t1]; end;
+procedure TCustomColorBoxStyle_W(Self: TCustomColorBox; const T: TColorBoxStyle); begin Self.Style := T; end;
+procedure TCustomColorBoxStyle_R(Self: TCustomColorBox; var T: TColorBoxStyle); begin T := Self.Style; end;
+
+procedure RIRegister_TCustomColorBox(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCustomColorBox) do
+  begin
+    RegisterPropertyHelper(@TCustomColorBoxStyle_R,@TCustomColorBoxStyle_W,'Style');
+    RegisterPropertyHelper(@TCustomColorBoxColors_R,nil,'Colors');
+    RegisterPropertyHelper(@TCustomColorBoxColorNames_R,nil,'ColorNames');
+    RegisterPropertyHelper(@TCustomColorBoxSelected_R,@TCustomColorBoxSelected_W,'Selected');
+    RegisterPropertyHelper(@TCustomColorBoxDefaultColorColor_R,@TCustomColorBoxDefaultColorColor_W,'DefaultColorColor');
+    RegisterPropertyHelper(@TCustomColorBoxNoneColorColor_R,@TCustomColorBoxNoneColorColor_W,'NoneColorColor');
+    RegisterPropertyHelper(@TCustomColorBoxOnGetColors_R,@TCustomColorBoxOnGetColors_W,'OnGetColors');
+  end;
+end;
+{$ENDIF}
+
+(*----------------------------------------------------------------------------*)
+procedure RIRegister_ExtCtrls(Cl: TPSRuntimeClassImporter);
 begin
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTSHAPE(Cl);
-  RIRegisterTIMAGE(Cl);
-  RIRegisterTPAINTBOX(Cl);
+    RIRegisterTSHAPE(Cl);
+    RIRegisterTIMAGE(Cl);
+    RIRegisterTPAINTBOX(Cl);
   {$ENDIF}
   RIRegisterTBEVEL(Cl);
   {$IFNDEF PS_MINIVCL}
-  RIRegisterTTIMER(Cl);
+    RIRegisterTTIMER(Cl);
   {$ENDIF}
   RIRegisterTCUSTOMPANEL(Cl);
-{$IFNDEF CLX}
-  RIRegisterTPANEL(Cl);
-{$ENDIF}
+  {$IFNDEF CLX}
+    RIRegisterTPANEL(Cl);
+  {$ENDIF}
   {$IFNDEF PS_MINIVCL}
-{$IFNDEF CLX}
-  RIRegisterTPAGE(Cl);
-	RIRegisterTNOTEBOOK(Cl);
- {$IFNDEF FPC}
-	RIRegisterTHEADER(Cl);
- {$ENDIF}{FPC}
-{$ENDIF}
-  RIRegisterTCUSTOMRADIOGROUP(Cl);
-  RIRegisterTRADIOGROUP(Cl);
+    {$IFNDEF CLX}
+      RIRegisterTPAGE(Cl);
+	  RIRegisterTNOTEBOOK(Cl);
+      {$IFNDEF FPC}
+	    RIRegisterTHEADER(Cl);
+      {$ENDIF}{FPC}
+    {$ENDIF}
+    RIRegisterTCUSTOMRADIOGROUP(Cl);
+    RIRegisterTRADIOGROUP(Cl);
+    RIRegister_TCustomColorBox(Cl);
+    RIRegister_TColorBox(Cl);
   {$ENDIF}
 end;
 
 end.
-
-

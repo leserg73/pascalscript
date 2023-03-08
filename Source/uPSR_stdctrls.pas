@@ -1,17 +1,19 @@
-{ STDCtrls import unit }
+{ Runtime STDCtrls support }
 unit uPSR_stdctrls;
 
 {$I PascalScript.inc}
+
 interface
+
 uses
   uPSRuntime, uPSUtils;
-
 
 procedure RIRegisterTCUSTOMGROUPBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTGROUPBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTCUSTOMLABEL(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTLABEL(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTCUSTOMEDIT(Cl: TPSRuntimeClassImporter);
+procedure RIRegisterTCUSTOMMASKEDIT(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTEDIT(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTCUSTOMMEMO(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTMEMO(Cl: TPSRuntimeClassImporter);
@@ -36,8 +38,6 @@ procedure RIRegisterTSCROLLBAR(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTUPDOWN(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTCUSTOMHOTKEY(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTHOTKEY(Cl: TPSRuntimeClassImporter);
-  procedure RIRegisterTIMAGELIST(Cl: TPSRuntimeClassImporter);
-  procedure RIRegisterTCUSTOMIMAGELIST(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTSTATUSBAR(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTSTATUSPANELS(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTSTATUSPANEL(Cl: TPSRuntimeClassImporter);
@@ -47,35 +47,51 @@ procedure RIRegisterTSCROLLBAR(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTLISTITEM(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTLISTCOLUMNS(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTLISTCOLUMN(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TCustomTreeView(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TTreeNodes(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TTreeNode(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_THeaderControl(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_THeaderSections(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_THeaderSection(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TPageControl(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TTabSheet(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TTabControl(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TCustomTabControl(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 
-procedure RIRegister_stdctrls(cl: TPSRuntimeClassImporter);
+procedure RIRegister_stdctrls(Cl: TPSRuntimeClassImporter);
 
 {$IFNDEF PS_MINIVCL}
-  procedure RIRegister_TListView(Cl: TPSRuntimeClassImporter);
-  procedure RIRegister_StatusBar(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTLISTVIEW(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTTSTATUSBAR(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTTREEVIEW(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTTAB(Cl: TPSRuntimeClassImporter);
+  procedure RIRegisterTHEADERCONTROL(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 
 implementation
-uses
-  sysutils, classes{$IFDEF CLX}, QControls, QStdCtrls, QGraphics{$ELSE}, controls, stdctrls, {$IFNDEF PS_MINIVCL}ComCtrls, ImgList, Windows, {$ENDIF} Graphics{$ENDIF}{$IFDEF FPC}, buttons{$ENDIF};
 
+uses
+  sysutils, MaskUtils, Mask, classes{$IFDEF CLX}, QControls, QStdCtrls, QGraphics{$ELSE}, controls, stdctrls,
+  {$IFNDEF PS_MINIVCL}ComCtrls{, ImgList}, Windows, Winapi.CommCtrl, {$ENDIF}
+  Graphics{$ENDIF}{$IFDEF FPC}, buttons{$ENDIF};
+
+{ TCustomGroupBox ------------------------------------------------------------ }
 procedure RIRegisterTCUSTOMGROUPBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCUSTOMGROUPBOX);
 end;
 
-
+{ TGroupBox ------------------------------------------------------------------ }
 procedure RIRegisterTGROUPBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TGROUPBOX);
 end;
 
-
+{ TCustomLabel --------------------------------------------------------------- }
 {$IFNDEF CLX}
   procedure TCUSTOMLABELCANVAS_R(Self: TCUSTOMLABEL; var T: TCanvas); begin T := Self.CANVAS; end;
 {$ENDIF}
-
 
 procedure RIRegisterTCUSTOMLABEL(Cl: TPSRuntimeClassImporter);
 begin
@@ -89,13 +105,13 @@ begin
   end;
 end;
 
-
+{ TLabel --------------------------------------------------------------------- }
 procedure RIRegisterTLABEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TLABEL);
 end;
 
-
+{ TCustomEdit ---------------------------------------------------------------- }
 procedure TCUSTOMEDITMODIFIED_R(Self: TCUSTOMEDIT; var T: BOOLEAN); begin T := Self.MODIFIED; end;
 procedure TCUSTOMEDITMODIFIED_W(Self: TCUSTOMEDIT; T: BOOLEAN); begin Self.MODIFIED := T; end;
 procedure TCUSTOMEDITSELLENGTH_R(Self: TCUSTOMEDIT; var T: INTEGER); begin T := Self.SELLENGTH; end;
@@ -120,7 +136,6 @@ begin
     RegisterPropertyHelper(@TCUSTOMEDITSELSTART_R, @TCUSTOMEDITSELSTART_W, 'SelStart');
     RegisterPropertyHelper(@TCUSTOMEDITSELTEXT_R, @TCUSTOMEDITSELTEXT_W, 'SelText');
     RegisterPropertyHelper(@TCUSTOMEDITTEXT_R, @TCUSTOMEDITTEXT_W, 'Text');
-
     {$IFNDEF PS_MINIVCL}
       RegisterMethod(@TCUSTOMEDIT.COPYTOCLIPBOARD, 'CopyToClipboard');
       RegisterMethod(@TCUSTOMEDIT.CUTTOCLIPBOARD, 'CutToClipboard');
@@ -133,16 +148,35 @@ begin
   end;
 end;
 
+{ TCustomMaskEdit ------------------------------------------------------------ }
+procedure TCUSTOMMASKEDITTEXT_W(Self: TCUSTOMMASKEDIT; const T: TMaskedText); begin Self.Text := T; end;
+procedure TCUSTOMMASKEDITTEXT_R(Self: TCUSTOMMASKEDIT; var T: TMaskedText); begin T := Self.Text; end;
+procedure TCUSTOMMASKEDITEDITTEXT_W(Self: TCUSTOMMASKEDIT; const T: string); begin Self.EditText := T; end;
+procedure TCUSTOMMASKEDITEDITTEXT_R(Self: TCUSTOMMASKEDIT; var T: string); begin T := Self.EditText; end;
+procedure TCUSTOMMASKEDITISMASKED_R(Self: TCUSTOMMASKEDIT; var T: Boolean); begin T := Self.IsMasked; end;
 
+procedure RIRegisterTCUSTOMMASKEDIT(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCUSTOMMASKEDIT) do
+  begin
+    RegisterVirtualConstructor(@TCUSTOMMASKEDIT.CREATE, 'Create');
+    RegisterVirtualMethod(@TCUSTOMMASKEDIT.VALIDATEEDIT, 'ValidateEdit');
+    RegisterMethod(@TCUSTOMMASKEDIT.GETTEXTLEN, 'GetTextLen');
+    RegisterPropertyHelper(@TCUSTOMMASKEDITISMASKED_R,nil,'IsMasked');
+    RegisterPropertyHelper(@TCUSTOMMASKEDITEDITTEXT_R,@TCUSTOMMASKEDITEDITTEXT_W,'EditText');
+    RegisterPropertyHelper(@TCUSTOMMASKEDITTEXT_R,@TCUSTOMMASKEDITTEXT_W,'Text');
+  end;
+end;
+
+{ TEdit ---------------------------------------------------------------------- }
 procedure RIRegisterTEDIT(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TEDIT);
 end;
 
-
+{ TCustomMemo ---------------------------------------------------------------- }
 procedure TCUSTOMMEMOLINES_R(Self: {$IFDEF CLX}TMemo{$ELSE}TCUSTOMMEMO{$ENDIF}; var T: TSTRINGS); begin T := Self.LINES; end;
 procedure TCUSTOMMEMOLINES_W(Self: {$IFDEF CLX}TMemo{$ELSE}TCUSTOMMEMO{$ENDIF}; T: TSTRINGS); begin Self.LINES := T; end;
-
 
 procedure RIRegisterTCUSTOMMEMO(Cl: TPSRuntimeClassImporter);
 begin
@@ -154,7 +188,7 @@ begin
   end;
 end;
 
-
+{ TMemo ---------------------------------------------------------------------- }
 procedure RIRegisterTMEMO(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TMEMO) do
@@ -165,7 +199,7 @@ begin
   end;
 end;
 
-
+{ TCustomComboBox ------------------------------------------------------------ }
 procedure TCUSTOMCOMBOBOXCANVAS_R(Self: TCUSTOMCOMBOBOX; var T: TCANVAS); begin T := Self.CANVAS; end;
 procedure TCUSTOMCOMBOBOXDROPPEDDOWN_R(Self: TCUSTOMCOMBOBOX; var T: BOOLEAN); begin T := Self.DROPPEDDOWN; end;
 procedure TCUSTOMCOMBOBOXDROPPEDDOWN_W(Self: TCUSTOMCOMBOBOX; T: BOOLEAN); begin Self.DROPPEDDOWN := T; end;
@@ -180,7 +214,6 @@ procedure TCUSTOMCOMBOBOXSELSTART_W(Self: TCUSTOMCOMBOBOX; T: INTEGER); begin Se
 procedure TCUSTOMCOMBOBOXSELTEXT_R(Self: TCUSTOMCOMBOBOX; var T: STRING); begin T := Self.SELTEXT; end;
 procedure TCUSTOMCOMBOBOXSELTEXT_W(Self: TCUSTOMCOMBOBOX; T: STRING); begin Self.SELTEXT := T; end;
 
-
 procedure RIRegisterTCUSTOMCOMBOBOX(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TCUSTOMCOMBOBOX) do
@@ -188,7 +221,6 @@ begin
     RegisterPropertyHelper(@TCUSTOMCOMBOBOXDROPPEDDOWN_R, @TCUSTOMCOMBOBOXDROPPEDDOWN_W, 'DroppedDown');
     RegisterPropertyHelper(@TCUSTOMCOMBOBOXITEMS_R, @TCUSTOMCOMBOBOXITEMS_W, 'Items');
     RegisterPropertyHelper(@TCUSTOMCOMBOBOXITEMINDEX_R, @TCUSTOMCOMBOBOXITEMINDEX_W, 'ItemIndex');
-
     {$IFNDEF PS_MINIVCL}
       RegisterMethod(@TCUSTOMCOMBOBOX.CLEAR, 'Clear');
       RegisterMethod(@TCUSTOMCOMBOBOX.SELECTALL, 'SelectAll');
@@ -200,13 +232,13 @@ begin
   end;
 end;
 
-
+{ TComboBox ------------------------------------------------------------------ }
 procedure RIRegisterTCOMBOBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCOMBOBOX);
 end;
 
-
+{ TButtonControl ------------------------------------------------------------- }
 procedure RIRegisterTBUTTONCONTROL(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TBUTTONCONTROL) do
@@ -221,6 +253,7 @@ end;
 
 
 {$IFNDEF PS_MINIVCL}
+{ TCustomButton -------------------------------------------------------------- }
 procedure RIRegisterTCUSTOMBUTTON(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TCUSTOMBUTTON) do
@@ -231,12 +264,12 @@ begin
       RegisterConstructor(@TCUSTOMBUTTON.CREATE, 'Create');
     {$ENDIF}
     RegisterMethod(@TCUSTOMBUTTON.CLICK, 'Click');
-//    RegisterMethod(@TCUSTOMBUTTON.USERIGHTTOLEFTALIGNMENT, 'UseRightToLeftAlignment');
+    //RegisterMethod(@TCUSTOMBUTTON.USERIGHTTOLEFTALIGNMENT, 'UseRightToLeftAlignment');
   end;
 end;
 {$ENDIF}
 
-
+{ TButton -------------------------------------------------------------------- }
 procedure RIRegisterTBUTTON(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TBUTTON) do
@@ -247,25 +280,25 @@ begin
   end;
 end;
 
-
+{ TCustomCheckBox ------------------------------------------------------------ }
 procedure RIRegisterTCUSTOMCHECKBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCUSTOMCHECKBOX);
 end;
 
-
+{ TCheckBox ------------------------------------------------------------------ }
 procedure RIRegisterTCHECKBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCHECKBOX);
 end;
 
-
+{ TRadioButton --------------------------------------------------------------- }
 procedure RIRegisterTRADIOBUTTON(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TRADIOBUTTON);
 end;
 
-
+{ TCustomListBox ------------------------------------------------------------- }
 procedure TCUSTOMLISTBOXCANVAS_R(Self: TCUSTOMLISTBOX; var T: TCANVAS); begin T := Self.CANVAS; end;
 procedure TCUSTOMLISTBOXITEMS_R(Self: TCUSTOMLISTBOX; var T: TSTRINGS); begin T := Self.ITEMS; end;
 procedure TCUSTOMLISTBOXITEMS_W(Self: TCUSTOMLISTBOX; T: TSTRINGS); begin Self.ITEMS := T; end;
@@ -277,7 +310,6 @@ procedure TCUSTOMLISTBOXSELECTED_W(Self: TCUSTOMLISTBOX; T: BOOLEAN; t1: INTEGER
 procedure TCUSTOMLISTBOXTOPINDEX_R(Self: TCUSTOMLISTBOX; var T: INTEGER); begin T := Self.TOPINDEX; end;
 procedure TCUSTOMLISTBOXTOPINDEX_W(Self: TCUSTOMLISTBOX; T: INTEGER); begin Self.TOPINDEX := T; end;
 
-
 procedure RIRegisterTCUSTOMLISTBOX(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TCUSTOMLISTBOX) do
@@ -286,7 +318,6 @@ begin
     RegisterPropertyHelper(@TCUSTOMLISTBOXITEMINDEX_R, @TCUSTOMLISTBOXITEMINDEX_W, 'ItemIndex');
     RegisterPropertyHelper(@TCUSTOMLISTBOXSELCOUNT_R, nil, 'SelCount');
     RegisterPropertyHelper(@TCUSTOMLISTBOXSELECTED_R, @TCUSTOMLISTBOXSELECTED_W, 'Selected');
-
     {$IFNDEF PS_MINIVCL}
       RegisterMethod(@TCUSTOMLISTBOX.CLEAR, 'Clear');
       RegisterMethod(@TCUSTOMLISTBOX.ITEMATPOS, 'ItemAtPos');
@@ -297,13 +328,13 @@ begin
   end;
 end;
 
-
+{ TListBox ------------------------------------------------------------------- }
 procedure RIRegisterTLISTBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TLISTBOX);
 end;
 
-
+{ TScrollBar ----------------------------------------------------------------- }
 procedure RIRegisterTSCROLLBAR(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TSCROLLBAR) do
@@ -312,9 +343,8 @@ begin
   end;
 end;
 
-
 {$IFNDEF PS_MINIVCL}
-{ TTrackBar }
+{ TTrackBar ------------------------------------------------------------------ }
 procedure RIRegisterTTRACKBAR(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TTRACKBAR) do
@@ -323,98 +353,31 @@ begin
   end;
 end;
 
-
-{ TUpDown }
+{ TCustomUpDown -------------------------------------------------------------- }
 procedure RIRegisterTCUSTOMUPDOWN(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCustomUpDown);
 end;
 
+{ TUpDown -------------------------------------------------------------------- }
 procedure RIRegisterTUPDOWN(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TUpDown);
 end;
 
-
-{ THotKey }
+{ TCustomHotKey -------------------------------------------------------------- }
 procedure RIRegisterTCUSTOMHOTKEY(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TCustomHotKey);
 end;
 
+{ THotKey -------------------------------------------------------------------- }
 procedure RIRegisterTHOTKEY(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(THotKey);
 end;
 
-
-{ TImageList }
-procedure TCustomImageListColorDepth_W(Self: TCustomImageList; const T: TColorDepth); begin Self.ColorDepth := T; end;
-procedure TCustomImageListColorDepth_R(Self: TCustomImageList; var T: TColorDepth); begin T := Self.ColorDepth; end;
-procedure TCustomImageListHandle_W(Self: TCustomImageList; const T: LongInt); begin Self.Handle := T; end;
-procedure TCustomImageListHandle_R(Self: TCustomImageList; var T: LongInt); begin T := Self.Handle; end;
-//procedure TCustomImageListDragging_R(Self: TCustomImageList; var T: Boolean); begin T := Self.Dragging; end;
-//procedure TCustomImageListDragCursor_W(Self: TCustomImageList; const T: TCursor); begin Self.DragCursor := T; end;
-//procedure TCustomImageListDragCursor_R(Self: TCustomImageList; var T: TCursor); begin T := Self.DragCursor; end;
-procedure TCustomImageListCount_R(Self: TCustomImageList; var T: Integer); begin T := Self.Count; end;
-
-procedure RIRegisterTIMAGELIST(Cl: TPSRuntimeClassImporter);
-begin
-  Cl.Add(TImageList);
-end;
-
-procedure RIRegisterTCUSTOMIMAGELIST(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TCustomImageList) do
-  begin
-    RegisterConstructor(@TCustomImageList.CreateSize, 'CreateSize');
-    RegisterMethod(@TCustomImageList.Add, 'Add');
-    RegisterMethod(@TCustomImageList.AddIcon, 'AddIcon');
-    RegisterMethod(@TCustomImageList.AddImages, 'AddImages');
-    RegisterMethod(@TCustomImageList.AddMasked, 'AddMasked');
-    //RegisterMethod(@TCustomImageList.BeginDrag, 'BeginDrag');
-    RegisterMethod(@TCustomImageList.Clear, 'Clear');
-    RegisterMethod(@TCustomImageList.Delete, 'Delete');
-    //RegisterMethod(@TCustomImageList.DragLock, 'DragLock');
-    //RegisterMethod(@TCustomImageList.DragMove, 'DragMove');
-    //RegisterMethod(@TCustomImageList.DragUnlock, 'DragUnlock');
-    RegisterMethod(@TCustomImageList.Draw, 'Draw');
-    RegisterMethod(@TCustomImageList.DrawOverlay, 'DrawOverlay');
-    //RegisterMethod(@TCustomImageList.EndDrag, 'EndDrag');
-    RegisterMethod(@TCustomImageList.FileLoad, 'FileLoad');
-    RegisterMethod(@TCustomImageList.GetBitmap, 'GetBitmap');
-    RegisterMethod(@TCustomImageList.GetHotSpot, 'GetHotSpot');
-    RegisterMethod(@TCustomImageList.GetIcon, 'GetIcon');
-    RegisterMethod(@TCustomImageList.GetImageBitmap, 'GetImageBitmap');
-    RegisterMethod(@TCustomImageList.GetMaskBitmap, 'GetMaskBitmap');
-    RegisterMethod(@TCustomImageList.GetResource, 'GetResource');
-    RegisterMethod(@TCustomImageList.GetInstRes, 'GetInstRes');
-    RegisterMethod(@TCustomImageList.HandleAllocated, 'HandleAllocated');
-    //RegisterMethod(@TCustomImageList.HideDragImage, 'HideDragImage');
-    RegisterMethod(@TCustomImageList.Insert, 'Insert');
-    RegisterMethod(@TCustomImageList.InsertIcon, 'InsertIcon');
-    RegisterMethod(@TCustomImageList.InsertMasked, 'InsertMasked');
-    RegisterMethod(@TCustomImageList.Move, 'Move');
-    RegisterMethod(@TCustomImageList.Overlay, 'Overlay');
-    RegisterMethod(@TCustomImageList.RegisterChanges, 'RegisterChanges');
-    RegisterMethod(@TCustomImageList.ResourceLoad, 'ResourceLoad');
-    RegisterMethod(@TCustomImageList.ResInstLoad, 'ResInstLoad');
-    RegisterMethod(@TCustomImageList.Replace, 'Replace');
-    RegisterMethod(@TCustomImageList.ReplaceIcon, 'ReplaceIcon');
-    RegisterMethod(@TCustomImageList.ReplaceMasked, 'ReplaceMasked');
-    //RegisterMethod(@TCustomImageList.SetDragImage, 'SetDragImage');
-    //RegisterMethod(@TCustomImageList.ShowDragImage, 'ShowDragImage');
-    RegisterMethod(@TCustomImageList.UnRegisterChanges, 'UnRegisterChanges');
-    RegisterPropertyHelper(@TCustomImageListCount_R,nil,'Count');
-    //RegisterPropertyHelper(@TCustomImageListDragCursor_R,@TCustomImageListDragCursor_W,'DragCursor');
-    //RegisterPropertyHelper(@TCustomImageListDragging_R,nil,'Dragging');
-    RegisterPropertyHelper(@TCustomImageListHandle_R,@TCustomImageListHandle_W,'Handle');
-    RegisterPropertyHelper(@TCustomImageListColorDepth_R,@TCustomImageListColorDepth_W,'ColorDepth');
-  end;
-end;
-
-
-{ TStatusBar }
+{ TStatusBar ----------------------------------------------------------------- }
 procedure TStatusBarOnResize_W(Self: TStatusBar; const T: TNotifyEvent); begin Self.OnResize := T; end;
 procedure TStatusBarOnResize_R(Self: TStatusBar; var T: TNotifyEvent); begin T := Self.OnResize; end;
 procedure TStatusBarOnDrawPanel_W(Self: TStatusBar; const T: TDrawPanelEvent); begin Self.OnDrawPanel := T; end;
@@ -455,6 +418,7 @@ begin
   end;
 end;
 
+{ TStatusPanels -------------------------------------------------------------- }
 procedure RIRegisterTSTATUSPANELS(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TStatusPanels) do
@@ -465,6 +429,7 @@ begin
   end;
 end;
 
+{ TStatusPanel --------------------------------------------------------------- }
 procedure RIRegisterTSTATUSPANEL(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TStatusPanel) do
@@ -477,8 +442,7 @@ begin
   end;
 end;
 
-
-{ TListView }
+{ TCustomListView ------------------------------------------------------------------ }
 procedure TCustomListViewBoundingRect_R(Self: TCustomListView; var T: TRect); begin T := Self.BoundingRect; end;
 procedure TCustomListViewVisibleRowCount_R(Self: TCustomListView; var T: Integer); begin T := Self.VisibleRowCount; end;
 procedure TCustomListViewViewOrigin_R(Self: TCustomListView; var T: TPoint); begin T := Self.ViewOrigin; end;
@@ -499,14 +463,12 @@ procedure TCustomListViewDropTarget_R(Self: TCustomListView; var T: TListItem); 
 procedure TCustomListViewColumn_R(Self: TCustomListView; var T: TListColumn; const t1: Integer); begin T := Self.Column[t1]; end;
 procedure TCustomListViewCheckboxes_W(Self: TCustomListView; const T: Boolean); begin Self.Checkboxes := T; end;
 procedure TCustomListViewCheckboxes_R(Self: TCustomListView; var T: Boolean); begin T := Self.Checkboxes; end;
-
 procedure TIconOptionsWrapText_W(Self: TIconOptions; const T: Boolean); begin Self.WrapText := T; end;
 procedure TIconOptionsWrapText_R(Self: TIconOptions; var T: Boolean); begin T := Self.WrapText; end;
 procedure TIconOptionsAutoArrange_W(Self: TIconOptions; const T: Boolean); begin Self.AutoArrange := T; end;
 procedure TIconOptionsAutoArrange_R(Self: TIconOptions; var T: Boolean); begin T := Self.AutoArrange; end;
 procedure TIconOptionsArrangement_W(Self: TIconOptions; const T: TIconArrangement); begin Self.Arrangement := T; end;
 procedure TIconOptionsArrangement_R(Self: TIconOptions; var T: TIconArrangement); begin T := Self.Arrangement; end;
-
 procedure TListItemsOwner_R(Self: TListItems; var T: TCustomListView); begin T := Self.Owner; end;
 procedure TListItemsItem_W(Self: TListItems; const T: TListItem; const t1: Integer); begin Self.Item[t1] := T; end;
 procedure TListItemsItem_R(Self: TListItems; var T: TListItem; const t1: Integer); begin T := Self.Item[t1]; end;
@@ -542,7 +504,6 @@ procedure TListItemChecked_W(Self: TListItem; const T: Boolean); begin Self.Chec
 procedure TListItemChecked_R(Self: TListItem; var T: Boolean); begin T := Self.Checked; end;
 procedure TListItemCaption_W(Self: TListItem; const T: string); begin Self.Caption := T; end;
 procedure TListItemCaption_R(Self: TListItem; var T: string); begin T := Self.Caption; end;
-
 procedure TListColumnsItems_W(Self: TListColumns; const T: TListColumn; const t1: Integer); begin Self.Items[t1] := T; end;
 procedure TListColumnsItems_R(Self: TListColumns; var T: TListColumn; const t1: Integer); begin T := Self.Items[t1]; end;
 procedure TListColumnsOwner_R(Self: TListColumns; var T: TCustomListView); begin T := Self.Owner; end;
@@ -587,6 +548,7 @@ begin
   end;
 end;
 
+{ TIconOptions --------------------------------------------------------------- }
 procedure RIRegisterTICONOPTIONS(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TIconOptions) do
@@ -598,6 +560,7 @@ begin
   end;
 end;
 
+{ TListItems ----------------------------------------------------------------- }
 procedure RIRegisterTLISTITEMS(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TListItems) do
@@ -617,6 +580,7 @@ begin
   end;
 end;
 
+{ TListItem ------------------------------------------------------------------ }
 procedure RIRegisterTLISTITEM(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TListItem) do
@@ -650,6 +614,7 @@ begin
   end;
 end;
 
+{ TListColumns --------------------------------------------------------------- }
 procedure RIRegisterTLISTCOLUMNS(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TListColumns) do
@@ -661,6 +626,7 @@ begin
   end;
 end;
 
+{ TListColumn ---------------------------------------------------------------- }
 procedure RIRegisterTLISTCOLUMN(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TListColumn) do
@@ -671,9 +637,354 @@ begin
     RegisterPropertyHelper(@TListColumnWidth_R,@TListColumnWidth_W,'Width');
   end;
 end;
+
+{ TCustomTreeView ------------------------------------------------------------ }
+procedure TCustomTreeViewTopItem_W(Self: TCustomTreeView; const T: TTreeNode); begin Self.TopItem := T; end;
+procedure TCustomTreeViewTopItem_R(Self: TCustomTreeView; var T: TTreeNode); begin T := Self.TopItem; end;
+procedure TCustomTreeViewSelected_W(Self: TCustomTreeView; const T: TTreeNode); begin Self.Selected := T; end;
+procedure TCustomTreeViewSelected_R(Self: TCustomTreeView; var T: TTreeNode); begin T := Self.Selected; end;
+procedure TCustomTreeViewDropTarget_W(Self: TCustomTreeView; const T: TTreeNode); begin Self.DropTarget := T; end;
+procedure TCustomTreeViewDropTarget_R(Self: TCustomTreeView; var T: TTreeNode); begin T := Self.DropTarget; end;
+
+procedure RIRegister_TCustomTreeView(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCustomTreeView) do
+  begin
+    RegisterMethod(@TCustomTreeView.AlphaSort, 'AlphaSort');
+    RegisterMethod(@TCustomTreeView.CustomSort, 'CustomSort');
+    RegisterMethod(@TCustomTreeView.FullCollapse, 'FullCollapse');
+    RegisterMethod(@TCustomTreeView.FullExpand, 'FullExpand');
+    RegisterMethod(@TCustomTreeView.GetHitTestInfoAt, 'GetHitTestInfoAt');
+    RegisterMethod(@TCustomTreeView.GetNodeAt, 'GetNodeAt');
+    RegisterMethod(@TCustomTreeView.IsEditing, 'IsEditing');
+    RegisterMethod(@TCustomTreeView.LoadFromFile, 'LoadFromFile');
+    RegisterMethod(@TCustomTreeView.LoadFromStream, 'LoadFromStream');
+    RegisterMethod(@TCustomTreeView.SaveToFile, 'SaveToFile');
+    RegisterMethod(@TCustomTreeView.SaveToStream, 'SaveToStream');
+    RegisterPropertyHelper(@TCustomTreeViewDropTarget_R,@TCustomTreeViewDropTarget_W,'DropTarget');
+    RegisterPropertyHelper(@TCustomTreeViewSelected_R,@TCustomTreeViewSelected_W,'Selected');
+    RegisterPropertyHelper(@TCustomTreeViewTopItem_R,@TCustomTreeViewTopItem_W,'TopItem');
+  end;
+end;
+
+{ TTreeNodes ----------------------------------------------------------------- }
+procedure TTreeNodesOwner_R(Self: TTreeNodes; var T: TCustomTreeView); begin T := Self.Owner; end;
+procedure TTreeNodesItem_R(Self: TTreeNodes; var T: TTreeNode; const t1: Integer); begin T := Self.Item[t1]; end;
+procedure TTreeNodesHandle_R(Self: TTreeNodes; var T: HWND); begin T := Self.Handle; end;
+procedure TTreeNodesCount_R(Self: TTreeNodes; var T: Integer); begin T := Self.Count; end;
+
+procedure RIRegister_TTreeNodes(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TTreeNodes) do
+  begin
+    RegisterConstructor(@TTreeNodes.Create, 'Create');
+    RegisterMethod(@TTreeNodes.AddChildFirst, 'AddChildFirst');
+    RegisterMethod(@TTreeNodes.AddChild, 'AddChild');
+    RegisterMethod(@TTreeNodes.AddChildObjectFirst, 'AddChildObjectFirst');
+    RegisterMethod(@TTreeNodes.AddChildObject, 'AddChildObject');
+    RegisterMethod(@TTreeNodes.AddFirst, 'AddFirst');
+    RegisterMethod(@TTreeNodes.Add, 'Add');
+    RegisterMethod(@TTreeNodes.AddObjectFirst, 'AddObjectFirst');
+    RegisterMethod(@TTreeNodes.AddObject, 'AddObject');
+    RegisterMethod(@TTreeNodes.BeginUpdate, 'BeginUpdate');
+    RegisterMethod(@TTreeNodes.Clear, 'Clear');
+    RegisterMethod(@TTreeNodes.Delete, 'Delete');
+    RegisterMethod(@TTreeNodes.EndUpdate, 'EndUpdate');
+    RegisterMethod(@TTreeNodes.GetFirstNode, 'GetFirstNode');
+    RegisterMethod(@TTreeNodes.GetNode, 'GetNode');
+    RegisterMethod(@TTreeNodes.Insert, 'Insert');
+    RegisterMethod(@TTreeNodes.InsertObject, 'InsertObject');
+    RegisterPropertyHelper(@TTreeNodesCount_R,nil,'Count');
+    RegisterPropertyHelper(@TTreeNodesHandle_R,nil,'Handle');
+    RegisterPropertyHelper(@TTreeNodesItem_R,nil,'Item');
+    RegisterPropertyHelper(@TTreeNodesOwner_R,nil,'Owner');
+  end;
+end;
+
+{ TTreeNode ------------------------------------------------------------------ }
+procedure TTreeNodeTreeView_R(Self: TTreeNode; var T: TCustomTreeView); begin T := Self.TreeView; end;
+procedure TTreeNodeText_W(Self: TTreeNode; const T: string); begin Self.Text := T; end;
+procedure TTreeNodeText_R(Self: TTreeNode; var T: string); begin T := Self.Text; end;
+procedure TTreeNodeStateIndex_W(Self: TTreeNode; const T: Integer); begin Self.StateIndex := T; end;
+procedure TTreeNodeStateIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.StateIndex; end;
+procedure TTreeNodeSelectedIndex_W(Self: TTreeNode; const T: Integer); begin Self.SelectedIndex := T; end;
+procedure TTreeNodeSelectedIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.SelectedIndex; end;
+procedure TTreeNodeParent_R(Self: TTreeNode; var T: TTreeNode); begin T := Self.Parent; end;
+procedure TTreeNodeOwner_R(Self: TTreeNode; var T: TTreeNodes); begin T := Self.Owner; end;
+procedure TTreeNodeOverlayIndex_W(Self: TTreeNode; const T: Integer); begin Self.OverlayIndex := T; end;
+procedure TTreeNodeOverlayIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.OverlayIndex; end;
+procedure TTreeNodeLevel_R(Self: TTreeNode; var T: Integer); begin T := Self.Level; end;
+procedure TTreeNodeItemId_R(Self: TTreeNode; var T: HTreeItem); begin T := Self.ItemId; end;
+procedure TTreeNodeItem_W(Self: TTreeNode; const T: TTreeNode; const t1: Integer); begin Self.Item[t1] := T; end;
+procedure TTreeNodeItem_R(Self: TTreeNode; var T: TTreeNode; const t1: Integer); begin T := Self.Item[t1]; end;
+procedure TTreeNodeIsVisible_R(Self: TTreeNode; var T: Boolean); begin T := Self.IsVisible; end;
+procedure TTreeNodeIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.Index; end;
+procedure TTreeNodeImageIndex_W(Self: TTreeNode; const T: Integer); begin Self.ImageIndex := T; end;
+procedure TTreeNodeImageIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.ImageIndex; end;
+procedure TTreeNodeHasChildren_W(Self: TTreeNode; const T: Boolean); begin Self.HasChildren := T; end;
+procedure TTreeNodeHasChildren_R(Self: TTreeNode; var T: Boolean); begin T := Self.HasChildren; end;
+procedure TTreeNodeHandle_R(Self: TTreeNode; var T: HWND); begin T := Self.Handle; end;
+procedure TTreeNodeExpanded_W(Self: TTreeNode; const T: Boolean); begin Self.Expanded := T; end;
+procedure TTreeNodeExpanded_R(Self: TTreeNode; var T: Boolean); begin T := Self.Expanded; end;
+procedure TTreeNodeSelected_W(Self: TTreeNode; const T: Boolean); begin Self.Selected := T; end;
+procedure TTreeNodeSelected_R(Self: TTreeNode; var T: Boolean); begin T := Self.Selected; end;
+procedure TTreeNodeDropTarget_W(Self: TTreeNode; const T: Boolean); begin Self.DropTarget := T; end;
+procedure TTreeNodeDropTarget_R(Self: TTreeNode; var T: Boolean); begin T := Self.DropTarget; end;
+procedure TTreeNodeFocused_W(Self: TTreeNode; const T: Boolean); begin Self.Focused := T; end;
+procedure TTreeNodeFocused_R(Self: TTreeNode; var T: Boolean); begin T := Self.Focused; end;
+procedure TTreeNodeDeleting_R(Self: TTreeNode; var T: Boolean); begin T := Self.Deleting; end;
+procedure TTreeNodeData_W(Self: TTreeNode; const T: Pointer); begin Self.Data := T; end;
+procedure TTreeNodeData_R(Self: TTreeNode; var T: Pointer); begin T := Self.Data; end;
+procedure TTreeNodeCut_W(Self: TTreeNode; const T: Boolean); begin Self.Cut := T; end;
+procedure TTreeNodeCut_R(Self: TTreeNode; var T: Boolean); begin T := Self.Cut; end;
+procedure TTreeNodeCount_R(Self: TTreeNode; var T: Integer); begin T := Self.Count; end;
+procedure TTreeNodeAbsoluteIndex_R(Self: TTreeNode; var T: Integer); begin T := Self.AbsoluteIndex; end;
+
+procedure RIRegister_TTreeNode(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TTreeNode) do
+  begin
+    RegisterConstructor(@TTreeNode.Create, 'Create');
+    RegisterMethod(@TTreeNode.AlphaSort, 'AlphaSort');
+    RegisterMethod(@TTreeNode.Collapse, 'Collapse');
+    RegisterMethod(@TTreeNode.CustomSort, 'CustomSort');
+    RegisterMethod(@TTreeNode.Delete, 'Delete');
+    RegisterMethod(@TTreeNode.DeleteChildren, 'DeleteChildren');
+    RegisterMethod(@TTreeNode.DisplayRect, 'DisplayRect');
+    RegisterMethod(@TTreeNode.EditText, 'EditText');
+    RegisterMethod(@TTreeNode.EndEdit, 'EndEdit');
+    RegisterMethod(@TTreeNode.Expand, 'Expand');
+    RegisterMethod(@TTreeNode.GetFirstChild, 'GetFirstChild');
+    RegisterMethod(@TTreeNode.GetHandle, 'GetHandle');
+    RegisterMethod(@TTreeNode.GetLastChild, 'GetLastChild');
+    RegisterMethod(@TTreeNode.GetNext, 'GetNext');
+    RegisterMethod(@TTreeNode.GetNextChild, 'GetNextChild');
+    RegisterMethod(@TTreeNode.GetNextSibling, 'GetNextSibling');
+    RegisterMethod(@TTreeNode.GetNextVisible, 'GetNextVisible');
+    RegisterMethod(@TTreeNode.GetPrev, 'GetPrev');
+    RegisterMethod(@TTreeNode.GetPrevChild, 'GetPrevChild');
+    RegisterMethod(@TTreeNode.GetPrevSibling, 'GetPrevSibling');
+    RegisterMethod(@TTreeNode.GetPrevVisible, 'GetPrevVisible');
+    RegisterMethod(@TTreeNode.HasAsParent, 'HasAsParent');
+    RegisterMethod(@TTreeNode.IndexOf, 'IndexOf');
+    RegisterMethod(@TTreeNode.MakeVisible, 'MakeVisible');
+    RegisterVirtualMethod(@TTreeNode.MoveTo, 'MoveTo');
+    RegisterPropertyHelper(@TTreeNodeAbsoluteIndex_R,nil,'AbsoluteIndex');
+    RegisterPropertyHelper(@TTreeNodeCount_R,nil,'Count');
+    RegisterPropertyHelper(@TTreeNodeCut_R,@TTreeNodeCut_W,'Cut');
+    RegisterPropertyHelper(@TTreeNodeData_R,@TTreeNodeData_W,'Data');
+    RegisterPropertyHelper(@TTreeNodeDeleting_R,nil,'Deleting');
+    RegisterPropertyHelper(@TTreeNodeFocused_R,@TTreeNodeFocused_W,'Focused');
+    RegisterPropertyHelper(@TTreeNodeDropTarget_R,@TTreeNodeDropTarget_W,'DropTarget');
+    RegisterPropertyHelper(@TTreeNodeSelected_R,@TTreeNodeSelected_W,'Selected');
+    RegisterPropertyHelper(@TTreeNodeExpanded_R,@TTreeNodeExpanded_W,'Expanded');
+    RegisterPropertyHelper(@TTreeNodeHandle_R,nil,'Handle');
+    RegisterPropertyHelper(@TTreeNodeHasChildren_R,@TTreeNodeHasChildren_W,'HasChildren');
+    RegisterPropertyHelper(@TTreeNodeImageIndex_R,@TTreeNodeImageIndex_W,'ImageIndex');
+    RegisterPropertyHelper(@TTreeNodeIndex_R,nil,'Index');
+    RegisterPropertyHelper(@TTreeNodeIsVisible_R,nil,'IsVisible');
+    RegisterPropertyHelper(@TTreeNodeItem_R,@TTreeNodeItem_W,'Item');
+    RegisterPropertyHelper(@TTreeNodeItemId_R,nil,'ItemId');
+    RegisterPropertyHelper(@TTreeNodeLevel_R,nil,'Level');
+    RegisterPropertyHelper(@TTreeNodeOverlayIndex_R,@TTreeNodeOverlayIndex_W,'OverlayIndex');
+    RegisterPropertyHelper(@TTreeNodeOwner_R,nil,'Owner');
+    RegisterPropertyHelper(@TTreeNodeParent_R,nil,'Parent');
+    RegisterPropertyHelper(@TTreeNodeSelectedIndex_R,@TTreeNodeSelectedIndex_W,'SelectedIndex');
+    RegisterPropertyHelper(@TTreeNodeStateIndex_R,@TTreeNodeStateIndex_W,'StateIndex');
+    RegisterPropertyHelper(@TTreeNodeText_R,@TTreeNodeText_W,'Text');
+    RegisterPropertyHelper(@TTreeNodeTreeView_R,nil,'TreeView');
+  end;
+end;
+
+{ THeaderControl ------------------------------------------------------------- }
+procedure THeaderControlOnSectionTrack_W(Self: THeaderControl; const T: TSectionTrackEvent); begin Self.OnSectionTrack := T; end;
+procedure THeaderControlOnSectionTrack_R(Self: THeaderControl; var T: TSectionTrackEvent); begin T := Self.OnSectionTrack; end;
+procedure THeaderControlOnSectionResize_W(Self: THeaderControl; const T: TSectionNotifyEvent); begin Self.OnSectionResize := T; end;
+procedure THeaderControlOnSectionResize_R(Self: THeaderControl; var T: TSectionNotifyEvent); begin T := Self.OnSectionResize; end;
+procedure THeaderControlOnSectionClick_W(Self: THeaderControl; const T: TSectionNotifyEvent); begin Self.OnSectionClick := T; end;
+procedure THeaderControlOnSectionClick_R(Self: THeaderControl; var T: TSectionNotifyEvent); begin T := Self.OnSectionClick; end;
+procedure THeaderControlOnResize_W(Self: THeaderControl; const T: TNotifyEvent); begin Self.OnResize := T; end;
+procedure THeaderControlOnResize_R(Self: THeaderControl; var T: TNotifyEvent); begin T := Self.OnResize; end;
+procedure THeaderControlOnDrawSection_W(Self: THeaderControl; const T: TDrawSectionEvent); begin Self.OnDrawSection := T; end;
+procedure THeaderControlOnDrawSection_R(Self: THeaderControl; var T: TDrawSectionEvent); begin T := Self.OnDrawSection; end;
+procedure THeaderControlSections_W(Self: THeaderControl; const T: THeaderSections); begin Self.Sections := T; end;
+procedure THeaderControlSections_R(Self: THeaderControl; var T: THeaderSections); begin T := Self.Sections; end;
+procedure THeaderControlHotTrack_W(Self: THeaderControl; const T: Boolean); begin Self.HotTrack := T; end;
+procedure THeaderControlHotTrack_R(Self: THeaderControl; var T: Boolean); begin T := Self.HotTrack; end;
+procedure THeaderControlCanvas_R(Self: THeaderControl; var T: TCanvas); begin T := Self.Canvas; end;
+
+procedure RIRegister_THeaderControl(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(THeaderControl) do
+  begin
+    RegisterPropertyHelper(@THeaderControlCanvas_R,nil,'Canvas');
+    RegisterPropertyHelper(@THeaderControlHotTrack_R,@THeaderControlHotTrack_W,'HotTrack');
+    RegisterPropertyHelper(@THeaderControlSections_R,@THeaderControlSections_W,'Sections');
+    RegisterPropertyHelper(@THeaderControlOnDrawSection_R,@THeaderControlOnDrawSection_W,'OnDrawSection');
+    RegisterPropertyHelper(@THeaderControlOnResize_R,@THeaderControlOnResize_W,'OnResize');
+    RegisterPropertyHelper(@THeaderControlOnSectionClick_R,@THeaderControlOnSectionClick_W,'OnSectionClick');
+    RegisterPropertyHelper(@THeaderControlOnSectionResize_R,@THeaderControlOnSectionResize_W,'OnSectionResize');
+    RegisterPropertyHelper(@THeaderControlOnSectionTrack_R,@THeaderControlOnSectionTrack_W,'OnSectionTrack');
+  end;
+end;
+
+{ THeaderSections ------------------------------------------------------------ }
+procedure THeaderSectionsItems_W(Self: THeaderSections; const T: THeaderSection; const t1: Integer); begin Self.Items[t1] := T; end;
+procedure THeaderSectionsItems_R(Self: THeaderSections; var T: THeaderSection; const t1: Integer); begin T := Self.Items[t1]; end;
+
+procedure RIRegister_THeaderSections(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(THeaderSections) do
+  begin
+    RegisterConstructor(@THeaderSections.Create, 'Create');
+    RegisterMethod(@THeaderSections.Add, 'Add');
+    RegisterPropertyHelper(@THeaderSectionsItems_R,@THeaderSectionsItems_W,'Items');
+  end;
+end;
+
+{ THeaderSection ------------------------------------------------------------- }
+procedure THeaderSectionWidth_W(Self: THeaderSection; const T: Integer); begin Self.Width := T; end;
+procedure THeaderSectionWidth_R(Self: THeaderSection; var T: Integer); begin T := Self.Width; end;
+procedure THeaderSectionText_W(Self: THeaderSection; const T: string); begin Self.Text := T; end;
+procedure THeaderSectionText_R(Self: THeaderSection; var T: string); begin T := Self.Text; end;
+procedure THeaderSectionStyle_W(Self: THeaderSection; const T: THeaderSectionStyle); begin Self.Style := T; end;
+procedure THeaderSectionStyle_R(Self: THeaderSection; var T: THeaderSectionStyle); begin T := Self.Style; end;
+procedure THeaderSectionMinWidth_W(Self: THeaderSection; const T: Integer); begin Self.MinWidth := T; end;
+procedure THeaderSectionMinWidth_R(Self: THeaderSection; var T: Integer); begin T := Self.MinWidth; end;
+procedure THeaderSectionMaxWidth_W(Self: THeaderSection; const T: Integer); begin Self.MaxWidth := T; end;
+procedure THeaderSectionMaxWidth_R(Self: THeaderSection; var T: Integer); begin T := Self.MaxWidth; end;
+procedure THeaderSectionAllowClick_W(Self: THeaderSection; const T: Boolean); begin Self.AllowClick := T; end;
+procedure THeaderSectionAllowClick_R(Self: THeaderSection; var T: Boolean); begin T := Self.AllowClick; end;
+procedure THeaderSectionAlignment_W(Self: THeaderSection; const T: TAlignment); begin Self.Alignment := T; end;
+procedure THeaderSectionAlignment_R(Self: THeaderSection; var T: TAlignment); begin T := Self.Alignment; end;
+procedure THeaderSectionRight_R(Self: THeaderSection; var T: Integer); begin T := Self.Right; end;
+procedure THeaderSectionLeft_R(Self: THeaderSection; var T: Integer); begin T := Self.Left; end;
+
+procedure RIRegister_THeaderSection(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(THeaderSection) do
+  begin
+    RegisterPropertyHelper(@THeaderSectionLeft_R,nil,'Left');
+    RegisterPropertyHelper(@THeaderSectionRight_R,nil,'Right');
+    RegisterPropertyHelper(@THeaderSectionAlignment_R,@THeaderSectionAlignment_W,'Alignment');
+    RegisterPropertyHelper(@THeaderSectionAllowClick_R,@THeaderSectionAllowClick_W,'AllowClick');
+    RegisterPropertyHelper(@THeaderSectionMaxWidth_R,@THeaderSectionMaxWidth_W,'MaxWidth');
+    RegisterPropertyHelper(@THeaderSectionMinWidth_R,@THeaderSectionMinWidth_W,'MinWidth');
+    RegisterPropertyHelper(@THeaderSectionStyle_R,@THeaderSectionStyle_W,'Style');
+    RegisterPropertyHelper(@THeaderSectionText_R,@THeaderSectionText_W,'Text');
+    RegisterPropertyHelper(@THeaderSectionWidth_R,@THeaderSectionWidth_W,'Width');
+  end;
+end;
+
+{ TPageControl --------------------------------------------------------------- }
+procedure TPageControlActivePage_W(Self: TPageControl; const T: TTabSheet); begin Self.ActivePage := T; end;
+procedure TPageControlActivePage_R(Self: TPageControl; var T: TTabSheet); begin T := Self.ActivePage; end;
+procedure TPageControlPages_R(Self: TPageControl; var T: TTabSheet; const t1: Integer); begin T := Self.Pages[t1]; end;
+procedure TPageControlPageCount_R(Self: TPageControl; var T: Integer); begin T := Self.PageCount; end;
+
+procedure RIRegister_TPageControl(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TPageControl) do
+  begin
+    RegisterMethod(@TPageControl.FindNextPage, 'FindNextPage');
+    RegisterMethod(@TPageControl.SelectNextPage, 'SelectNextPage');
+    RegisterPropertyHelper(@TPageControlPageCount_R,nil,'PageCount');
+    RegisterPropertyHelper(@TPageControlPages_R,nil,'Pages');
+    RegisterPropertyHelper(@TPageControlActivePage_R,@TPageControlActivePage_W,'ActivePage');
+  end;
+end;
+
+
+{ TTabSheet ------------------------------------------------------------------ }
+procedure TTabSheetTabVisible_W(Self: TTabSheet; const T: Boolean); begin Self.TabVisible := T; end;
+procedure TTabSheetTabVisible_R(Self: TTabSheet; var T: Boolean); begin T := Self.TabVisible; end;
+procedure TTabSheetPageIndex_W(Self: TTabSheet; const T: Integer); begin Self.PageIndex := T; end;
+procedure TTabSheetPageIndex_R(Self: TTabSheet; var T: Integer); begin T := Self.PageIndex; end;
+procedure TTabSheetTabIndex_R(Self: TTabSheet; var T: Integer); begin T := Self.TabIndex; end;
+procedure TTabSheetPageControl_W(Self: TTabSheet; const T: TPageControl); begin Self.PageControl := T; end;
+procedure TTabSheetPageControl_R(Self: TTabSheet; var T: TPageControl); begin T := Self.PageControl; end;
+
+procedure RIRegister_TTabSheet(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TTabSheet) do
+  begin
+    RegisterPropertyHelper(@TTabSheetPageControl_R,@TTabSheetPageControl_W,'PageControl');
+    RegisterPropertyHelper(@TTabSheetTabIndex_R,nil,'TabIndex');
+    RegisterPropertyHelper(@TTabSheetPageIndex_R,@TTabSheetPageIndex_W,'PageIndex');
+    RegisterPropertyHelper(@TTabSheetTabVisible_R,@TTabSheetTabVisible_W,'TabVisible');
+  end;
+end;
+
+{ TTabControl ---------------------------------------------------------------- }
+procedure RIRegister_TTabControl(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TTabControl) do
+  begin
+  end;
+end;
+
+{ TCustomTabControl ---------------------------------------------------------- }
+procedure RIRegister_TCustomTabControl(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCustomTabControl) do
+  begin
+  end;
+end;
+
+{ Register TListView --------------------------------------------------------- }
+procedure RIRegisterTLISTVIEW(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TListColumns) do
+    with Cl.Add(TListItems) do
+      with Cl.Add(TCustomListView) do RIRegisterTLISTCOLUMN(Cl);
+  RIRegisterTLISTCOLUMNS(Cl);
+  RIRegisterTLISTITEM(Cl);
+  RIRegisterTLISTITEMS(Cl);
+  RIRegisterTICONOPTIONS(Cl);
+  RIRegisterTCUSTOMLISTVIEW(Cl);
+  Cl.Add(TListView);
+end;
+
+{ Register TStatusBar -------------------------------------------------------- }
+procedure RIRegisterTTSTATUSBAR(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TStatusBar) do RIRegisterTSTATUSPANEL(Cl);
+  RIRegisterTSTATUSPANELS(Cl);
+  RIRegisterTSTATUSBAR(Cl);
+end;
+
+{ Register TTreeView --------------------------------------------------------- }
+procedure RIRegisterTTREEVIEW(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCustomTreeView) do
+  with Cl.Add(TTreeNodes) do
+  RIRegister_TTreeNode(Cl);
+  RIRegister_TTreeNodes(Cl);
+  with Cl.Add(ETreeViewError) do
+  RIRegister_TCustomTreeView(Cl);
+  Cl.Add(TTreeView);
+end;
+
+{ Register TTab -------------------------------------------------------------- }
+procedure RIRegisterTTAB(Cl: TPSRuntimeClassImporter);
+begin
+  RIRegister_TCustomTabControl(Cl);
+  RIRegister_TTabControl(Cl);
+  with Cl.Add(TPageControl) do RIRegister_TTabSheet(Cl);
+  RIRegister_TPageControl(Cl);
+end;
+
+{ Register THeader ----------------------------------------------------------- }
+procedure RIRegisterTHEADERCONTROL(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(THeaderControl) do RIRegister_THeaderSection(Cl);
+  RIRegister_THeaderSections(Cl);
+  RIRegister_THeaderControl(Cl);
+end;
 {$ENDIF}
 
-procedure RIRegister_stdctrls(cl: TPSRuntimeClassImporter);
+(*----------------------------------------------------------------------------*)
+procedure RIRegister_stdctrls(Cl: TPSRuntimeClassImporter);
 begin
   {$IFNDEF PS_MINIVCL}
     RIRegisterTCUSTOMGROUPBOX(Cl);
@@ -682,6 +993,7 @@ begin
   RIRegisterTCUSTOMLABEL(Cl);
   RIRegisterTLABEL(Cl);
   RIRegisterTCUSTOMEDIT(Cl);
+  RIRegisterTCUSTOMMASKEDIT(Cl);
   RIRegisterTEDIT(Cl);
   RIRegisterTCUSTOMMEMO(Cl);
   RIRegisterTMEMO(Cl);
@@ -705,37 +1017,13 @@ begin
     RIRegisterTUPDOWN(Cl);
     RIRegisterTCUSTOMHOTKEY(Cl);
     RIRegisterTHOTKEY(Cl);
-    RIRegisterTCUSTOMIMAGELIST(Cl);
-    RIRegisterTIMAGELIST(Cl);
+    RIRegisterTTSTATUSBAR(Cl);
+    RIRegisterTLISTVIEW(Cl);
+    RIRegisterTTREEVIEW(Cl);
+    RIRegisterTTAB(Cl);
+    RIRegisterTHEADERCONTROL(Cl);
   {$ENDIF}
 end;
 
-
-{$IFNDEF PS_MINIVCL}
-{ Register TListView }
-procedure RIRegister_TListView(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TListColumns) do
-    with Cl.Add(TListItems) do
-      with Cl.Add(TCustomListView) do RIRegisterTLISTCOLUMN(Cl);
-  RIRegisterTLISTCOLUMNS(Cl);
-  RIRegisterTLISTITEM(Cl);
-  RIRegisterTLISTITEMS(Cl);
-  RIRegisterTICONOPTIONS(Cl);
-  RIRegisterTCUSTOMLISTVIEW(Cl);
-  Cl.Add(TListView);
-end;
-
-
-{ Register TStatusBar }
-procedure RIRegister_StatusBar(Cl: TPSRuntimeClassImporter);
-begin
-  with Cl.Add(TStatusBar) do RIRegisterTSTATUSPANEL(Cl);
-  RIRegisterTSTATUSPANELS(Cl);
-  RIRegisterTSTATUSBAR(Cl);
-end;
-{$ENDIF}
-
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
-
 end.

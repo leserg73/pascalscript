@@ -1,14 +1,14 @@
-
-
+{ Runtime ComObj support }
 unit uPSR_comobj;
 
 {$I PascalScript.inc}
+
 interface
+
 uses
   uPSRuntime, uPSUtils;
 
-
-procedure RIRegister_ComObj(cl: TPSExec);
+procedure RIRegister_ComObj(Cl: TPSExec);
 
 implementation
 {$IFDEF FPC}
@@ -30,7 +30,8 @@ resourceString
 const
 {$ENDIF }
 
-  RPS_OLEError = 'OLE error %.8x';
+RPS_OLEError = 'OLE error %.8x';
+
 function OleErrorMessage(ErrorCode: HResult): String;
 begin
   Result := SysErrorMessage(ErrorCode);
@@ -88,30 +89,29 @@ begin
     Unknown.Release;
   end;
 end;
-
 {$ENDIF}
 
-
-procedure RIRegister_ComObj(cl: TPSExec);
+(*----------------------------------------------------------------------------*)
+procedure RIRegister_ComObj(Cl: TPSExec);
 begin
 {$IFDEF FPC}
-    {$IFDEF PS_FPC_HAS_COM}
-    cl.RegisterDelphiFunction(@OleCheck, 'OleCheck', cdRegister);
-    cl.RegisterDelphiFunction(@StringToGUID, 'StringToGUID', cdRegister);
-    cl.RegisterDelphiFunction(@CreateComObject, 'CreateComObject', cdRegister);
-    cl.RegisterDelphiFunction(@CreateOleObject, 'CreateOleObject', cdRegister);
-    cl.RegisterDelphiFunction(@GetActiveOleObject, 'GetActiveOleObject', cdRegister);
-    {$ENDIF}
+  {$IFDEF PS_FPC_HAS_COM}
+  Cl.RegisterDelphiFunction(@OleCheck, 'OleCheck', cdRegister);
+  Cl.RegisterDelphiFunction(@StringToGUID, 'StringToGUID', cdRegister);
+  Cl.RegisterDelphiFunction(@CreateComObject, 'CreateComObject', cdRegister);
+  Cl.RegisterDelphiFunction(@CreateOleObject, 'CreateOleObject', cdRegister);
+  Cl.RegisterDelphiFunction(@GetActiveOleObject, 'GetActiveOleObject', cdRegister);
+  {$ENDIF}
 {$ELSE}
-  cl.RegisterDelphiFunction(@OleCheck, 'OleCheck', cdRegister);
+  Cl.RegisterDelphiFunction(@OleCheck, 'OleCheck', cdRegister);
 {$IFNDEF PS_NOINTERFACES}
-{$IFDEF DELPHI3UP}
-  cl.RegisterDelphiFunction(@StringToGUID, 'StringToGUID', cdRegister);
-  cl.RegisterDelphiFunction(@CreateComObject, 'CreateComObject', cdRegister);
+  {$IFDEF DELPHI3UP}
+    Cl.RegisterDelphiFunction(@StringToGUID, 'StringToGUID', cdRegister);
+    Cl.RegisterDelphiFunction(@CreateComObject, 'CreateComObject', cdRegister);
+  {$ENDIF}
 {$ENDIF}
-{$ENDIF}
-  cl.RegisterDelphiFunction(@CreateOleObject, 'CreateOleObject', cdRegister);
-  cl.RegisterDelphiFunction(@GetActiveOleObject, 'GetActiveOleObject', cdRegister);
+  Cl.RegisterDelphiFunction(@CreateOleObject, 'CreateOleObject', cdRegister);
+  Cl.RegisterDelphiFunction(@GetActiveOleObject, 'GetActiveOleObject', cdRegister);
 {$ENDIF}  
 end;
 

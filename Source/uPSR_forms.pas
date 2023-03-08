@@ -1,17 +1,21 @@
-
+{ Runtime Forms support }
 unit uPSR_forms;
 
 {$I PascalScript.inc}
+
 interface
+
 uses
   uPSRuntime, uPSUtils;
 
 procedure RIRegisterTCONTROLSCROLLBAR(Cl: TPSRuntimeClassImporter);
-{$IFNDEF FPC} procedure RIRegisterTSCROLLINGWINCONTROL(Cl: TPSRuntimeClassImporter);{$ENDIF}
+{$IFNDEF FPC}
+  procedure RIRegisterTSCROLLINGWINCONTROL(Cl: TPSRuntimeClassImporter);
+{$ENDIF}
 procedure RIRegisterTSCROLLBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFORM(Cl: TPSRuntimeClassImporter);
+procedure RIRegisterTCUSTOMFORM(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
-
 {$IFNDEF PS_MINIVCL}
   procedure RIRegisterTSCREEN(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
@@ -19,9 +23,11 @@ procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
 procedure RIRegister_Forms(Cl: TPSRuntimeClassImporter);
 
 implementation
+
 uses
   sysutils, classes, {$IFDEF CLX}QControls, QForms, QGraphics{$ELSE}Controls, Forms, Graphics{$ENDIF};
 
+{ TControlScrollBar ---------------------------------------------------------- }
 procedure TCONTROLSCROLLBARKIND_R(Self: TCONTROLSCROLLBAR; var T: TSCROLLBARKIND); begin T := Self.KIND; end;
 procedure TCONTROLSCROLLBARSCROLLPOS_R(Self: TCONTROLSCROLLBAR; var T: INTEGER); begin t := Self.SCROLLPOS; end;
 
@@ -35,6 +41,7 @@ begin
 end;
 
 {$IFNDEF FPC}
+{ TScrollingWinControl ------------------------------------------------------- }
 procedure RIRegisterTSCROLLINGWINCONTROL(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TSCROLLINGWINCONTROL) do
@@ -44,32 +51,93 @@ begin
 end;
 {$ENDIF}
 
+{ TScrollBox ----------------------------------------------------------------- }
 procedure RIRegisterTSCROLLBOX(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TSCROLLBOX);
 end;
-{$IFNDEF FPC}
-{$IFNDEF CLX}
-procedure TFORMACTIVEOLECONTROL_W(Self: TFORM; T: TWINCONTROL); begin Self.ACTIVEOLECONTROL := T; end;
-procedure TFORMACTIVEOLECONTROL_R(Self: TFORM; var T: TWINCONTROL); begin T := Self.ACTIVEOLECONTROL; 
-end;
-procedure TFORMTILEMODE_W(Self: TFORM; T: TTILEMODE); begin Self.TILEMODE := T; end;
-procedure TFORMTILEMODE_R(Self: TFORM; var T: TTILEMODE); begin T := Self.TILEMODE; end;
-{$ENDIF}{CLX}
-procedure TFORMACTIVEMDICHILD_R(Self: TFORM; var T: TFORM); begin T := Self.ACTIVEMDICHILD; end;
-procedure TFORMDROPTARGET_W(Self: TFORM; T: BOOLEAN); begin Self.DROPTARGET := T; end;
-procedure TFORMDROPTARGET_R(Self: TFORM; var T: BOOLEAN); begin T := Self.DROPTARGET; end;
-procedure TFORMMDICHILDCOUNT_R(Self: TFORM; var T: INTEGER); begin T := Self.MDICHILDCOUNT; end;
-procedure TFORMMDICHILDREN_R(Self: TFORM; var T: TFORM; t1: INTEGER); begin T := Self.MDICHILDREN[T1]; 
-end;
-{$ENDIF}{FPC}
 
+{ TCustomForm ---------------------------------------------------------------- }
+procedure TCustomFormWindowState_W(Self: TCustomForm; const T: TWindowState); begin Self.WindowState := T; end;
+procedure TCustomFormWindowState_R(Self: TCustomForm; var T: TWindowState); begin T := Self.WindowState; end;
+//procedure TCustomFormOleFormObject_W(Self: TCustomForm; const T: TOLEFormObject); begin Self.OleFormObject := T; end;
+//procedure TCustomFormOleFormObject_R(Self: TCustomForm; var T: TOLEFormObject); begin T := Self.OleFormObject; end;
+procedure TCustomFormModalResult_W(Self: TCustomForm; const T: TModalResult); begin Self.ModalResult := T; end;
+procedure TCustomFormModalResult_R(Self: TCustomForm; var T: TModalResult); begin T := Self.ModalResult; end;
+//procedure TCustomFormMenu_W(Self: TCustomForm; const T: TMainMenu); begin Self.Menu := T; end;
+//procedure TCustomFormMenu_R(Self: TCustomForm; var T: TMainMenu); begin T := Self.Menu; end;
+procedure TCustomFormKeyPreview_W(Self: TCustomForm; const T: Boolean); begin Self.KeyPreview := T; end;
+procedure TCustomFormKeyPreview_R(Self: TCustomForm; var T: Boolean); begin T := Self.KeyPreview; end;
+procedure TCustomFormHelpFile_W(Self: TCustomForm; const T: string); begin Self.HelpFile := T; end;
+procedure TCustomFormHelpFile_R(Self: TCustomForm; var T: string); begin T := Self.HelpFile; end;
+procedure TCustomFormDropTarget_W(Self: TCustomForm; const T: Boolean); begin Self.DropTarget := T; end;
+procedure TCustomFormDropTarget_R(Self: TCustomForm; var T: Boolean); begin T := Self.DropTarget; end;
+//procedure TCustomFormDesigner_W(Self: TCustomForm; const T: TDesigner); begin Self.Designer := T; end;
+//procedure TCustomFormDesigner_R(Self: TCustomForm; var T: TDesigner); begin T := Self.Designer; end;
+procedure TCustomFormCanvas_R(Self: TCustomForm; var T: TCanvas); begin T := Self.Canvas; end;
+procedure TCustomFormActiveOleControl_W(Self: TCustomForm; const T: TWinControl); begin Self.ActiveOleControl := T; end;
+procedure TCustomFormActiveOleControl_R(Self: TCustomForm; var T: TWinControl); begin T := Self.ActiveOleControl; end;
+procedure TCustomFormActiveControl_W(Self: TCustomForm; const T: TWinControl); begin Self.ActiveControl := T; end;
+procedure TCustomFormActiveControl_R(Self: TCustomForm; var T: TWinControl); begin T := Self.ActiveControl; end;
+procedure TCustomFormActive_R(Self: TCustomForm; var T: Boolean); begin T := Self.Active; end;
+
+procedure RIRegisterTCUSTOMFORM(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCustomForm) do
+  begin
+    {$IFDEF DELPHI4UP}
+      RegisterVirtualConstructor(@TCustomForm.CreateNew, 'CreateNew');
+    {$ELSE}
+      RegisterConstructor(@TCustomForm.CreateNew, 'CreateNew');
+    {$ENDIF}
+    RegisterMethod(@TCustomForm.Close, 'Close');
+    RegisterMethod(@TCustomForm.CloseQuery, 'CloseQuery');
+    RegisterMethod(@TCustomForm.DefocusControl, 'DefocusControl');
+    RegisterMethod(@TCustomForm.FocusControl, 'FocusControl');
+    RegisterMethod(@TCustomForm.GetFormImage, 'GetFormImage');
+    RegisterMethod(@TCustomForm.Hide, 'Hide');
+    RegisterMethod(@TCustomForm.Print, 'Print');
+    RegisterMethod(@TCustomForm.Release, 'Release');
+    RegisterMethod(@TCustomForm.SendCancelMode, 'SendCancelMode');
+    RegisterMethod(@TCustomForm.SetFocusedControl, 'SetFocusedControl');
+    RegisterMethod(@TCustomForm.Show, 'Show');
+    RegisterMethod(@TCustomForm.ShowModal, 'ShowModal');
+    RegisterVirtualMethod(@TCustomForm.WantChildKey, 'WantChildKey');
+    RegisterPropertyHelper(@TCustomFormActive_R,nil,'Active');
+    RegisterPropertyHelper(@TCustomFormActiveControl_R,@TCustomFormActiveControl_W,'ActiveControl');
+    RegisterPropertyHelper(@TCustomFormActiveOleControl_R,@TCustomFormActiveOleControl_W,'ActiveOleControl');
+    RegisterPropertyHelper(@TCustomFormCanvas_R,nil,'Canvas');
+    //RegisterPropertyHelper(@TCustomFormDesigner_R,@TCustomFormDesigner_W,'Designer');
+    RegisterPropertyHelper(@TCustomFormDropTarget_R,@TCustomFormDropTarget_W,'DropTarget');
+    RegisterPropertyHelper(@TCustomFormHelpFile_R,@TCustomFormHelpFile_W,'HelpFile');
+    RegisterPropertyHelper(@TCustomFormKeyPreview_R,@TCustomFormKeyPreview_W,'KeyPreview');
+    //RegisterPropertyHelper(@TCustomFormMenu_R,@TCustomFormMenu_W,'Menu');
+    RegisterPropertyHelper(@TCustomFormModalResult_R,@TCustomFormModalResult_W,'ModalResult');
+    //RegisterPropertyHelper(@TCustomFormOleFormObject_R,@TCustomFormOleFormObject_W,'OleFormObject');
+    RegisterPropertyHelper(@TCustomFormWindowState_R,@TCustomFormWindowState_W,'WindowState');
+  end;
+end;
+
+{ TForm ---------------------------------------------------------------------- }
+{$IFNDEF FPC}
+  {$IFNDEF CLX}
+    procedure TFORMACTIVEOLECONTROL_W(Self: TFORM; T: TWINCONTROL); begin Self.ACTIVEOLECONTROL := T; end;
+    procedure TFORMACTIVEOLECONTROL_R(Self: TFORM; var T: TWINCONTROL); begin T := Self.ACTIVEOLECONTROL; end;
+    procedure TFORMTILEMODE_W(Self: TFORM; T: TTILEMODE); begin Self.TILEMODE := T; end;
+    procedure TFORMTILEMODE_R(Self: TFORM; var T: TTILEMODE); begin T := Self.TILEMODE; end;
+  {$ENDIF}{CLX}
+  procedure TFORMACTIVEMDICHILD_R(Self: TFORM; var T: TFORM); begin T := Self.ACTIVEMDICHILD; end;
+  procedure TFORMDROPTARGET_W(Self: TFORM; T: BOOLEAN); begin Self.DROPTARGET := T; end;
+  procedure TFORMDROPTARGET_R(Self: TFORM; var T: BOOLEAN); begin T := Self.DROPTARGET; end;
+  procedure TFORMMDICHILDCOUNT_R(Self: TFORM; var T: INTEGER); begin T := Self.MDICHILDCOUNT; end;
+  procedure TFORMMDICHILDREN_R(Self: TFORM; var T: TFORM; t1: INTEGER); begin T := Self.MDICHILDREN[T1]; end;
+{$ENDIF}{FPC}
 procedure TFORMMODALRESULT_W(Self: TFORM; T: TMODALRESULT); begin Self.MODALRESULT := T; end;
 procedure TFORMMODALRESULT_R(Self: TFORM; var T: TMODALRESULT); begin T := Self.MODALRESULT; end;
 procedure TFORMACTIVE_R(Self: TFORM; var T: BOOLEAN); begin T := Self.ACTIVE; end;
 procedure TFORMCANVAS_R(Self: TFORM; var T: TCANVAS); begin T := Self.CANVAS; end;
 {$IFNDEF CLX}
-procedure TFORMCLIENTHANDLE_R(Self: TFORM; var T: Longint); begin T := Self.CLIENTHANDLE; end;
+  procedure TFORMCLIENTHANDLE_R(Self: TFORM; var T: Longint); begin T := Self.CLIENTHANDLE; end;
 {$ENDIF}
 
 { Innerfuse Pascal Script Class Import Utility (runtime) }
@@ -79,9 +147,9 @@ begin
   with Cl.Add(TFORM) do
   begin
     {$IFDEF DELPHI4UP}
-    RegisterVirtualConstructor(@TFORM.CREATENEW, 'CreateNew');
+      RegisterVirtualConstructor(@TFORM.CREATENEW, 'CreateNew');
     {$ELSE}
-    RegisterConstructor(@TFORM.CREATENEW, 'CreateNew');
+      RegisterConstructor(@TFORM.CREATENEW, 'CreateNew');
     {$ENDIF}
     RegisterMethod(@TFORM.CLOSE, 'Close');
     RegisterMethod(@TFORM.HIDE, 'Hide');
@@ -89,27 +157,26 @@ begin
     RegisterMethod(@TFORM.SHOWMODAL, 'ShowModal');
     RegisterMethod(@TFORM.RELEASE, 'Release');
     RegisterPropertyHelper(@TFORMACTIVE_R, nil, 'Active');
-
     {$IFNDEF PS_MINIVCL}
- {$IFNDEF FPC}
-{$IFNDEF CLX} 
-    RegisterMethod(@TFORM.ARRANGEICONS, 'ArrangeIcons');
-    RegisterMethod(@TFORM.GETFORMIMAGE, 'GetFormImage');
-    RegisterMethod(@TFORM.PRINT, 'Print');
-    RegisterMethod(@TFORM.SENDCANCELMODE, 'SendCancelMode');
-    RegisterPropertyHelper(@TFORMACTIVEOLECONTROL_R, @TFORMACTIVEOLECONTROL_W, 'ActiveOleControl');
-    RegisterPropertyHelper(@TFORMCLIENTHANDLE_R, nil, 'ClientHandle');
-    RegisterPropertyHelper(@TFORMTILEMODE_R, @TFORMTILEMODE_W, 'TileMode');
-{$ENDIF}{CLX}
-    RegisterMethod(@TFORM.CASCADE, 'Cascade');
-    RegisterMethod(@TFORM.NEXT, 'Next');
-    RegisterMethod(@TFORM.PREVIOUS, 'Previous');
-    RegisterMethod(@TFORM.TILE, 'Tile');
-    RegisterPropertyHelper(@TFORMACTIVEMDICHILD_R, nil, 'ActiveMDIChild');
-    RegisterPropertyHelper(@TFORMDROPTARGET_R, @TFORMDROPTARGET_W, 'DropTarget');
-    RegisterPropertyHelper(@TFORMMDICHILDCOUNT_R, nil, 'MDIChildCount');
-    RegisterPropertyHelper(@TFORMMDICHILDREN_R, nil, 'MDIChildren');
- {$ENDIF}{FPC}
+      {$IFNDEF FPC}
+        {$IFNDEF CLX} 
+          RegisterMethod(@TFORM.ARRANGEICONS, 'ArrangeIcons');
+          RegisterMethod(@TFORM.GETFORMIMAGE, 'GetFormImage');
+          RegisterMethod(@TFORM.PRINT, 'Print');
+          RegisterMethod(@TFORM.SENDCANCELMODE, 'SendCancelMode');
+          RegisterPropertyHelper(@TFORMACTIVEOLECONTROL_R, @TFORMACTIVEOLECONTROL_W, 'ActiveOleControl');
+          RegisterPropertyHelper(@TFORMCLIENTHANDLE_R, nil, 'ClientHandle');
+          RegisterPropertyHelper(@TFORMTILEMODE_R, @TFORMTILEMODE_W, 'TileMode');
+        {$ENDIF}{CLX}
+        RegisterMethod(@TFORM.CASCADE, 'Cascade');
+        RegisterMethod(@TFORM.NEXT, 'Next');
+        RegisterMethod(@TFORM.PREVIOUS, 'Previous');
+        RegisterMethod(@TFORM.TILE, 'Tile');
+        RegisterPropertyHelper(@TFORMACTIVEMDICHILD_R, nil, 'ActiveMDIChild');
+        RegisterPropertyHelper(@TFORMDROPTARGET_R, @TFORMDROPTARGET_W, 'DropTarget');
+        RegisterPropertyHelper(@TFORMMDICHILDCOUNT_R, nil, 'MDIChildCount');
+        RegisterPropertyHelper(@TFORMMDICHILDREN_R, nil, 'MDIChildren');
+      {$ENDIF}{FPC}
     RegisterMethod(@TFORM.CLOSEQUERY, 'CloseQuery');
     RegisterMethod(@TFORM.DEFOCUSCONTROL, 'DefocusControl');
     RegisterMethod(@TFORM.FOCUSCONTROL, 'FocusControl');
@@ -120,19 +187,18 @@ begin
   end;
 end;
 
- {$IFNDEF FPC}
-procedure TAPPLICATIONACTIVE_R(Self: TAPPLICATION; var T: BOOLEAN); begin T := Self.ACTIVE; end;
-{$IFNDEF CLX}
-procedure TAPPLICATIONDIALOGHANDLE_R(Self: TAPPLICATION; var T: Longint); begin T := Self.DIALOGHANDLE; end;
-procedure TAPPLICATIONDIALOGHANDLE_W(Self: TAPPLICATION; T: Longint); begin Self.DIALOGHANDLE := T; end;
-procedure TAPPLICATIONHANDLE_R(Self: TAPPLICATION; var T: Longint); begin T := Self.HANDLE; end;
-procedure TAPPLICATIONHANDLE_W(Self: TAPPLICATION; T: Longint); begin Self.HANDLE := T; end;
-procedure TAPPLICATIONUPDATEFORMATSETTINGS_R(Self: TAPPLICATION; var T: BOOLEAN); begin T := Self.UPDATEFORMATSETTINGS; end;
-procedure TAPPLICATIONUPDATEFORMATSETTINGS_W(Self: TAPPLICATION; T: BOOLEAN); begin Self.UPDATEFORMATSETTINGS := T; end;
-{$ENDIF}
+{ TApplication --------------------------------------------------------------- }
+{$IFNDEF FPC}
+  procedure TAPPLICATIONACTIVE_R(Self: TAPPLICATION; var T: BOOLEAN); begin T := Self.ACTIVE; end;
+  {$IFNDEF CLX}
+    procedure TAPPLICATIONDIALOGHANDLE_R(Self: TAPPLICATION; var T: Longint); begin T := Self.DIALOGHANDLE; end;
+    procedure TAPPLICATIONDIALOGHANDLE_W(Self: TAPPLICATION; T: Longint); begin Self.DIALOGHANDLE := T; end;
+    procedure TAPPLICATIONHANDLE_R(Self: TAPPLICATION; var T: Longint); begin T := Self.HANDLE; end;
+    procedure TAPPLICATIONHANDLE_W(Self: TAPPLICATION; T: Longint); begin Self.HANDLE := T; end;
+    procedure TAPPLICATIONUPDATEFORMATSETTINGS_R(Self: TAPPLICATION; var T: BOOLEAN); begin T := Self.UPDATEFORMATSETTINGS; end;
+    procedure TAPPLICATIONUPDATEFORMATSETTINGS_W(Self: TAPPLICATION; T: BOOLEAN); begin Self.UPDATEFORMATSETTINGS := T; end;
+  {$ENDIF}
 {$ENDIF}{FPC}
-
-
 procedure TAPPLICATIONEXENAME_R(Self: TAPPLICATION; var T: STRING); begin T := Self.EXENAME; end;
 procedure TAPPLICATIONHELPFILE_R(Self: TAPPLICATION; var T: STRING); begin T := Self.HELPFILE; end;
 procedure TAPPLICATIONHELPFILE_W(Self: TAPPLICATION; T: STRING); begin Self.HELPFILE := T; end;
@@ -154,64 +220,56 @@ procedure TAPPLICATIONSHOWMAINFORM_W(Self: TAPPLICATION; T: BOOLEAN); begin Self
 procedure TAPPLICATIONTERMINATED_R(Self: TAPPLICATION; var T: BOOLEAN); begin T := Self.TERMINATED; end;
 procedure TAPPLICATIONTITLE_R(Self: TAPPLICATION; var T: STRING); begin T := Self.TITLE; end;
 procedure TAPPLICATIONTITLE_W(Self: TAPPLICATION; T: STRING); begin Self.TITLE := T; end;
-
 {$IFNDEF FPC}
-procedure TAPPLICATIONONACTIVATE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONACTIVATE; end;
-procedure TAPPLICATIONONACTIVATE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONACTIVATE := T; end;
-procedure TAPPLICATIONONDEACTIVATE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONDEACTIVATE; end;
-procedure TAPPLICATIONONDEACTIVATE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONDEACTIVATE := T; end;
+  procedure TAPPLICATIONONACTIVATE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONACTIVATE; end;
+  procedure TAPPLICATIONONACTIVATE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONACTIVATE := T; end;
+  procedure TAPPLICATIONONDEACTIVATE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONDEACTIVATE; end;
+  procedure TAPPLICATIONONDEACTIVATE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONDEACTIVATE := T; end;
 {$ENDIF}
-
 procedure TAPPLICATIONONIDLE_R(Self: TAPPLICATION; var T: TIDLEEVENT); begin T := Self.ONIDLE; end;
 procedure TAPPLICATIONONIDLE_W(Self: TAPPLICATION; T: TIDLEEVENT); begin Self.ONIDLE := T; end;
 procedure TAPPLICATIONONHELP_R(Self: TAPPLICATION; var T: THELPEVENT); begin T := Self.ONHELP; end;
 procedure TAPPLICATIONONHELP_W(Self: TAPPLICATION; T: THELPEVENT); begin Self.ONHELP := T; end;
 procedure TAPPLICATIONONHINT_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONHINT; end;
 procedure TAPPLICATIONONHINT_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONHINT := T; end;
-
 {$IFNDEF FPC}
-procedure TAPPLICATIONONMINIMIZE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONMINIMIZE; end;
-procedure TAPPLICATIONONMINIMIZE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONMINIMIZE := T; end;
-
-procedure TAPPLICATIONONRESTORE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONRESTORE; end;
-procedure TAPPLICATIONONRESTORE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONRESTORE := T; end;
-
-{$IFNDEF PS_MINIVCL}
-procedure TAPPLICATIONONMESSAGE_R(Self: TAPPLICATION; var T: TMESSAGEEVENT); begin T := Self.ONMESSAGE; end;
-procedure TAPPLICATIONONMESSAGE_W(Self: TAPPLICATION; T: TMESSAGEEVENT); begin Self.ONMESSAGE := T; end;
-procedure TAPPLICATIONICON_W(Self: TAPPLICATION; const T: TICON); begin Self.ICON := T; end;
-procedure TAPPLICATIONICON_R(Self: TAPPLICATION; var T: TICON); begin T := Self.ICON; end;
-{$ENDIF}
-
+  procedure TAPPLICATIONONMINIMIZE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONMINIMIZE; end;
+  procedure TAPPLICATIONONMINIMIZE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONMINIMIZE := T; end;
+  procedure TAPPLICATIONONRESTORE_R(Self: TAPPLICATION; var T: TNOTIFYEVENT); begin T := Self.ONRESTORE; end;
+  procedure TAPPLICATIONONRESTORE_W(Self: TAPPLICATION; T: TNOTIFYEVENT); begin Self.ONRESTORE := T; end;
+  {$IFNDEF PS_MINIVCL}
+    procedure TAPPLICATIONONMESSAGE_R(Self: TAPPLICATION; var T: TMESSAGEEVENT); begin T := Self.ONMESSAGE; end;
+    procedure TAPPLICATIONONMESSAGE_W(Self: TAPPLICATION; T: TMESSAGEEVENT); begin Self.ONMESSAGE := T; end;
+    procedure TAPPLICATIONICON_W(Self: TAPPLICATION; const T: TICON); begin Self.ICON := T; end;
+    procedure TAPPLICATIONICON_R(Self: TAPPLICATION; var T: TICON); begin T := Self.ICON; end;
+  {$ENDIF}
 {$ENDIF}
 
 procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TAPPLICATION) do
   begin
- {$IFNDEF FPC}
-    RegisterMethod(@TAPPLICATION.MINIMIZE, 'Minimize');
-    RegisterMethod(@TAPPLICATION.RESTORE, 'Restore');
-    RegisterPropertyHelper(@TAPPLICATIONACTIVE_R, nil, 'Active');
-    RegisterPropertyHelper(@TAPPLICATIONONACTIVATE_R, @TAPPLICATIONONACTIVATE_W, 'OnActivate');
-    RegisterPropertyHelper(@TAPPLICATIONONDEACTIVATE_R, @TAPPLICATIONONDEACTIVATE_W, 'OnDeactivate');
-    RegisterPropertyHelper(@TAPPLICATIONONMINIMIZE_R, @TAPPLICATIONONMINIMIZE_W, 'OnMinimize');
-    RegisterPropertyHelper(@TAPPLICATIONONRESTORE_R, @TAPPLICATIONONRESTORE_W, 'OnRestore');
-
-    {$IFNDEF PS_MINIVCL}
-    RegisterPropertyHelper(@TAPPLICATIONONMESSAGE_R, @TAPPLICATIONONMESSAGE_W, 'OnMessage');
-    RegisterPropertyHelper(@TAPPLICATIONICON_R,@TAPPLICATIONICON_W,'Icon');
+    {$IFNDEF FPC}
+      RegisterMethod(@TAPPLICATION.MINIMIZE, 'Minimize');
+      RegisterMethod(@TAPPLICATION.RESTORE, 'Restore');
+      RegisterPropertyHelper(@TAPPLICATIONACTIVE_R, nil, 'Active');
+      RegisterPropertyHelper(@TAPPLICATIONONACTIVATE_R, @TAPPLICATIONONACTIVATE_W, 'OnActivate');
+      RegisterPropertyHelper(@TAPPLICATIONONDEACTIVATE_R, @TAPPLICATIONONDEACTIVATE_W, 'OnDeactivate');
+      RegisterPropertyHelper(@TAPPLICATIONONMINIMIZE_R, @TAPPLICATIONONMINIMIZE_W, 'OnMinimize');
+      RegisterPropertyHelper(@TAPPLICATIONONRESTORE_R, @TAPPLICATIONONRESTORE_W, 'OnRestore');
+      {$IFNDEF PS_MINIVCL}
+        RegisterPropertyHelper(@TAPPLICATIONONMESSAGE_R, @TAPPLICATIONONMESSAGE_W, 'OnMessage');
+        RegisterPropertyHelper(@TAPPLICATIONICON_R,@TAPPLICATIONICON_W,'Icon');
+      {$ENDIF}
+      RegisterPropertyHelper(@TAPPLICATIONDIALOGHANDLE_R, @TAPPLICATIONDIALOGHANDLE_W, 'DialogHandle');
+      RegisterMethod(@TAPPLICATION.CREATEHANDLE, 'CreateHandle');
+      RegisterMethod(@TAPPLICATION.NORMALIZETOPMOSTS, 'NormalizeTopMosts');
+      RegisterMethod(@TAPPLICATION.RESTORETOPMOSTS, 'RestoreTopMosts');
+      {$IFNDEF CLX}
+        RegisterPropertyHelper(@TAPPLICATIONHANDLE_R, @TAPPLICATIONHANDLE_W, 'Handle');
+        RegisterPropertyHelper(@TAPPLICATIONUPDATEFORMATSETTINGS_R, @TAPPLICATIONUPDATEFORMATSETTINGS_W, 'UpdateFormatSettings');
+      {$ENDIF}
     {$ENDIF}
-
-    RegisterPropertyHelper(@TAPPLICATIONDIALOGHANDLE_R, @TAPPLICATIONDIALOGHANDLE_W, 'DialogHandle');
-    RegisterMethod(@TAPPLICATION.CREATEHANDLE, 'CreateHandle');
-    RegisterMethod(@TAPPLICATION.NORMALIZETOPMOSTS, 'NormalizeTopMosts');
-    RegisterMethod(@TAPPLICATION.RESTORETOPMOSTS, 'RestoreTopMosts');
-    {$IFNDEF CLX}
-    RegisterPropertyHelper(@TAPPLICATIONHANDLE_R, @TAPPLICATIONHANDLE_W, 'Handle');
-    RegisterPropertyHelper(@TAPPLICATIONUPDATEFORMATSETTINGS_R, @TAPPLICATIONUPDATEFORMATSETTINGS_W, 'UpdateFormatSettings');
-    {$ENDIF}
- {$ENDIF}
     RegisterMethod(@TAPPLICATION.BRINGTOFRONT, 'BringToFront');
     RegisterMethod(@TAPPLICATION.MESSAGEBOX, 'MessageBox');
     RegisterMethod(@TAPPLICATION.PROCESSMESSAGES, 'ProcessMessages');
@@ -226,38 +284,38 @@ begin
     RegisterPropertyHelper(@TAPPLICATIONONIDLE_R, @TAPPLICATIONONIDLE_W, 'OnIdle');
     RegisterPropertyHelper(@TAPPLICATIONONHINT_R, @TAPPLICATIONONHINT_W, 'OnHint');
     {$IFNDEF PS_MINIVCL}
-    RegisterMethod(@TAPPLICATION.CONTROLDESTROYED, 'ControlDestroyed');
-    RegisterMethod(@TAPPLICATION.CANCELHINT, 'CancelHint');
-    {$IFNDEF CLX}
-    {$IFNDEF FPC}
-    RegisterMethod(@TAPPLICATION.HELPCOMMAND, 'HelpCommand');
-    {$ENDIF}
-    RegisterMethod(@TAPPLICATION.HELPCONTEXT, 'HelpContext');
-    {$IFNDEF FPC}
-    RegisterMethod(@TAPPLICATION.HELPJUMP, 'HelpJump');
-    {$ENDIF}
-    {$ENDIF}
-//    RegisterMethod(@TAPPLICATION.HANDLEEXCEPTION, 'HandleException');
-//    RegisterMethod(@TAPPLICATION.HOOKMAINWINDOW, 'HookMainWindow');
-//    RegisterMethod(@TAPPLICATION.UNHOOKMAINWINDOW, 'UnhookMainWindow');
-
-    RegisterMethod(@TAPPLICATION.HANDLEMESSAGE, 'HandleMessage');
-    RegisterMethod(@TAPPLICATION.HIDEHINT, 'HideHint');
-    RegisterMethod(@TAPPLICATION.HINTMOUSEMESSAGE, 'HintMouseMessage');
-    RegisterMethod(@TAPPLICATION.INITIALIZE, 'Initialize');
-    RegisterMethod(@TAPPLICATION.RUN, 'Run');
-//    RegisterMethod(@TAPPLICATION.SHOWEXCEPTION, 'ShowException');
-    RegisterPropertyHelper(@TAPPLICATIONHELPFILE_R, @TAPPLICATIONHELPFILE_W, 'HelpFile');
-    RegisterPropertyHelper(@TAPPLICATIONHINTCOLOR_R, @TAPPLICATIONHINTCOLOR_W, 'HintColor');
-    RegisterPropertyHelper(@TAPPLICATIONHINTPAUSE_R, @TAPPLICATIONHINTPAUSE_W, 'HintPause');
-    RegisterPropertyHelper(@TAPPLICATIONHINTSHORTPAUSE_R, @TAPPLICATIONHINTSHORTPAUSE_W, 'HintShortPause');
-    RegisterPropertyHelper(@TAPPLICATIONHINTHIDEPAUSE_R, @TAPPLICATIONHINTHIDEPAUSE_W, 'HintHidePause');
-    RegisterPropertyHelper(@TAPPLICATIONONHELP_R, @TAPPLICATIONONHELP_W, 'OnHelp');
+      RegisterMethod(@TAPPLICATION.CONTROLDESTROYED, 'ControlDestroyed');
+      RegisterMethod(@TAPPLICATION.CANCELHINT, 'CancelHint');
+      {$IFNDEF CLX}
+        {$IFNDEF FPC}
+          RegisterMethod(@TAPPLICATION.HELPCOMMAND, 'HelpCommand');
+        {$ENDIF}
+        RegisterMethod(@TAPPLICATION.HELPCONTEXT, 'HelpContext');
+        {$IFNDEF FPC}
+          RegisterMethod(@TAPPLICATION.HELPJUMP, 'HelpJump');
+        {$ENDIF}
+      {$ENDIF}
+      //RegisterMethod(@TAPPLICATION.HANDLEEXCEPTION, 'HandleException');
+      //RegisterMethod(@TAPPLICATION.HOOKMAINWINDOW, 'HookMainWindow');
+      //RegisterMethod(@TAPPLICATION.UNHOOKMAINWINDOW, 'UnhookMainWindow');
+      RegisterMethod(@TAPPLICATION.HANDLEMESSAGE, 'HandleMessage');
+      RegisterMethod(@TAPPLICATION.HIDEHINT, 'HideHint');
+      RegisterMethod(@TAPPLICATION.HINTMOUSEMESSAGE, 'HintMouseMessage');
+      RegisterMethod(@TAPPLICATION.INITIALIZE, 'Initialize');
+      RegisterMethod(@TAPPLICATION.RUN, 'Run');
+      //RegisterMethod(@TAPPLICATION.SHOWEXCEPTION, 'ShowException');
+      RegisterPropertyHelper(@TAPPLICATIONHELPFILE_R, @TAPPLICATIONHELPFILE_W, 'HelpFile');
+      RegisterPropertyHelper(@TAPPLICATIONHINTCOLOR_R, @TAPPLICATIONHINTCOLOR_W, 'HintColor');
+      RegisterPropertyHelper(@TAPPLICATIONHINTPAUSE_R, @TAPPLICATIONHINTPAUSE_W, 'HintPause');
+      RegisterPropertyHelper(@TAPPLICATIONHINTSHORTPAUSE_R, @TAPPLICATIONHINTSHORTPAUSE_W, 'HintShortPause');
+      RegisterPropertyHelper(@TAPPLICATIONHINTHIDEPAUSE_R, @TAPPLICATIONHINTHIDEPAUSE_W, 'HintHidePause');
+      RegisterPropertyHelper(@TAPPLICATIONONHELP_R, @TAPPLICATIONONHELP_W, 'OnHelp');
     {$ENDIF}
   end;
 end;
 
 {$IFNDEF PS_MINIVCL}
+{ TScreen -------------------------------------------------------------------- }
 // procedure TScreenUpdatingAllFonts_R(Self: TScreen; var T: Boolean); begin T := Self.UpdatingAllFonts; end;
 procedure TScreenOnActiveFormChange_W(Self: TScreen; const T: TNotifyEvent); begin Self.OnActiveFormChange := T; end;
 procedure TScreenOnActiveFormChange_R(Self: TScreen; var T: TNotifyEvent); begin T := Self.OnActiveFormChange; end;
@@ -311,9 +369,9 @@ procedure TScreenActiveForm_R(Self: TScreen; var T: TForm); begin T := Self.Acti
 // procedure TScreenActiveCustomForm_R(Self: TScreen; var T: TCustomForm); begin T := Self.ActiveCustomForm; end;
 procedure TScreenActiveControl_R(Self: TScreen; var T: TWinControl); begin T := Self.ActiveControl; end;
 
-procedure RIRegisterTSCREEN(CL: TPSRuntimeClassImporter);
+procedure RIRegisterTSCREEN(Cl: TPSRuntimeClassImporter);
 begin
-  with CL.Add(TScreen) do
+  with Cl.Add(TScreen) do
   begin
 //    RegisterMethod(@TScreen.DisableAlign, 'DisableAlign');
 //    RegisterMethod(@TScreen.EnableAlign, 'EnableAlign');
@@ -368,21 +426,24 @@ begin
 end;
 {$ENDIF}
 
+(*----------------------------------------------------------------------------*)
 procedure RIRegister_Forms(Cl: TPSRuntimeClassImporter);
 begin
   {$IFNDEF PS_MINIVCL}
     RIRegisterTCONTROLSCROLLBAR(Cl);
     RIRegisterTSCROLLBOX(Cl);
   {$ENDIF}
-{$IFNDEF FPC}  RIRegisterTScrollingWinControl(Cl);{$ENDIF}
+  {$IFNDEF FPC}
+    RIRegisterTScrollingWinControl(Cl);
+  {$ENDIF}
+  RIRegisterTCustomForm(Cl);
   RIRegisterTForm(Cl);
   {$IFNDEF PS_MINIVCL}
+    RIRegisterTScreen(Cl);
     RIRegisterTApplication(Cl);
-    RIRegisterTScreen(CL);
   {$ENDIF}
 end;
 
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
 // FPC changes by Boguslaw brandys (brandys at o2 _dot_ pl)
-
 end.

@@ -1,17 +1,22 @@
 { Compiletime Buttons support }
 unit uPSC_buttons;
+
 {$I PascalScript.inc}
+
 interface
+
 uses
   uPSCompiler, uPSUtils;
 
 {
+
   Will register files from:
     Buttons
  
-  Requires
-      STD, classes, controls and graphics and StdCtrls and Buttons
+  Requires:
+    STD, classes, controls and graphics and StdCtrls and Buttons
 }
+
 procedure SIRegister_Buttons_TypesAndConsts(Cl: TPSPascalCompiler);
 
 procedure SIRegisterTSPEEDBUTTON(Cl: TPSPascalCompiler);
@@ -21,9 +26,10 @@ procedure SIRegister_Buttons(Cl: TPSPascalCompiler);
 
 implementation
 
+{ TSpeedButton --------------------------------------------------------------- }
 procedure SIRegisterTSPEEDBUTTON(Cl: TPSPascalCompiler);
 begin
-  with Cl.AddClassN(cl.FindClass('TGraphicControl'), 'TSpeedButton') do
+  with Cl.AddClassN(Cl.FindClass('TGraphicControl'), 'TSpeedButton') do
   begin
     RegisterMethod('constructor Create(AOwner: TComponent)'); //
 //    RegisterMethod('procedure Click');
@@ -62,9 +68,10 @@ begin
   end;
 end;
 
+{ TBitBtn -------------------------------------------------------------------- }
 procedure SIRegisterTBITBTN(Cl: TPSPascalCompiler);
 begin
-  with Cl.AddClassN(cl.FindClass('TCustomButton'), 'TBitBtn') do
+  with Cl.AddClassN(Cl.FindClass('TCustomButton'), 'TBitBtn') do
   begin
     RegisterMethod('constructor Create(AOwner: TComponent)'); //
 //    RegisterMethod('procedure Click');  
@@ -77,7 +84,6 @@ begin
     RegisterProperty('Font', 'TFont', iptrw);
     RegisterProperty('ParentFont', 'Boolean', iptrw);
     RegisterProperty('ModalResult', 'LongInt', iptrw);
-
     RegisterProperty('Glyph', 'TBitmap', iptrw);
     RegisterProperty('Kind', 'TBitBtnKind', iptrw);
     RegisterProperty('Layout', 'TButtonLayout', iptrw);
@@ -85,7 +91,6 @@ begin
     RegisterProperty('NumGlyphs', 'Byte', iptrw);
     RegisterProperty('Style', 'TButtonStyle', iptrw);
     RegisterProperty('Spacing', 'Integer', iptrw);
-
     RegisterProperty('DragCursor', 'LongInt', iptrw);
     RegisterProperty('DragMode', 'TDragMode', iptrw);
     RegisterProperty('ParentShowHint', 'Boolean', iptrw);
@@ -104,36 +109,29 @@ begin
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
     RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
     RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
-
   end;
 end;
 
-
-
-procedure SIRegister_Buttons_TypesAndConsts(cl: TPSPascalCompiler);
+{ Types And Consts ----------------------------------------------------------- }
+procedure SIRegister_Buttons_TypesAndConsts(Cl: TPSPascalCompiler);
 begin
   { TSpeedButton }
-  cl.AddTypeS('TButtonLayout', '(blGlyphLeft, blGlyphRight, blGlyphTop, blGlyphBottom)');
-  cl.AddTypeS('TButtonState', '(bsUp, bsDisabled, bsDown, bsExclusive)');
+  Cl.AddTypeS('TButtonLayout', '(blGlyphLeft, blGlyphRight, blGlyphTop, blGlyphBottom)');
+  Cl.AddTypeS('TButtonState', '(bsUp, bsDisabled, bsDown, bsExclusive)');
   { TBitBtn }
-//  cl.AddTypeS('TModalResult', '(mrNone, mrOk, mrCancel, mrAbort, mrRetry, mrIgnore, mrYes, mrNo, mrClose, mrHelp, mrTryAgain, mrContinue, mrAll, mrNoToAll, mrYesToAll)');
-  cl.AddTypeS('TButtonStyle', '(bsAutoDetect, bsWin31, bsNew)');
-//  cl.AddTypeS('TButtonStyle', '(bsPushButton, bsCommandLink, bsSplitButton)');
-  cl.AddTypeS('TBitBtnKind', '(bkCustom, bkOK, bkCancel, bkHelp, bkYes, bkNo, bkClose, bkAbort, bkRetry, bkIgnore, bkAll)');
+//  Cl.AddTypeS('TModalResult', '(mrNone, mrOk, mrCancel, mrAbort, mrRetry, mrIgnore, mrYes, mrNo, mrClose, mrHelp, mrTryAgain, mrContinue, mrAll, mrNoToAll, mrYesToAll)');
+  Cl.AddTypeS('TButtonStyle', '(bsAutoDetect, bsWin31, bsNew)');
+//  Cl.AddTypeS('TButtonStyle', '(bsPushButton, bsCommandLink, bsSplitButton)');
+  Cl.AddTypeS('TBitBtnKind', '(bkCustom, bkOK, bkCancel, bkHelp, bkYes, bkNo, bkClose, bkAbort, bkRetry, bkIgnore, bkAll)');
 end;
 
+(*----------------------------------------------------------------------------*)
 procedure SIRegister_Buttons(Cl: TPSPascalCompiler);
 begin
-  SIRegister_Buttons_TypesAndConsts(cl);
+  SIRegister_Buttons_TypesAndConsts(Cl);
   SIRegisterTSPEEDBUTTON(Cl);
   SIRegisterTBITBTN(Cl);
 end;
 
 // PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
-
-
 end.
-
-
-
-
