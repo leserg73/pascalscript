@@ -2,33 +2,39 @@
 unit uPSC_dateutils;
 
 interface
+
 uses
   SysUtils, uPSCompiler, uPSUtils;
 
-
-procedure RegisterDateTimeLibrary_C(S: TPSPascalCompiler);
+procedure RegisterDateTimeLibrary_C(Cl: TPSPascalCompiler);
 
 implementation
 
-procedure RegisterDatetimeLibrary_C(S: TPSPascalCompiler);
+procedure RegisterDatetimeLibrary_C(Cl: TPSPascalCompiler);
 begin
-  s.AddType('TDateTime', btDouble).ExportName := True;
-  s.AddDelphiFunction('function EncodeDate(Year, Month, Day: Word): TDateTime;');
-  s.AddDelphiFunction('function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;');
-  s.AddDelphiFunction('function TryEncodeDate(Year, Month, Day: Word; var Date: TDateTime): Boolean;');
-  s.AddDelphiFunction('function TryEncodeTime(Hour, Min, Sec, MSec: Word; var Time: TDateTime): Boolean;');
-  s.AddDelphiFunction('procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);');
-  s.AddDelphiFunction('procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);');
-  s.AddDelphiFunction('function DayOfWeek(const DateTime: TDateTime): Word;');
-  s.AddDelphiFunction('function Date: TDateTime;');
-  s.AddDelphiFunction('function Time: TDateTime;');
-  s.AddDelphiFunction('function Now: TDateTime;');
-  s.AddDelphiFunction('function DateTimeToUnix(D: TDateTime): Int64;');
-  s.AddDelphiFunction('function UnixToDateTime(U: Int64): TDateTime;');
+  //Cl.AddType('TDateTime', btDouble).ExportName := True;
+  Cl.AddDelphiFunction('function EncodeDate(Year, Month, Day: Word): TDateTime;');
+  Cl.AddDelphiFunction('function EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime;');
+  Cl.AddDelphiFunction('function TryEncodeDate(Year, Month, Day: Word; var Date: TDateTime): Boolean;');
+  Cl.AddDelphiFunction('function TryEncodeTime(Hour, Min, Sec, MSec: Word; var Time: TDateTime): Boolean;');
+  Cl.AddDelphiFunction('procedure DecodeDate(const DateTime: TDateTime; var Year, Month, Day: Word);');
+  Cl.AddDelphiFunction('procedure DecodeTime(const DateTime: TDateTime; var Hour, Min, Sec, MSec: Word);');
+  Cl.AddDelphiFunction('function DayOfWeek(const DateTime: TDateTime): Word;');
+  Cl.AddDelphiFunction('function Date: TDateTime;');
+  Cl.AddDelphiFunction('function Time: TDateTime;');
+  Cl.AddDelphiFunction('function Now: TDateTime;');
+  Cl.AddDelphiFunction('function DateTimeToUnix(D: TDateTime): Int64;');
+  Cl.AddDelphiFunction('function UnixToDateTime(U: Int64): TDateTime;');
 
-  s.AddDelphiFunction('function DateToStr(D: TDateTime): string;');
-  s.AddDelphiFunction('function StrToDate(const S: string): TDateTime;');
-  s.AddDelphiFunction('function FormatDateTime(const fmt: string; D: TDateTime): string;');
+  Cl.AddDelphiFunction('function DateToStr(D: TDateTime): String;');
+  Cl.AddDelphiFunction('function StrToDate(const S: String): TDateTime;');
+  Cl.AddDelphiFunction('function FormatDateTime(const fmt: String; D: TDateTime): String;');
+
+  Cl.AddDelphiFunction('function TimeToStr(Time: TDateTime): String;');
+  Cl.AddDelphiFunction('function StrToDateTime(const S: String): TDateTime;');
+  Cl.AddDelphiFunction('function StrToTime(const S: String): TDateTime;');
+  Cl.AddDelphiFunction('function DateTimeToStr(DateTime: TDateTime): String;');
+  Cl.AddDelphiFunction('procedure DateTimeToString(var Result: String; const Format: String; DateTime: TDateTime);');
 end;
 
 end.

@@ -32,6 +32,7 @@ procedure SIRegisterTCUSTOMCOMBOBOX(Cl: TPSPascalCompiler);
 procedure SIRegisterTCOMBOBOX(Cl: TPSPascalCompiler);
 procedure SIRegisterTBUTTONCONTROL(Cl: TPSPascalCompiler);
 {$IFNDEF PS_MINIVCL}
+  procedure SIRegisterTIMAGEMARGINS(Cl: TPSPascalCompiler);
   procedure SIRegisterTCUSTOMBUTTON(Cl: TPSPascalCompiler);
 {$ENDIF}
 procedure SIRegisterTBUTTON(Cl: TPSPascalCompiler);
@@ -73,6 +74,11 @@ procedure SIRegisterTSCROLLBAR(Cl: TPSPascalCompiler);
   procedure SIRegisterTTREEVIEW(Cl: TPSPascalCompiler);
   procedure SIRegisterTTAB(Cl: TPSPascalCompiler);
   procedure SIRegisterTHEADERCONTROL(Cl: TPSPascalCompiler);
+  { Date&Time }
+  procedure SIRegister_TDateTimePicker(Cl: TPSPascalCompiler);
+  procedure SIRegister_TMonthCalendar(Cl: TPSPascalCompiler);
+  procedure SIRegister_TCommonCalendar(Cl: TPSPascalCompiler);
+  procedure SIRegister_TMonthCalColors(Cl: TPSPascalCompiler);
 {$ENDIF}
 
 procedure SIRegister_StdCtrls(Cl: TPSPascalCompiler);
@@ -109,6 +115,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -168,6 +175,7 @@ begin
     RegisterProperty('OnMouseUp', 'TMouseEvent', iptrw);
     RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
     {$IFNDEF PS_MINIVCL}
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
       RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     {$ENDIF}
@@ -249,6 +257,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -313,6 +322,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -379,6 +389,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnDrawItem', 'TDrawItemEvent', iptrw);
@@ -403,27 +414,42 @@ end;
 { TCustomButton -------------------------------------------------------------- }
 procedure SIRegisterTCUSTOMBUTTON(Cl: TPSPascalCompiler);
 begin
+  //Cl.AddTypeS('TButtonStyle', '(bsPushButton, bsCommandLink, bsSplitButton)');
   with Cl.AddClassN(Cl.FindClass('TButtonControl'), 'TCustomButton') do
   begin
     RegisterMethod('constructor Create(AOwner: TComponent)'); //
     RegisterMethod('procedure Click');
-(*    RegisterMethod('function UseRightToLeftAlignment: Boolean');
+    RegisterProperty('Cancel', 'Boolean', iptrw);
+    RegisterProperty('CommandLinkHint', 'string', iptrw);
     RegisterProperty('Default', 'Boolean', iptrw);
     RegisterProperty('DisabledImageIndex', 'TImageIndex', iptrw);
     RegisterProperty('DropDownMenu', 'TPopupMenu', iptrw);
     RegisterProperty('ElevationRequired', 'Boolean', iptrw);
     RegisterProperty('HotImageIndex', 'TImageIndex', iptrw);
-    RegisterProperty('ModalResult', 'LongInt', iptrw);
-    RegisterProperty('OnDropDownClick', 'TNotifyEvent', iptrw);
-    RegisterProperty('PressedImageIndex', 'TImageIndex', iptrw);
-    RegisterProperty('SelectedImageIndex', 'TImageIndex', iptrw);
-    RegisterProperty('StylusHotImageIndex', 'TImageIndex', iptrw);
-    RegisterProperty('ImageIndex', 'TImageIndex', iptrw);
     RegisterProperty('Images', 'TCustomImageList', iptrw);
     RegisterProperty('ImageAlignment', 'TImageAlignment', iptrw);
+    RegisterProperty('ImageIndex', 'TImageIndex', iptrw);
     RegisterProperty('ImageMargins', 'TImageMargins', iptrw);
-    RegisterProperty('Style', 'TButtonStyle', iptrw);
-*)
+    RegisterProperty('ModalResult', 'TModalResult', iptrw);
+    RegisterProperty('PressedImageIndex', 'TImageIndex', iptrw);
+    RegisterProperty('SelectedImageIndex', 'TImageIndex', iptrw);
+    //RegisterProperty('Style', 'TButtonStyles', iptrw);
+    RegisterProperty('StylusHotImageIndex', 'TImageIndex', iptrw);
+    RegisterProperty('OnDropDownClick', 'TNotifyEvent', iptrw);
+  end;
+end;
+
+{ TImageMargins -------------------------------------------------------------- }
+procedure SIRegisterTIMAGEMARGINS(Cl: TPSPascalCompiler);
+begin
+  //with RegClassS(Cl,'TPersistent', 'TImageMargins') do
+  with Cl.AddClassN(Cl.FindClass('TPersistent'),'TImageMargins') do
+  begin
+    RegisterProperty('OnChange', 'TNotifyEvent', iptrw);
+    RegisterProperty('Left', 'Integer', iptrw);
+    RegisterProperty('Top', 'Integer', iptrw);
+    RegisterProperty('Right', 'Integer', iptrw);
+    RegisterProperty('Bottom', 'Integer', iptrw);
   end;
 end;
 {$ENDIF}
@@ -431,14 +457,20 @@ end;
 { TButton -------------------------------------------------------------------- }
 procedure SIRegisterTBUTTON(Cl: TPSPascalCompiler);
 begin
-  with Cl.AddClassN(Cl.FindClass('TButtonControl'),  'TButton') do
+{$IFNDEF PS_MINIVCL}
+  with Cl.AddClassN(Cl.FindClass('TCustomButton'),'TButton') do
+{$ELSE}
+  with Cl.AddClassN(Cl.FindClass('TButtonControl'),'TButton') do
+{$ENDIF}
   begin
     {$IFNDEF PS_MINIVCL}
       RegisterMethod('procedure Click');
     {$ENDIF}
+
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+
     RegisterProperty('Cancel', 'Boolean', iptrw);
     RegisterProperty('Caption', 'string', iptrw);
     RegisterProperty('Default', 'Boolean', iptrw);
@@ -449,10 +481,41 @@ begin
     RegisterProperty('OnEnter', 'TNotifyEvent', iptrw);
     RegisterProperty('OnExit', 'TNotifyEvent', iptrw);
     {$IFNDEF PS_MINIVCL}
+      RegisterProperty('Align', 'TAlign', iptrw);
+      RegisterProperty('BiDiMode', 'TBiDiMode', iptrw);
+      RegisterProperty('Constraints', 'TSizeConstraints', iptrw);
+      RegisterProperty('DoubleBuffered', 'Boolean', iptrw);
+      RegisterProperty('Enabled', 'Boolean', iptrw);
+      RegisterProperty('ParentBiDiMode', 'Boolean', iptrw);
+      RegisterProperty('ParentDoubleBuffered', 'Boolean', iptrw);
+      RegisterProperty('ShowHint', 'Boolean', iptrw);
+      RegisterProperty('TabOrder', 'Integer', iptrw);
+
+      // Properties from TCustomButton -------------------------------------------
+      RegisterProperty('CommandLinkHint', 'string', iptrw);
+      RegisterProperty('DisabledImageIndex', 'TImageIndex', iptrw);
+      RegisterProperty('DropDownMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('ElevationRequired', 'Boolean', iptrw);
+      RegisterProperty('HotImageIndex', 'TImageIndex', iptrw);
+      RegisterProperty('ImageAlignment', 'TImageAlignment', iptrw);
+      RegisterProperty('ImageIndex', 'TImageIndex', iptrw);
+      RegisterProperty('ImageMargins', 'TImageMargins', iptrw);
+      RegisterProperty('Images', 'TCustomImageList', iptrw);
+      RegisterProperty('PressedImageIndex', 'TImageIndex', iptrw);
+      RegisterProperty('SelectedImageIndex', 'TImageIndex', iptrw);
+      //RegisterProperty('Style', 'TButtonStyle', iptrw);
+      RegisterProperty('StylusHotImageIndex', 'TImageIndex', iptrw);
+      RegisterProperty('OnDropDownClick', 'TNotifyEvent', iptrw);
+      // -------------------------------------------------------------------------
+
+      RegisterProperty('TabStop', 'Boolean', iptrw);
+      RegisterProperty('Visible', 'Boolean', iptrw);
+      RegisterProperty('WordWrap', 'Boolean', iptrw);
       RegisterProperty('DragCursor', 'LongInt', iptrw);
       RegisterProperty('DragMode', 'TDragMode', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -504,6 +567,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -546,6 +610,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -616,6 +681,7 @@ begin
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
       RegisterProperty('TabWidth', 'Integer', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnDrawItem', 'TDrawItemEvent', iptrw);
@@ -656,6 +722,7 @@ begin
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
       RegisterProperty('SmallChange', 'TScrollBarInc', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -700,6 +767,7 @@ begin
     RegisterProperty('ThumbLength', 'Integer', iptrw);
     RegisterProperty('TickMarks', 'TTickMark', iptrw);
     RegisterProperty('TickStyle', 'TTickStyle', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
     RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
     RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -735,6 +803,7 @@ begin
     RegisterProperty('Position', 'Integer', iptrw);
     RegisterProperty('Thousands', 'Boolean', iptrw);
     RegisterProperty('Wrap', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnChanging', 'TUDChangingEvent', iptrw);
     RegisterProperty('OnChangingEx', 'TUDChangingEventEx', iptrw);
     RegisterProperty('OnClick', 'TUDClickEvent', iptrw);
@@ -767,6 +836,7 @@ begin
     RegisterProperty('InvalidKeys', 'THKInvalidKeys', iptrw);
     RegisterProperty('Modifiers', 'THKModifiers', iptrw);
     RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnChange', 'TNotifyEvent', iptrw);
     RegisterProperty('OnEnter', 'TNotifyEvent', iptrw);
     RegisterProperty('OnExit', 'TNotifyEvent', iptrw);
@@ -788,6 +858,7 @@ begin
     RegisterProperty('SimplePanel', 'Boolean', iptrw);
     RegisterProperty('SimpleText', 'string', iptrw);
     RegisterProperty('SizeGrip', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     //RegisterProperty('OnDrawPanel', 'TDrawPanelEvent', iptrw);
     RegisterProperty('OnResize', 'TNotifyEvent', iptrw);
   end;
@@ -860,7 +931,7 @@ begin
   with Cl.AddClassN(Cl.FindClass('TPersistent'),'TIconOptions') do
   begin
     RegisterMethod('constructor Create(AOwner: TCustomListView)');
-    RegisterProperty('Arrangement', 'TIconArrangement', iptrw);
+    RegisterProperty('Arrangement', 'Byte', iptrw);
     RegisterProperty('AutoArrange', 'Boolean', iptrw);
     RegisterProperty('WrapText', 'Boolean', iptrw);
   end;
@@ -1072,6 +1143,7 @@ begin
     RegisterProperty('ParentShowHint', 'Boolean', iptrw);
     RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
     RegisterProperty('Visible', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
     RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
     RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -1147,6 +1219,7 @@ begin
     RegisterProperty('TabStop', 'Boolean', iptrw);
     RegisterProperty('TabWidth', 'Smallint', iptrw);
     RegisterProperty('Visible', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnChange', 'TTVChangedEvent', iptrw);
     RegisterProperty('OnChanging', 'TTVChangingEvent', iptrw);
     RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
@@ -1217,6 +1290,7 @@ begin
     RegisterProperty('TabStop', 'Boolean', iptrw);
     RegisterProperty('TabWidth', 'Smallint', iptrw);
     RegisterProperty('Visible', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnChange', 'TTVChangedEvent', iptrw);
     RegisterProperty('OnChanging', 'TTVChangingEvent', iptrw);
     RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
@@ -1250,7 +1324,7 @@ begin
   Cl.AddTypeS('TDisplayCode', '(drBounds, drIcon, drLabel, drSelectBounds)');
   SIRegisterTLISTITEM(Cl);
   SIRegisterTLISTITEMS(Cl);
-  Cl.AddTypeS('TIconArrangement', '(iaTop, iaLeft)');
+  //Cl.AddTypeS('TIconArrangement', '(iaTop, iaLeft)');
   SIRegisterTICONOPTIONS(Cl);
   Cl.AddTypeS('TListArrangement', '(arAlignBottom, arAlignLeft, arAlignRight, arAlignTop, arDefault, arSnapToGrid)');
   Cl.AddTypeS('TViewStyle', '(vsIcon, vsSmallIcon, vsList, vsReport)');
@@ -1330,6 +1404,7 @@ begin
       RegisterProperty('StateImages', 'TImageList', iptrw);
       RegisterProperty('ParentColor', 'Boolean', iptrw);
       RegisterProperty('ParentFont', 'Boolean', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
       RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
     end;
@@ -1509,6 +1584,181 @@ begin
     RegisterProperty('OnSectionTrack', 'TSectionTrackEvent', iptrw);
   end;
 end;
+
+{ TMonthCalColors ------------------------------------------------------------ }
+procedure SIRegister_TMonthCalColors(Cl: TPSPascalCompiler);
+begin
+  //with RegClassS(Cl,'TPersistent', 'TMonthCalColors') do
+  with Cl.AddClassN(Cl.FindClass('TPersistent'),'TMonthCalColors') do
+  begin
+    { Properties }
+    RegisterMethod('constructor Create(AOwner: TCommonCalendar)');
+    RegisterProperty('BackColor', 'TColor', iptrw);
+    RegisterProperty('TextColor', 'TColor', iptrw);
+    RegisterProperty('TitleBackColor', 'TColor', iptrw);
+    RegisterProperty('TitleTextColor', 'TColor', iptrw);
+    RegisterProperty('MonthBackColor', 'TColor', iptrw);
+    RegisterProperty('TrailingTextColor', 'TColor', iptrw);
+  end;
+end;
+
+{ TCommonCalendar ------------------------------------------------------------ }
+procedure SIRegister_TCommonCalendar(Cl: TPSPascalCompiler);
+begin
+  //with RegClassS(Cl,'TWinControl', 'TCommonCalendar') do
+  with Cl.AddClassN(Cl.FindClass('TWinControl'),'TCommonCalendar') do
+  begin
+    { Properties }
+    RegisterMethod('procedure BoldDays(Days: array of LongWord; var MonthBoldInfo: LongWord)');
+  end;
+end;
+
+{ TMonthCalendar ------------------------------------------------------------- }
+procedure SIRegister_TMonthCalendar(Cl: TPSPascalCompiler);
+begin
+  //with RegClassS(Cl,'TCommonCalendar', 'TMonthCalendar') do
+  with Cl.AddClassN(Cl.FindClass('TCommonCalendar'),'TMonthCalendar') do
+  begin
+    { Properties }
+    RegisterProperty('Align', 'TAlign', iptrw);
+    {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    RegisterProperty('AutoSize', 'Boolean', iptrw);
+    RegisterProperty('BorderWidth', 'TBorderWidth', iptrw);
+    RegisterProperty('BiDiMode', 'TBiDiMode', iptrw);
+    RegisterProperty('CalColors', 'TMonthCalColors', iptrw);
+    RegisterProperty('Constraints', 'TSizeConstraints', iptrw);
+    RegisterProperty('MultiSelect', 'Boolean', iptrw);
+    RegisterProperty('Date', 'TDate', iptrw);
+    RegisterProperty('DoubleBuffered', 'Boolean', iptrw);
+    RegisterProperty('DragCursor', 'TCursor', iptrw);
+    //property DragKind;
+    RegisterProperty('DragMode', 'TDragMode', iptrw);
+    RegisterProperty('Enabled', 'Boolean', iptrw);
+    RegisterProperty('EndDate', 'TDate', iptrw);
+    RegisterProperty('FirstDayOfWeek', 'TCalDayOfWeek', iptrw);
+    RegisterProperty('Font', 'TFont', iptrw);
+    //property ImeMode;
+    //property ImeName;
+    RegisterProperty('MaxDate', 'TDate', iptrw);
+    RegisterProperty('MaxSelectRange', 'Integer', iptrw);
+    RegisterProperty('MinDate', 'TDate', iptrw);
+    RegisterProperty('ParentBiDiMode', 'Boolean', iptrw);
+    RegisterProperty('ParentDoubleBuffered', 'Boolean', iptrw);
+    RegisterProperty('ParentFont', 'Boolean', iptrw);
+    RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+    RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+    RegisterProperty('ShowHint', 'Boolean', iptrw);
+    RegisterProperty('ShowToday', 'Boolean', iptrw);
+    RegisterProperty('ShowTodayCircle', 'Boolean', iptrw);
+    RegisterProperty('TabOrder', 'Integer', iptrw);
+    RegisterProperty('TabStop', 'Boolean', iptrw); // default True;
+    //property Touch;
+    RegisterProperty('Visible', 'Boolean', iptrw);
+    RegisterProperty('WeekNumbers', 'Boolean', iptrw);
+    { Events }
+    RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
+    //property OnContextPopup (TContextPopupEvent);
+    RegisterProperty('OnDblClick', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
+    RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
+    //property OnEndDock;
+    RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
+    RegisterProperty('OnEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnExit', 'TNotifyEvent', iptrw);
+    //property OnGesture;
+    RegisterProperty('OnGetMonthInfo', 'TOnGetMonthInfoEvent', iptrw);
+    RegisterProperty('OnGetMonthBoldInfo', 'TOnGetMonthBoldInfoEvent', iptrw);
+    RegisterProperty('OnKeyDown', 'TKeyEvent', iptrw);
+    RegisterProperty('OnKeyPress', 'TKeyPressEvent', iptrw);
+    RegisterProperty('OnKeyUp', 'TKeyEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
+    //property OnStartDock;
+    RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+  end;
+end;
+
+{ TDateTimePicker ------------------------------------------------------------ }
+procedure SIRegister_TDateTimePicker(Cl: TPSPascalCompiler);
+begin
+  //with RegClassS(Cl,'TCommonCalendar', 'TDateTimePicker') do
+  Cl.AddTypeS('TDateTimeColors', 'TMonthCalColors');
+  with Cl.AddClassN(Cl.FindClass('TCommonCalendar'),'TDateTimePicker') do
+  begin
+    { Properties }
+    RegisterProperty('DateTime', 'TDateTime', iptrw);
+    RegisterProperty('DroppedDown', 'Boolean', iptr);
+    RegisterProperty('Align', 'TAlign', iptrw);
+    {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    RegisterProperty('BevelEdges', 'TBevelEdges', iptrw);
+    RegisterProperty('BevelInner', 'TBevelCut', iptrw);
+    RegisterProperty('BevelOuter', 'TBevelCut', iptrw);
+    RegisterProperty('BevelKind', 'TBevelKind', iptrw);
+    RegisterProperty('BevelWidth', 'TBevelWidth', iptrw);
+    RegisterProperty('BiDiMode', 'TBiDiMode', iptrw);
+    RegisterProperty('CalAlignment', 'TDTCalAlignment', iptrw);
+    RegisterProperty('CalColors', 'TDateTimeColors', iptrw);
+    RegisterProperty('Constraints', 'TSizeConstraints', iptrw);
+    RegisterProperty('Date', 'TDate', iptrw);
+    RegisterProperty('Format', 'String', iptrw);
+    RegisterProperty('Time', 'TTime', iptrw);
+    RegisterProperty('ShowCheckbox', 'Boolean', iptrw);
+    RegisterProperty('Checked', 'Boolean', iptrw);
+    RegisterProperty('DateFormat', 'TDTDateFormat', iptrw);
+    RegisterProperty('DateMode', 'TDTDateMode', iptrw);
+    RegisterProperty('DoubleBuffered', 'Boolean', iptrw);
+    RegisterProperty('DragCursor', 'TCursor', iptrw);
+    //property DragKind;
+    RegisterProperty('DragMode', 'TDragMode', iptrw);
+    RegisterProperty('Enabled', 'Boolean', iptrw);
+    RegisterProperty('Font', 'TFont', iptrw);
+    //property ImeMode;
+    //property ImeName;
+    RegisterProperty('Kind', 'TDateTimeKind', iptrw);
+    RegisterProperty('MaxDate', 'TDate', iptrw);
+    RegisterProperty('MinDate', 'TDate', iptrw);
+    RegisterProperty('ParseInput', 'Boolean', iptrw);
+    RegisterProperty('ParentBiDiMode', 'Boolean', iptrw);
+    RegisterProperty('ParentColor', 'Boolean', iptrw); //  default False
+    RegisterProperty('ParentDoubleBuffered', 'Boolean', iptrw);
+    RegisterProperty('ParentFont', 'Boolean', iptrw);
+    RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+    RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+    RegisterProperty('ShowHint', 'Boolean', iptrw);
+    RegisterProperty('TabOrder', 'Integer', iptrw);
+    RegisterProperty('TabStop', 'Boolean', iptrw); // default True;
+    //property Touch;
+    RegisterProperty('Visible', 'Boolean', iptrw);
+//    {$IFNDEF VER230}
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
+//    {$ENDIF}
+    { Events }
+    RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnCloseUp', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnChange', 'TNotifyEvent', iptrw);
+    //property OnContextPopup (TContextPopupEvent);
+    RegisterProperty('OnDropDown', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
+    RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
+    //property OnEndDock;
+    RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
+    RegisterProperty('OnEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnExit', 'TNotifyEvent', iptrw);
+    //property OnGesture;
+    RegisterProperty('OnKeyDown', 'TKeyEvent', iptrw);
+    RegisterProperty('OnKeyPress', 'TKeyPressEvent', iptrw);
+    RegisterProperty('OnKeyUp', 'TKeyEvent', iptrw);
+    RegisterProperty('OnMouseEnter', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnMouseLeave', 'TNotifyEvent', iptrw);
+    //property OnStartDock;
+    RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    RegisterProperty('OnUserInput', 'TDTParseInputEvent', iptrw);
+  end;
+end;
 {$ENDIF}
 
 { Types And Consts ----------------------------------------------------------- }
@@ -1530,6 +1780,10 @@ begin
   Cl.AddTypeS('TDrawItemEvent', 'procedure(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState)');
 
 {$IFNDEF PS_MINIVCL}
+  { TCustomButton }
+  Cl.AddTypeS('TImageAlignment', '(iaLeft, iaRight, iaTop, iaBottom, iaCenter)');
+  //Cl.AddTypeS('TButtonStyle', '(bsPushButton, bsCommandLink, bsSplitButton)');
+
   { TTrackBar }
   Cl.AddTypeS('TTrackBarOrientation', '(trHorizontal, trVertical)');
   Cl.AddTypeS('TTickMark', '(tmBottomRight, tmTopLeft, tmBoth)');
@@ -1550,6 +1804,19 @@ begin
   Cl.AddTypeS('THKInvalidKey', '(hcNone, hcShift, hcCtrl, hcAlt, hcShiftCtrl, hcShiftAlt, hcCtrlAlt, hcShiftCtrlAlt)');
   Cl.AddTypeS('THKInvalidKeys', 'set of THKInvalidKey');
   Cl.addTypeS('TShortCut', 'Word');
+
+  { Date&Time }
+  Cl.AddType('TDateTime', btDouble).ExportName := True;
+  Cl.AddTypeS('TCalDayOfWeek', '(dowMonday, dowTuesday, dowWednesday, dowThursday, dowFriday, dowSaturday, dowSunday, dowLocaleDefault)');
+  Cl.AddTypeS('TOnGetMonthInfoEvent', 'procedure(Sender: TObject; Month: LongWord; var MonthBoldInfo: LongWord)');
+  Cl.AddTypeS('TOnGetMonthBoldInfoEvent', 'procedure(Sender: TObject; Month: LongWord; Year: LongWord; var MonthBoldInfo: LongWord)');
+  Cl.AddTypeS('TDate', 'TDateTime');
+  Cl.AddTypeS('TTime', 'TDateTime');
+  Cl.AddTypeS('TDateTimeKind', '(dtkDate, dtkTime)');
+  Cl.AddTypeS('TDTDateMode', '(dmComboBox, dmUpDown)');
+  Cl.AddTypeS('TDTDateFormat', '(dfShort, dfLong)');
+  Cl.AddTypeS('TDTCalAlignment', '(dtaLeft, dtaRight)');
+  Cl.AddTypeS('TDTParseInputEvent', 'procedure(Sender: TObject; const UserString: string; var DateAndTime: TDateTime; var AllowChange: Boolean)');
 {$ENDIF}
 end;
 
@@ -1572,6 +1839,7 @@ begin
   SIRegisterTCOMBOBOX(Cl);
   SIRegisterTBUTTONCONTROL(Cl);
   {$IFNDEF PS_MINIVCL}
+    SIRegisterTIMAGEMARGINS(Cl);
     SIRegisterTCUSTOMBUTTON(Cl);
   {$ENDIF}
   SIRegisterTBUTTON(Cl);
@@ -1593,6 +1861,11 @@ begin
     SIRegisterTTREEVIEW(Cl);
     SIRegisterTTAB(Cl);
     SIRegisterTHEADERCONTROL(Cl);
+    { Date&Time }
+    SIRegister_TMonthCalColors(Cl);
+    SIRegister_TCommonCalendar(Cl);
+    SIRegister_TMonthCalendar(Cl);
+    SIRegister_TDateTimePicker(Cl);
   {$ENDIF}
 end;
 

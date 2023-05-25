@@ -56,7 +56,7 @@ procedure RIRegisterTINDEXDEFS(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTINDEXDEF(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFIELDDEFS(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFIELDDEF(Cl: TPSRuntimeClassImporter);
-procedure RIRegister_DB(CL: TPSRuntimeClassImporter);
+procedure RIRegister_DB(Cl: TPSRuntimeClassImporter);
 
 implementation
 Uses DB, {$IFDEF DELPHI6UP}{$IFNDEF FPC}FMTBcd, MaskUtils,{$ENDIF}{$ENDIF}Classes;
@@ -2032,7 +2032,7 @@ end;
 {$ENDIF}
 
 
-procedure RIRegister_DB(CL: TPSRuntimeClassImporter);
+procedure RIRegister_DB(Cl: TPSRuntimeClassImporter);
 Begin
 RIRegisterTFIELDDEF(Cl);
 RIRegisterTFIELDDEFS(Cl);

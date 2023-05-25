@@ -38,7 +38,7 @@ begin
 //    RegisterMethod('function SetFocusedControl(Control: TWinControl): Boolean');
     RegisterProperty('AllowAllUp', 'Boolean', iptrw);
     {$IFDEF DELPHI4UP}
-    RegisterProperty('Anchors', 'TAnchors', iptrw);
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('GroupIndex', 'Integer', iptrw);
     RegisterProperty('Down', 'Boolean', iptrw);
@@ -58,6 +58,7 @@ begin
     RegisterProperty('Spacing', 'Integer', iptrw);
     RegisterProperty('Transparent', 'Boolean', iptrw);
     RegisterProperty('Visible', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
     RegisterProperty('OnDblClick', 'TNotifyEvent', iptrw);
     RegisterProperty('OnMouseDown', 'TMouseEvent', iptrw);
@@ -76,7 +77,7 @@ begin
     RegisterMethod('constructor Create(AOwner: TComponent)'); //
 //    RegisterMethod('procedure Click');  
     {$IFDEF DELPHI4UP}
-    RegisterProperty('Anchors', 'TAnchors', iptrw);
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Cancel', 'Boolean', iptrw);
     RegisterProperty('Caption', 'string', iptrw);
@@ -94,6 +95,7 @@ begin
     RegisterProperty('DragCursor', 'LongInt', iptrw);
     RegisterProperty('DragMode', 'TDragMode', iptrw);
     RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+    RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
     RegisterProperty('OnEnter', 'TNotifyEvent', iptrw);
     RegisterProperty('OnExit', 'TNotifyEvent', iptrw);

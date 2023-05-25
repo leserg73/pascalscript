@@ -12,7 +12,9 @@ procedure RIRegisterTGRAPHICSOBJECT(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFont(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTPEN(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTBRUSH(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTCustomCanvas(Cl: TPSRuntimeClassImporter);
+{$IFNDEF PS_MINIVCL}
+  procedure RIRegisterTCustomCanvas(Cl: TPSRuntimeClassImporter);
+{$ENDIF}
 procedure RIRegisterTCanvas(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTGraphic(Cl: TPSRuntimeClassImporter; Streams: Boolean);
 procedure RIRegisterTBitmap(Cl: TPSRuntimeClassImporter; Streams: Boolean);
@@ -78,6 +80,10 @@ procedure TFontPitch_W(Self: TFont; const T: TFontPitch); begin Self.Pitch := T;
 procedure TFontPitch_R(Self: TFont; var T: TFontPitch); begin T := Self.Pitch; end;
 procedure TFontOrientation_W(Self: TFont; const T: Integer); begin Self.Orientation := T; end;
 procedure TFontOrientation_R(Self: TFont; var T: Integer); begin T := Self.Orientation; end;
+{$IFNDEF PS_MINIVCL}
+  procedure TFontQuality_W(Self: TFont; const T: TFontQuality); begin Self.Quality := T; end;
+  procedure TFontQuality_R(Self: TFont; var T: TFontQuality); begin T := Self.Quality; end;
+{$ENDIF}
 
 procedure RIRegisterTFont(Cl: TPSRuntimeClassImporter);
 begin
@@ -92,9 +98,13 @@ begin
     RegisterPropertyHelper(@TFontCharset_R,@TFontCharset_W,'Charset');
     RegisterPropertyHelper(@TFontOrientation_R,@TFontOrientation_W,'Orientation');
     RegisterPropertyHelper(@TFontPitch_R,@TFontPitch_W,'Pitch');
+    {$IFNDEF PS_MINIVCL}
+      RegisterPropertyHelper(@TFontQuality_R,@TFontQuality_W,'Quality');
+    {$ENDIF}
   end;
 end;
 
+{$IFNDEF PS_MINIVCL}
 { TCustomCanvas -------------------------------------------------------------- }
 procedure TCustomCanvasOnChanging_W(Self: TCustomCanvas; const T: TNotifyEvent); begin Self.OnChanging := T; end;
 procedure TCustomCanvasOnChanging_R(Self: TCustomCanvas; var T: TNotifyEvent); begin T := Self.OnChanging; end;
@@ -109,8 +119,8 @@ procedure TCustomCanvasPenPos_R(Self: TCustomCanvas; var T: TPoint); begin T := 
 procedure TCustomCanvasCanvasOrientation_R(Self: TCustomCanvas; var T: TCanvasOrientation); begin T := Self.CanvasOrientation; end;
 procedure TCustomCanvasLockCount_R(Self: TCustomCanvas; var T: Integer); begin T := Self.LockCount; end;
 procedure TCustomCanvasClipRect_R(Self: TCustomCanvas; var T: TRect); begin T := Self.ClipRect; end;
-procedure TCustomCanvasTextRect1_P(Self: TCustomCanvas; Rect: TRect; X, Y: Integer; const Text: string); begin Self.TextRect(Rect, X, Y, Text); end;
-procedure TCustomCanvasTextRect_P(Self: TCustomCanvas; var Rect: TRect; var Text: string; TextFormat: TTextFormat); begin Self.TextRect(Rect, Text, TextFormat); end;
+procedure TCustomCanvasTextRect_P(Self: TCustomCanvas; Rect: TRect; X, Y: Integer; const Text: string); begin Self.TextRect(Rect, X, Y, Text); end;
+procedure TCustomCanvasTextRect1_P(Self: TCustomCanvas; var Rect: TRect; var Text: string; TextFormat: TTextFormat); begin Self.TextRect(Rect, Text, TextFormat); end;
 procedure TCustomCanvasRoundRect1_P(Self: TCustomCanvas; const Rect: TRect; CX, CY: Integer); begin Self.RoundRect(Rect, CX, CY); end;
 procedure TCustomCanvasRoundRect_P(Self: TCustomCanvas; X1, Y1, X2, Y2, X3, Y3: Integer); begin Self.RoundRect(X1, Y1, X2, Y2, X3, Y3); end;
 procedure TCustomCanvasRectangle1_P(Self: TCustomCanvas; const Rect: TRect); begin Self.Rectangle(Rect); end;
@@ -130,7 +140,7 @@ begin
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.BrushCopy, 'BrushCopy');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.Chord, 'Chord');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.Draw, 'Draw');
-    //RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.Draw1, 'Draw');
+    RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.Draw, 'Draw1');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.DrawFocusRect, 'DrawFocusRect');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.Ellipse, 'Ellipse');
     RegisterMethod(@TCustomCanvasEllipse1_P, 'Ellipse1');
@@ -155,7 +165,7 @@ begin
     RegisterMethod(@TCustomCanvas.TextHeight, 'TextHeight');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.TextOut, 'TextOut');
     RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.TextRect, 'TextRect');
-    //RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.TextRect1, 'TextRect');
+    RegisterVirtualAbstractMethod(TCustomCanvas, @TCustomCanvas.TextRect, 'TextRect1');
     RegisterMethod(@TCustomCanvas.TextWidth, 'TextWidth');
     RegisterMethod(@TCustomCanvas.TryLock, 'TryLock');
     RegisterMethod(@TCustomCanvas.Unlock, 'Unlock');
@@ -169,6 +179,7 @@ begin
     RegisterPropertyHelper(@TCustomCanvasOnChanging_R,@TCustomCanvasOnChanging_W,'OnChanging');
   end;
 end;
+{$ENDIF}
 
 { TCanvas -------------------------------------------------------------------- }
 {$IFNDEF CLX}
@@ -179,21 +190,21 @@ end;
 procedure TCanvasPixelsR(Self: TCanvas; var T: Longint; X,Y: Longint); begin T := Self.Pixels[X,Y]; end;
 procedure TCanvasPixelsW(Self: TCanvas; T, X, Y: Longint); begin Self.Pixels[X,Y]:= T; end;
 {$IFDEF FPC}
-  procedure TCanvasArc(Self : TCanvas; X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); begin Self.Arc(X1, Y1, X2, Y2, X3, Y3, X4, Y4); end;
-  procedure TCanvasChord(Self : TCanvas; X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); begin self.Chord(X1, Y1, X2, Y2, X3, Y3, X4, Y4); end;
-  procedure TCanvasFillRect(Self : TCanvas; const Rect: TRect); begin self.FillRect(rect); end;
-  procedure TCanvasFloodFill(Self : TCanvas; X, Y: Integer; Color: TColor; FillStyle: TFillStyle); begin self.FloodFill(x,y,color,fillstyle); end;
+  procedure TCanvasArc(Self: TCanvas; X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); begin Self.Arc(X1, Y1, X2, Y2, X3, Y3, X4, Y4); end;
+  procedure TCanvasChord(Self: TCanvas; X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer); begin self.Chord(X1, Y1, X2, Y2, X3, Y3, X4, Y4); end;
+  procedure TCanvasFillRect(Self: TCanvas; const Rect: TRect); begin self.FillRect(rect); end;
+  procedure TCanvasFloodFill(Self: TCanvas; X, Y: Integer; Color: TColor; FillStyle: TFillStyle); begin self.FloodFill(x,y,color,fillstyle); end;
 {$ENDIF}
-procedure TCanvasDraw(Self : TCanvas; X, Y: Integer; Graphic: TGraphic); begin Self.Draw(X, Y, Graphic); end;
-procedure TCanvasDraw2(Self : TCanvas; X, Y: Integer; Graphic: TGraphic; Opacity:Byte); begin Self.Draw(X, Y, Graphic, Opacity); end;
-procedure TCanvasEllipse(Self : TCanvas;X1, Y1, X2, Y2: Integer); begin self.Ellipse(X1, Y1, X2, Y2); end;
-procedure TCanvasEllipse2(Self : TCanvas;const Rect: TRect); begin self.Ellipse(Rect); end;
-procedure TCanvasRectangle(Self : TCanvas; X1,Y1,X2,Y2 : integer); begin self.Rectangle(x1,y1,x2,y2); end;
-procedure TCanvasRectangle2(Self : TCanvas; const Rect : TRect); begin self.Rectangle(Rect); end;
-procedure TCanvasRoundRect(Self : TCanvas; X1, Y1, X2, Y2, X3, Y3 : integer); begin self.RoundRect(X1, Y1, X2, Y2, X3, Y3); end;
-procedure TCanvasRoundRect2(Self : TCanvas; const Rect : TRect; CX, CY: Integer); begin self.RoundRect(Rect, CX, CY); end;
-procedure TCanvasTextRect(Self : TCanvas; Rect: TRect; X: Integer; Y: Integer; const Text: string); begin Self.TextRect(Rect, X, Y, Text); end;
-procedure TCanvasTextRect2(Self : TCanvas; var Rect : TRect; var Text : string; TextFormat : TTextFormat); begin Self.TextRect(Rect, Text, TextFormat); end;
+procedure TCanvasDraw(Self: TCanvas; X, Y: Integer; Graphic: TGraphic); begin Self.Draw(X, Y, Graphic); end;
+procedure TCanvasDraw2(Self: TCanvas; X, Y: Integer; Graphic: TGraphic; Opacity:Byte); begin Self.Draw(X, Y, Graphic, Opacity); end;
+procedure TCanvasEllipse(Self: TCanvas; X1, Y1, X2, Y2: Integer); begin self.Ellipse(X1, Y1, X2, Y2); end;
+procedure TCanvasEllipse2(Self: TCanvas; const Rect: TRect); begin self.Ellipse(Rect); end;
+procedure TCanvasRectangle(Self: TCanvas; X1,Y1,X2,Y2: integer); begin self.Rectangle(x1,y1,x2,y2); end;
+procedure TCanvasRectangle2(Self: TCanvas; const Rect: TRect); begin self.Rectangle(Rect); end;
+procedure TCanvasRoundRect(Self: TCanvas; X1, Y1, X2, Y2, X3, Y3 : integer); begin self.RoundRect(X1, Y1, X2, Y2, X3, Y3); end;
+procedure TCanvasRoundRect2(Self: TCanvas; const Rect: TRect; CX, CY: Integer); begin self.RoundRect(Rect, CX, CY); end;
+procedure TCanvasTextRect(Self: TCanvas; Rect: TRect; X: Integer; Y: Integer; const Text: string); begin Self.TextRect(Rect, X, Y, Text); end;
+procedure TCanvasTextRect2(Self: TCanvas; var Rect: TRect; var Text: string; TextFormat: TTextFormat); begin Self.TextRect(Rect, Text, TextFormat); end;
 
 procedure RIRegisterTCanvas(Cl: TPSRuntimeClassImporter);
 begin
@@ -246,28 +257,57 @@ begin
 end;
 
 { TPen ----------------------------------------------------------------------- }
-procedure TPenHandle_W(Self: TPen; const T: HPen); begin Self.Handle := T; end;
-procedure TPenHandle_R(Self: TPen; var T: HPen); begin T := Self.Handle; end;
+{$IFNDEF PS_MINIVCL}
+  procedure TPenHandle_W(Self: TPen; const T: HPen); begin Self.Handle := T; end;
+  procedure TPenHandle_R(Self: TPen; var T: HPen); begin T := Self.Handle; end;
+{$ENDIF}
+procedure TPenWidth_W(Self: TPen; const T: Integer); begin Self.Width := T; end;
+procedure TPenWidth_R(Self: TPen; var T: Integer); begin T := Self.Width; end;
+procedure TPenStyle_W(Self: TPen; const T: TPenStyle); begin Self.Style := T; end;
+procedure TPenStyle_R(Self: TPen; var T: TPenStyle); begin T := Self.Style; end;
+procedure TPenMode_W(Self: TPen; const T: TPenMode); begin Self.Mode := T; end;
+procedure TPenMode_R(Self: TPen; var T: TPenMode); begin T := Self.Mode; end;
+procedure TPenColor_W(Self: TPen; const T: TColor); begin Self.Color := T; end;
+procedure TPenColor_R(Self: TPen; var T: TColor); begin T := Self.Color; end;
 
 procedure RIRegisterTPEN(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TPEN) do
   begin
     RegisterConstructor(@TPEN.CREATE, 'Create');
-    RegisterPropertyHelper(@TPenHandle_R,@TPenHandle_W,'Handle');
+    {$IFNDEF PS_MINIVCL}
+      RegisterPropertyHelper(@TPenHandle_R,@TPenHandle_W,'Handle');
+    {$ENDIF}
+    RegisterPropertyHelper(@TPenColor_R,@TPenColor_W,'Color');
+    RegisterPropertyHelper(@TPenMode_R,@TPenMode_W,'Mode');
+    RegisterPropertyHelper(@TPenStyle_R,@TPenStyle_W,'Style');
+    RegisterPropertyHelper(@TPenWidth_R,@TPenWidth_W,'Width');
   end;
 end;
 
 { TBrush --------------------------------------------------------------------- }
-procedure TBrushHandle_W(Self: TBrush; const T: HBrush); begin Self.Handle := T; end;
-procedure TBrushHandle_R(Self: TBrush; var T: HBrush); begin T := Self.Handle; end;
+{$IFNDEF PS_MINIVCL}
+  procedure TBrushHandle_W(Self: TBrush; const T: HBrush); begin Self.Handle := T; end;
+  procedure TBrushHandle_R(Self: TBrush; var T: HBrush); begin T := Self.Handle; end;
+  procedure TBrushBitmap_W(Self: TBrush; const T: TBitmap); begin Self.Bitmap := T; end;
+  procedure TBrushBitmap_R(Self: TBrush; var T: TBitmap); begin T := Self.Bitmap; end;
+{$ENDIF}
+procedure TBrushStyle_W(Self: TBrush; const T: TBrushStyle); begin Self.Style := T; end;
+procedure TBrushStyle_R(Self: TBrush; var T: TBrushStyle); begin T := Self.Style; end;
+procedure TBrushColor_W(Self: TBrush; const T: TColor); begin Self.Color := T; end;
+procedure TBrushColor_R(Self: TBrush; var T: TColor); begin T := Self.Color; end;
 
 procedure RIRegisterTBRUSH(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TBRUSH) do
   begin
     RegisterConstructor(@TBRUSH.CREATE, 'Create');
-    RegisterPropertyHelper(@TBrushHandle_R,@TBrushHandle_W,'Handle');
+    {$IFNDEF PS_MINIVCL}
+      RegisterPropertyHelper(@TBrushHandle_R,@TBrushHandle_W,'Handle');
+      RegisterPropertyHelper(@TBrushBitmap_R,@TBrushBitmap_W,'Bitmap');
+    {$ENDIF}
+    RegisterPropertyHelper(@TBrushColor_R,@TBrushColor_W,'Color');
+    RegisterPropertyHelper(@TBrushStyle_R,@TBrushStyle_W,'Style');
   end;
 end;
 
@@ -580,7 +620,9 @@ procedure RIRegister_Graphics(Cl: TPSRuntimeClassImporter; Streams: Boolean);
 begin
   RIRegisterTGRAPHICSOBJECT(Cl);
   RIRegisterTFont(Cl);
-  RIRegisterTCustomCanvas(Cl);
+  {$IFNDEF PS_MINIVCL}
+    RIRegisterTCustomCanvas(Cl);
+  {$ENDIF}
   RIRegisterTCanvas(Cl);
   RIRegisterTPEN(Cl);
   RIRegisterTBRUSH(Cl);

@@ -13,7 +13,9 @@ procedure SIRegisterTGRAPHICSOBJECT(Cl: TPSPascalCompiler);
 procedure SIRegisterTFont(Cl: TPSPascalCompiler);
 procedure SIRegisterTPEN(Cl: TPSPascalCompiler);
 procedure SIRegisterTBRUSH(Cl: TPSPascalCompiler);
-procedure SIRegisterTCustomCanvas(Cl: TPSPascalCompiler);
+{$IFNDEF PS_MINIVCL}
+  procedure SIRegisterTCustomCanvas(Cl: TPSPascalCompiler);
+{$ENDIF}
 procedure SIRegisterTCanvas(Cl: TPSPascalCompiler);
 procedure SIRegisterTGraphic(Cl: TPSPascalCompiler; Streams: Boolean);
 procedure SIRegisterTBitmap(Cl: TPSPascalCompiler; Streams: Boolean);
@@ -63,13 +65,17 @@ begin
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Height', 'Integer', iptrw);
     RegisterProperty('Name', 'String', iptrw);
-    RegisterProperty('Pitch', 'Byte', iptrw);
+    RegisterProperty('Pitch', 'TFontPitch', iptrw); // Byte
     RegisterProperty('Size', 'Integer', iptrw);
     RegisterProperty('PixelsPerInch', 'Integer', iptrw);
     RegisterProperty('Style', 'TFontStyles', iptrw);
+    {$IFNDEF PS_MINIVCL}
+      RegisterProperty('Quality', 'TFontQuality', iptrw);
+    {$ENDIF}
   end;
 end;
 
+{$IFNDEF PS_MINIVCL}
 { TCustomCanvas -------------------------------------------------------------- }
 procedure SIRegisterTCustomCanvas(Cl: TPSPascalCompiler);
 begin
@@ -82,7 +88,7 @@ begin
     RegisterMethod('procedure BrushCopy(const Dest: TRect; Bitmap: TBitmap; const Source: TRect; Color: TColor)');
     RegisterMethod('procedure Chord(X1, Y1, X2, Y2, X3, Y3, X4, Y4: Integer)');
     RegisterMethod('procedure Draw(X, Y: Integer; Graphic: TGraphic);');
-    //RegisterMethod('procedure Draw1(X, Y: Integer; Graphic: TGraphic; Opacity: Byte);');
+    RegisterMethod('procedure Draw1(X, Y: Integer; Graphic: TGraphic; Opacity: Byte);');
     RegisterMethod('procedure DrawFocusRect(const Rect: TRect)');
     RegisterMethod('procedure Ellipse(X1, Y1, X2, Y2: Integer);');
     RegisterMethod('procedure Ellipse1(const Rect: TRect);');
@@ -108,8 +114,8 @@ begin
     RegisterMethod('function TextExtent(const Text: string): TSize');
     RegisterMethod('function TextHeight(const Text: string): Integer');
     RegisterMethod('procedure TextOut(X, Y: Integer; const Text: string)');
-    //RegisterMethod('procedure TextRect(var Rect: TRect; var Text: string; TextFormat: TTextFormat);');
-    RegisterMethod('procedure TextRect1(Rect: TRect; X, Y: Integer; const Text: string);');
+    RegisterMethod('procedure TextRect(Rect: TRect; X, Y: Integer; const Text: string);');
+    RegisterMethod('procedure TextRect1(var Rect: TRect; var Text: string; TextFormat: TTextFormat);');
     RegisterMethod('function TextWidth(const Text: string): Integer');
     RegisterMethod('function TryLock: Boolean');
     RegisterMethod('procedure Unlock');
@@ -123,11 +129,16 @@ begin
     RegisterProperty('OnChanging', 'TNotifyEvent', iptrw);
   end;
 end;
+{$ENDIF}
 
 { TCanvas -------------------------------------------------------------------- }
 procedure SIRegisterTCanvas(Cl: TPSPascalCompiler);
 begin
+{$IFNDEF PS_MINIVCL}
   with Cl.AddClassN(Cl.FindClass('TCustomCanvas'), 'TCanvas') do
+{$ELSE}
+  with Cl.AddClassN(cl.FindClass('TPersistent'), 'TCanvas') do
+{$ENDIF}
   begin
     RegisterMethod('constructor Create');
     RegisterMethod('procedure CopyRect(const Dest: TRect; Canvas: TCanvas; const Source: TRect)');
@@ -208,6 +219,7 @@ begin
     RegisterMethod('constructor Create');
     {$IFNDEF PS_MINIVCL}
       RegisterProperty('Handle', 'HBrush', iptrw);
+      RegisterProperty('Bitmap', 'TBitmap', iptrw);
     {$ENDIF} 
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Style', 'TBrushStyle', iptrw);
@@ -511,8 +523,11 @@ begin
 
   Cl.addTypeS('TFontStyle', '(fsBold, fsItalic, fsUnderline, fsStrikeOut)');
   Cl.addTypeS('TFontStyles', 'set of TFontStyle');
-
   Cl.AddTypeS('TFontPitch', '(fpDefault, fpVariable, fpFixed)');
+  {$IFNDEF PS_MINIVCL}
+    Cl.AddTypeS('TFontQuality', '(fqDefault, fqDraft, fqProof, fqNonAntialiased, fqAntialiased, fqClearType, fqClearTypeNatural)');
+  {$ENDIF}
+
   Cl.AddTypeS('TPenStyle', '(psSolid, psDash, psDot, psDashDot, psDashDotDot, psClear, psInsideFrame)');
   Cl.AddTypeS('TPenMode', '(pmBlack, pmWhite, pmNop, pmNot, pmCopy, pmNotCopy, pmMergePenNot, pmMaskPenNot, pmMergeNotPen, pmMaskNotPen, pmMerge, pmNotMerge, pmMask, pmNotMask, pmXor, pmNotXor)');
   Cl.AddTypeS('TBrushStyle', '(bsSolid, bsClear, bsHorizontal, bsVertical, bsFDiagonal, bsBDiagonal, bsCross, bsDiagCross)');
@@ -547,7 +562,9 @@ begin
   SIRegisterTFont(Cl);
   SIRegisterTPEN(Cl);
   SIRegisterTBRUSH(Cl);
-  SIRegisterTCustomCanvas(Cl);
+  {$IFNDEF PS_MINIVCL}
+    SIRegisterTCustomCanvas(Cl);
+  {$ENDIF}
   SIRegisterTCanvas(Cl);
   SIRegisterTBitmap(Cl, Streams);
   {$IFNDEF PS_MINIVCL}

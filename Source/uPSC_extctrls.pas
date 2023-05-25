@@ -205,6 +205,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -325,6 +326,7 @@ begin
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
       RegisterProperty('ParentShowHint', 'Boolean', iptrw);
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);

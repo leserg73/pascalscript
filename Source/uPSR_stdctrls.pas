@@ -21,6 +21,7 @@ procedure RIRegisterTCUSTOMCOMBOBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTCOMBOBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTBUTTONCONTROL(Cl: TPSRuntimeClassImporter);
 {$IFNDEF PS_MINIVCL}
+  procedure RIRegisterTIMAGEMARGINS(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTCUSTOMBUTTON(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 procedure RIRegisterTBUTTON(Cl: TPSRuntimeClassImporter);
@@ -67,13 +68,19 @@ procedure RIRegister_stdctrls(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTTREEVIEW(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTTAB(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTHEADERCONTROL(Cl: TPSRuntimeClassImporter);
+  { Date&Time }
+  procedure RIRegister_TDateTimePicker(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TMonthCalendar(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TCommonCalendar(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_TMonthCalColors(Cl: TPSRuntimeClassImporter);
+  procedure RIRegister_DateTime(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 
 implementation
 
 uses
   sysutils, MaskUtils, Mask, classes{$IFDEF CLX}, QControls, QStdCtrls, QGraphics{$ELSE}, controls, stdctrls,
-  {$IFNDEF PS_MINIVCL}ComCtrls{, ImgList}, Windows, Winapi.CommCtrl, {$ENDIF}
+  {$IFNDEF PS_MINIVCL}ComCtrls, ImgList, Windows, Winapi.CommCtrl, Menus, {$ENDIF}
   Graphics{$ENDIF}{$IFDEF FPC}, buttons{$ENDIF};
 
 { TCustomGroupBox ------------------------------------------------------------ }
@@ -254,6 +261,42 @@ end;
 
 {$IFNDEF PS_MINIVCL}
 { TCustomButton -------------------------------------------------------------- }
+procedure TCustomButtonOnDropDownClick_W(Self: TCustomButton; const T: TNotifyEvent); begin Self.OnDropDownClick := T; end;
+procedure TCustomButtonOnDropDownClick_R(Self: TCustomButton; var T: TNotifyEvent); begin T := Self.OnDropDownClick; end;
+procedure TCustomButtonStylusHotImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.StylusHotImageIndex := T; end;
+procedure TCustomButtonStylusHotImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.StylusHotImageIndex; end;
+//procedure TCustomButtonStyle_W(Self: TCustomButton; const T: TButtonStyle); begin Self.Style := T; end;
+//procedure TCustomButtonStyle_R(Self: TCustomButton; var T: TButtonStyle); begin T := Self.Style; end;
+procedure TCustomButtonSelectedImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.SelectedImageIndex := T; end;
+procedure TCustomButtonSelectedImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.SelectedImageIndex; end;
+procedure TCustomButtonPressedImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.PressedImageIndex := T; end;
+procedure TCustomButtonPressedImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.PressedImageIndex; end;
+procedure TCustomButtonModalResult_W(Self: TCustomButton; const T: TModalResult); begin Self.ModalResult := T; end;
+procedure TCustomButtonModalResult_R(Self: TCustomButton; var T: TModalResult); begin T := Self.ModalResult; end;
+procedure TCustomButtonImageMargins_W(Self: TCustomButton; const T: TImageMargins); begin Self.ImageMargins := T; end;
+procedure TCustomButtonImageMargins_R(Self: TCustomButton; var T: TImageMargins); begin T := Self.ImageMargins; end;
+procedure TCustomButtonImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.ImageIndex := T; end;
+procedure TCustomButtonImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.ImageIndex; end;
+procedure TCustomButtonImageAlignment_W(Self: TCustomButton; const T: TImageAlignment); begin Self.ImageAlignment := T; end;
+procedure TCustomButtonImageAlignment_R(Self: TCustomButton; var T: TImageAlignment); begin T := Self.ImageAlignment; end;
+procedure TCustomButtonImages_W(Self: TCustomButton; const T: TCustomImageList); begin Self.Images := T; end;
+procedure TCustomButtonImages_R(Self: TCustomButton; var T: TCustomImageList); begin T := Self.Images; end;
+procedure TCustomButtonHotImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.HotImageIndex := T; end;
+procedure TCustomButtonHotImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.HotImageIndex; end;
+procedure TCustomButtonElevationRequired_W(Self: TCustomButton; const T: Boolean); begin Self.ElevationRequired := T; end;
+procedure TCustomButtonElevationRequired_R(Self: TCustomButton; var T: Boolean); begin T := Self.ElevationRequired; end;
+procedure TCustomButtonDropDownMenu_W(Self: TCustomButton; const T: TPopupMenu); begin Self.DropDownMenu := T; end;
+procedure TCustomButtonDropDownMenu_R(Self: TCustomButton; var T: TPopupMenu); begin T := Self.DropDownMenu; end;
+procedure TCustomButtonDisabledImageIndex_W(Self: TCustomButton; const T: TImageIndex); begin Self.DisabledImageIndex := T; end;
+procedure TCustomButtonDisabledImageIndex_R(Self: TCustomButton; var T: TImageIndex); begin T := Self.DisabledImageIndex; end;
+procedure TCustomButtonDefault_W(Self: TCustomButton; const T: Boolean); begin Self.Default := T; end;
+procedure TCustomButtonDefault_R(Self: TCustomButton; var T: Boolean); begin T := Self.Default; end;
+procedure TCustomButtonCommandLinkHint_W(Self: TCustomButton; const T: string); begin Self.CommandLinkHint := T; end;
+procedure TCustomButtonCommandLinkHint_R(Self: TCustomButton; var T: string); begin T := Self.CommandLinkHint; end;
+procedure TCustomButtonCancel_W(Self: TCustomButton; const T: Boolean); begin Self.Cancel := T; end;
+procedure TCustomButtonCancel_R(Self: TCustomButton; var T: Boolean); begin T := Self.Cancel; end;
+
+
 procedure RIRegisterTCUSTOMBUTTON(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TCUSTOMBUTTON) do
@@ -264,7 +307,47 @@ begin
       RegisterConstructor(@TCUSTOMBUTTON.CREATE, 'Create');
     {$ENDIF}
     RegisterMethod(@TCUSTOMBUTTON.CLICK, 'Click');
-    //RegisterMethod(@TCUSTOMBUTTON.USERIGHTTOLEFTALIGNMENT, 'UseRightToLeftAlignment');
+    RegisterPropertyHelper(@TCustomButtonCancel_R,@TCustomButtonCancel_W,'Cancel');
+    RegisterPropertyHelper(@TCustomButtonCommandLinkHint_R,@TCustomButtonCommandLinkHint_W,'CommandLinkHint');
+    RegisterPropertyHelper(@TCustomButtonDefault_R,@TCustomButtonDefault_W,'Default');
+    RegisterPropertyHelper(@TCustomButtonDisabledImageIndex_R,@TCustomButtonDisabledImageIndex_W,'DisabledImageIndex');
+    RegisterPropertyHelper(@TCustomButtonDropDownMenu_R,@TCustomButtonDropDownMenu_W,'DropDownMenu');
+    RegisterPropertyHelper(@TCustomButtonElevationRequired_R,@TCustomButtonElevationRequired_W,'ElevationRequired');
+    RegisterPropertyHelper(@TCustomButtonHotImageIndex_R,@TCustomButtonHotImageIndex_W,'HotImageIndex');
+    RegisterPropertyHelper(@TCustomButtonImages_R,@TCustomButtonImages_W,'Images');
+    RegisterPropertyHelper(@TCustomButtonImageAlignment_R,@TCustomButtonImageAlignment_W,'ImageAlignment');
+    RegisterPropertyHelper(@TCustomButtonImageIndex_R,@TCustomButtonImageIndex_W,'ImageIndex');
+    RegisterPropertyHelper(@TCustomButtonImageMargins_R,@TCustomButtonImageMargins_W,'ImageMargins');
+    RegisterPropertyHelper(@TCustomButtonModalResult_R,@TCustomButtonModalResult_W,'ModalResult');
+    RegisterPropertyHelper(@TCustomButtonPressedImageIndex_R,@TCustomButtonPressedImageIndex_W,'PressedImageIndex');
+    RegisterPropertyHelper(@TCustomButtonSelectedImageIndex_R,@TCustomButtonSelectedImageIndex_W,'SelectedImageIndex');
+    //RegisterPropertyHelper(@TCustomButtonStyle_R,@TCustomButtonStyle_W,'Style');
+    RegisterPropertyHelper(@TCustomButtonStylusHotImageIndex_R,@TCustomButtonStylusHotImageIndex_W,'StylusHotImageIndex');
+    RegisterPropertyHelper(@TCustomButtonOnDropDownClick_R,@TCustomButtonOnDropDownClick_W,'OnDropDownClick');
+  end;
+end;
+
+{ TImageMargins -------------------------------------------------------------- }
+procedure TImageMarginsBottom_W(Self: TImageMargins; const T: Integer); begin Self.Bottom := T; end;
+procedure TImageMarginsBottom_R(Self: TImageMargins; var T: Integer); begin T := Self.Bottom; end;
+procedure TImageMarginsRight_W(Self: TImageMargins; const T: Integer); begin Self.Right := T; end;
+procedure TImageMarginsRight_R(Self: TImageMargins; var T: Integer); begin T := Self.Right; end;
+procedure TImageMarginsTop_W(Self: TImageMargins; const T: Integer); begin Self.Top := T; end;
+procedure TImageMarginsTop_R(Self: TImageMargins; var T: Integer); begin T := Self.Top; end;
+procedure TImageMarginsLeft_W(Self: TImageMargins; const T: Integer); begin Self.Left := T; end;
+procedure TImageMarginsLeft_R(Self: TImageMargins; var T: Integer); begin T := Self.Left; end;
+procedure TImageMarginsOnChange_W(Self: TImageMargins; const T: TNotifyEvent); begin Self.OnChange := T; end;
+procedure TImageMarginsOnChange_R(Self: TImageMargins; var T: TNotifyEvent); begin T := Self.OnChange; end;
+
+procedure RIRegisterTIMAGEMARGINS(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TImageMargins) do
+  begin
+    RegisterPropertyHelper(@TImageMarginsOnChange_R,@TImageMarginsOnChange_W,'OnChange');
+    RegisterPropertyHelper(@TImageMarginsLeft_R,@TImageMarginsLeft_W,'Left');
+    RegisterPropertyHelper(@TImageMarginsTop_R,@TImageMarginsTop_W,'Top');
+    RegisterPropertyHelper(@TImageMarginsRight_R,@TImageMarginsRight_W,'Right');
+    RegisterPropertyHelper(@TImageMarginsBottom_R,@TImageMarginsBottom_W,'Bottom');
   end;
 end;
 {$ENDIF}
@@ -981,6 +1064,114 @@ begin
   RIRegister_THeaderSections(Cl);
   RIRegister_THeaderControl(Cl);
 end;
+
+{ TMonthCalColors ------------------------------------------------------------ }
+procedure TMonthCalColorsTrailingTextColor_W(Self: TMonthCalColors; const T: TColor); begin Self.TrailingTextColor := T; end;
+procedure TMonthCalColorsTrailingTextColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.TrailingTextColor; end;
+procedure TMonthCalColorsMonthBackColor_W(Self: TMonthCalColors; const T: TColor); begin Self.MonthBackColor := T; end;
+procedure TMonthCalColorsMonthBackColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.MonthBackColor; end;
+procedure TMonthCalColorsTitleTextColor_W(Self: TMonthCalColors; const T: TColor); begin Self.TitleTextColor := T; end;
+procedure TMonthCalColorsTitleTextColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.TitleTextColor; end;
+procedure TMonthCalColorsTitleBackColor_W(Self: TMonthCalColors; const T: TColor); begin Self.TitleBackColor := T; end;
+procedure TMonthCalColorsTitleBackColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.TitleBackColor; end;
+procedure TMonthCalColorsTextColor_W(Self: TMonthCalColors; const T: TColor); begin Self.TextColor := T; end;
+procedure TMonthCalColorsTextColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.TextColor; end;
+procedure TMonthCalColorsBackColor_W(Self: TMonthCalColors; const T: TColor); begin Self.BackColor := T; end;
+procedure TMonthCalColorsBackColor_R(Self: TMonthCalColors; var T: TColor); begin T := Self.BackColor; end;
+
+procedure RIRegister_TMonthCalColors(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TMonthCalColors) do
+  begin
+    RegisterConstructor(@TMonthCalColors.Create, 'Create');
+    RegisterPropertyHelper(@TMonthCalColorsBackColor_R,@TMonthCalColorsBackColor_W,'BackColor');
+    RegisterPropertyHelper(@TMonthCalColorsTextColor_R,@TMonthCalColorsTextColor_W,'TextColor');
+    RegisterPropertyHelper(@TMonthCalColorsTitleBackColor_R,@TMonthCalColorsTitleBackColor_W,'TitleBackColor');
+    RegisterPropertyHelper(@TMonthCalColorsTitleTextColor_R,@TMonthCalColorsTitleTextColor_W,'TitleTextColor');
+    RegisterPropertyHelper(@TMonthCalColorsMonthBackColor_R,@TMonthCalColorsMonthBackColor_W,'MonthBackColor');
+    RegisterPropertyHelper(@TMonthCalColorsTrailingTextColor_R,@TMonthCalColorsTrailingTextColor_W,'TrailingTextColor');
+  end;
+end;
+
+{ TCommonCalendar ------------------------------------------------------------ }
+procedure RIRegister_TCommonCalendar(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCommonCalendar) do
+  begin
+    RegisterMethod(@TCommonCalendar.BoldDays, 'BoldDays');
+  end;
+end;
+
+{ TMonthCalendar ------------------------------------------------------------- }
+procedure RIRegister_TMonthCalendar(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TMonthCalendar) do
+  begin
+  end;
+end;
+
+{ TDateTimePicker ------------------------------------------------------------ }
+procedure TDateTimePickerOnUserInput_W(Self: TDateTimePicker; const T: TDTParseInputEvent); begin Self.OnUserInput := T; end;
+procedure TDateTimePickerOnUserInput_R(Self: TDateTimePicker; var T: TDTParseInputEvent); begin T := Self.OnUserInput; end;
+procedure TDateTimePickerOnDropDown_W(Self: TDateTimePicker; const T: TNotifyEvent); begin Self.OnDropDown := T; end;
+procedure TDateTimePickerOnDropDown_R(Self: TDateTimePicker; var T: TNotifyEvent); begin T := Self.OnDropDown; end;
+procedure TDateTimePickerOnChange_W(Self: TDateTimePicker; const T: TNotifyEvent); begin Self.OnChange := T; end;
+procedure TDateTimePickerOnChange_R(Self: TDateTimePicker; var T: TNotifyEvent); begin T := Self.OnChange; end;
+procedure TDateTimePickerOnCloseUp_W(Self: TDateTimePicker; const T: TNotifyEvent); begin Self.OnCloseUp := T; end;
+procedure TDateTimePickerOnCloseUp_R(Self: TDateTimePicker; var T: TNotifyEvent); begin T := Self.OnCloseUp; end;
+procedure TDateTimePickerParseInput_W(Self: TDateTimePicker; const T: Boolean); begin Self.ParseInput := T; end;
+procedure TDateTimePickerParseInput_R(Self: TDateTimePicker; var T: Boolean); begin T := Self.ParseInput; end;
+procedure TDateTimePickerKind_W(Self: TDateTimePicker; const T: TDateTimeKind); begin Self.Kind := T; end;
+procedure TDateTimePickerKind_R(Self: TDateTimePicker; var T: TDateTimeKind); begin T := Self.Kind; end;
+procedure TDateTimePickerDateMode_W(Self: TDateTimePicker; const T: TDTDateMode); begin Self.DateMode := T; end;
+procedure TDateTimePickerDateMode_R(Self: TDateTimePicker; var T: TDTDateMode); begin T := Self.DateMode; end;
+procedure TDateTimePickerDateFormat_W(Self: TDateTimePicker; const T: TDTDateFormat); begin Self.DateFormat := T; end;
+procedure TDateTimePickerDateFormat_R(Self: TDateTimePicker; var T: TDTDateFormat); begin T := Self.DateFormat; end;
+procedure TDateTimePickerChecked_W(Self: TDateTimePicker; const T: Boolean); begin Self.Checked := T; end;
+procedure TDateTimePickerChecked_R(Self: TDateTimePicker; var T: Boolean); begin T := Self.Checked; end;
+procedure TDateTimePickerShowCheckbox_W(Self: TDateTimePicker; const T: Boolean); begin Self.ShowCheckbox := T; end;
+procedure TDateTimePickerShowCheckbox_R(Self: TDateTimePicker; var T: Boolean); begin T := Self.ShowCheckbox; end;
+procedure TDateTimePickerTime_W(Self: TDateTimePicker; const T: TTime); begin Self.Time := T; end;
+procedure TDateTimePickerTime_R(Self: TDateTimePicker; var T: TTime); begin T := Self.Time; end;
+procedure TDateTimePickerFormat_W(Self: TDateTimePicker; const T: String); begin Self.Format := T; end;
+procedure TDateTimePickerFormat_R(Self: TDateTimePicker; var T: String); begin T := Self.Format; end;
+procedure TDateTimePickerCalAlignment_W(Self: TDateTimePicker; const T: TDTCalAlignment); begin Self.CalAlignment := T; end;
+procedure TDateTimePickerCalAlignment_R(Self: TDateTimePicker; var T: TDTCalAlignment); begin T := Self.CalAlignment; end;
+procedure TDateTimePickerDroppedDown_R(Self: TDateTimePicker; var T: Boolean); begin T := Self.DroppedDown; end;
+
+procedure RIRegister_TDateTimePicker(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TDateTimePicker) do
+  begin
+    RegisterPropertyHelper(@TDateTimePickerDroppedDown_R,nil,'DroppedDown');
+    RegisterPropertyHelper(@TDateTimePickerCalAlignment_R,@TDateTimePickerCalAlignment_W,'CalAlignment');
+    RegisterPropertyHelper(@TDateTimePickerFormat_R,@TDateTimePickerFormat_W,'Format');
+    RegisterPropertyHelper(@TDateTimePickerTime_R,@TDateTimePickerTime_W,'Time');
+    RegisterPropertyHelper(@TDateTimePickerShowCheckbox_R,@TDateTimePickerShowCheckbox_W,'ShowCheckbox');
+    RegisterPropertyHelper(@TDateTimePickerChecked_R,@TDateTimePickerChecked_W,'Checked');
+    RegisterPropertyHelper(@TDateTimePickerDateFormat_R,@TDateTimePickerDateFormat_W,'DateFormat');
+    RegisterPropertyHelper(@TDateTimePickerDateMode_R,@TDateTimePickerDateMode_W,'DateMode');
+    RegisterPropertyHelper(@TDateTimePickerKind_R,@TDateTimePickerKind_W,'Kind');
+    RegisterPropertyHelper(@TDateTimePickerParseInput_R,@TDateTimePickerParseInput_W,'ParseInput');
+    RegisterPropertyHelper(@TDateTimePickerOnCloseUp_R,@TDateTimePickerOnCloseUp_W,'OnCloseUp');
+    RegisterPropertyHelper(@TDateTimePickerOnChange_R,@TDateTimePickerOnChange_W,'OnChange');
+    RegisterPropertyHelper(@TDateTimePickerOnDropDown_R,@TDateTimePickerOnDropDown_W,'OnDropDown');
+    RegisterPropertyHelper(@TDateTimePickerOnUserInput_R,@TDateTimePickerOnUserInput_W,'OnUserInput');
+  end;
+end;
+
+{ DateTime ------------------------------------------------------------------- }
+procedure RIRegister_DateTime(Cl: TPSRuntimeClassImporter);
+begin
+  with Cl.Add(TCommonCalendar) do
+  //with Cl.Add(ECommonCalendarError) do
+  RIRegister_TMonthCalColors(Cl);
+  RIRegister_TCommonCalendar(Cl);
+  //with Cl.Add(EMonthCalError) do
+  RIRegister_TMonthCalendar(Cl);
+  //with Cl.Add(EDateTimeError) do
+  RIRegister_TDateTimePicker(Cl);
+end;
 {$ENDIF}
 
 (*----------------------------------------------------------------------------*)
@@ -1001,6 +1192,7 @@ begin
   RIRegisterTCOMBOBOX(Cl);
   RIRegisterTBUTTONCONTROL(Cl);
   {$IFNDEF PS_MINIVCL}
+    RIRegisterTIMAGEMARGINS(Cl);
     RIRegisterTCUSTOMBUTTON(Cl);
   {$ENDIF}
   RIRegisterTBUTTON(Cl);
@@ -1022,6 +1214,8 @@ begin
     RIRegisterTTREEVIEW(Cl);
     RIRegisterTTAB(Cl);
     RIRegisterTHEADERCONTROL(Cl);
+    { Date&Time }
+    RIRegister_DateTime(Cl);
   {$ENDIF}
 end;
 

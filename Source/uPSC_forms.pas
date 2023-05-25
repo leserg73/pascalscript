@@ -14,7 +14,9 @@ procedure SIRegisterTCONTROLSCROLLBAR(Cl: TPSPascalCompiler);
 procedure SIRegisterTSCROLLINGWINCONTROL(Cl: TPSPascalCompiler);
 procedure SIRegisterTSCROLLBOX(Cl: TPSPascalCompiler);
 procedure SIRegisterTFORM(Cl: TPSPascalCompiler);
-procedure SIRegisterTCUSTOMFORM(Cl: TPSPascalCompiler);
+{$IFNDEF PS_MINIVCL}
+  procedure SIRegisterTCUSTOMFORM(Cl: TPSPascalCompiler);
+{$ENDIF}
 procedure SIRegisterTAPPLICATION(Cl: TPSPascalCompiler);
 {$IFNDEF PS_MINIVCL}
   procedure SIRegisterTSCREEN(Cl: TPSPascalCompiler);
@@ -77,6 +79,7 @@ begin
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
       RegisterProperty('CTL3D', 'Boolean', iptrw);
       RegisterProperty('ParentCtl3D', 'Boolean', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
@@ -89,6 +92,7 @@ begin
   end;
 end;
 
+{$IFNDEF PS_MINIVCL}
 { TCustomForm ---------------------------------------------------------------- }
 procedure SIRegisterTCUSTOMFORM(Cl: TPSPascalCompiler);
 begin
@@ -126,15 +130,20 @@ begin
     RegisterProperty('KeyPreview', 'Boolean', iptrw);
     RegisterProperty('Menu', 'TMainMenu', iptrw);
     RegisterProperty('ModalResult', 'LongInt', iptrw);
-    RegisterProperty('OleFormObject', 'TOLEFormObject', iptrw);
+    //RegisterProperty('OleFormObject', 'TOLEFormObject', iptrw);
     RegisterProperty('WindowState', 'TWindowState', iptrw);
   end;
 end;
+{$ENDIF}
 
 { TForm ---------------------------------------------------------------------- }
 procedure SIRegisterTFORM(Cl: TPSPascalCompiler);
 begin
- with Cl.AddClassN(Cl.FindClass('TCustomForm'), 'TForm') do
+{$IFNDEF PS_MINIVCL}
+  with Cl.AddClassN(Cl.FindClass('TCustomForm'), 'TForm') do
+{$ELSE}
+  with Cl.AddClassN(cl.FindClass('TScrollingWinControl'), 'TForm') do
+{$ENDIF}
   begin
     {$IFDEF DELPHI4UP}
       RegisterMethod('constructor CreateNew(AOwner: TComponent; Dummy: Integer)');
@@ -215,6 +224,7 @@ begin
       RegisterProperty('PopupMenu', 'TPopupMenu', iptrw);
       RegisterProperty('TransparentColor', 'Boolean', iptrw);
       RegisterProperty('TransparentColorValue', 'TColor', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
       RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
       RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
       RegisterProperty('OnMouseDown', 'TMouseEvent', iptrw);
@@ -404,8 +414,8 @@ begin
   SIRegisterTSCROLLINGWINCONTROL(Cl);
   {$IFNDEF PS_MINIVCL}
     SIRegisterTSCROLLBOX(Cl);
+    SIRegisterTCUSTOMFORM(Cl);
   {$ENDIF}
-  SIRegisterTCUSTOMFORM(Cl);
   SIRegisterTFORM(Cl);
   {$IFNDEF PS_MINIVCL}
     SIRegisterTSCREEN(Cl);

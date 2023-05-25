@@ -1,11 +1,12 @@
-
+{ Runtime Date and Time support }
 unit uPSR_dateutils;
+
 {$I PascalScript.inc}
+
 interface
+
 uses
   SysUtils, uPSRuntime;
-
-
 
 procedure RegisterDateTimeLibrary_R(S: TPSExec);
 
@@ -58,6 +59,12 @@ begin
   S.RegisterDelphiFunction(@DateToStr, 'DateToStr', cdRegister);
   S.RegisterDelphiFunction(@FormatDateTime, 'FormatDateTime', cdRegister);
   S.RegisterDelphiFunction(@StrToDate, 'StrToDate', cdRegister);
+
+  S.RegisterDelphiFunction(@TimeToStr, 'TimeToStr', cdRegister);
+  S.RegisterDelphiFunction(@StrToDateTime, 'StrToDateTime', cdRegister);
+  S.RegisterDelphiFunction(@StrToTime, 'StrToTime', cdRegister);
+  S.RegisterDelphiFunction(@DateTimeToStr, 'DateTimeToStr', cdRegister);
+  S.RegisterDelphiFunction(@DateTimeToString, 'DateTimeToString', cdRegister);
 end;
 
 end.

@@ -14,7 +14,9 @@ procedure RIRegisterTCONTROLSCROLLBAR(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 procedure RIRegisterTSCROLLBOX(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTFORM(Cl: TPSRuntimeClassImporter);
-procedure RIRegisterTCUSTOMFORM(Cl: TPSRuntimeClassImporter);
+{$IFNDEF PS_MINIVCL}
+  procedure RIRegisterTCUSTOMFORM(Cl: TPSRuntimeClassImporter);
+{$ENDIF}
 procedure RIRegisterTAPPLICATION(Cl: TPSRuntimeClassImporter);
 {$IFNDEF PS_MINIVCL}
   procedure RIRegisterTSCREEN(Cl: TPSRuntimeClassImporter);
@@ -57,6 +59,7 @@ begin
   Cl.Add(TSCROLLBOX);
 end;
 
+{$IFNDEF PS_MINIVCL}
 { TCustomForm ---------------------------------------------------------------- }
 procedure TCustomFormWindowState_W(Self: TCustomForm; const T: TWindowState); begin Self.WindowState := T; end;
 procedure TCustomFormWindowState_R(Self: TCustomForm; var T: TWindowState); begin T := Self.WindowState; end;
@@ -117,6 +120,7 @@ begin
     RegisterPropertyHelper(@TCustomFormWindowState_R,@TCustomFormWindowState_W,'WindowState');
   end;
 end;
+{$ENDIF}
 
 { TForm ---------------------------------------------------------------------- }
 {$IFNDEF FPC}
@@ -436,7 +440,9 @@ begin
   {$IFNDEF FPC}
     RIRegisterTScrollingWinControl(Cl);
   {$ENDIF}
-  RIRegisterTCustomForm(Cl);
+  {$IFNDEF PS_MINIVCL}
+    RIRegisterTCustomForm(Cl);
+  {$ENDIF}
   RIRegisterTForm(Cl);
   {$IFNDEF PS_MINIVCL}
     RIRegisterTScreen(Cl);

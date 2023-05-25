@@ -87,6 +87,7 @@ begin
       RegisterProperty('CustomHint', 'TCustomHint', iptrw);
       RegisterProperty('BoundsRect', 'TRect', iptrw);
       RegisterProperty('Margins', 'TMargins', iptrw);
+      RegisterProperty('StyleElements', 'TStyleElements', iptrw);
     {$ENDIF}
   end;
 end;
@@ -472,6 +473,8 @@ begin
     Cl.AddTypeS('TBlendFunction', 'record BlendOp: Byte; BlendFlags: Byte; SourceConstantAlpha: Byte; AlphaFormat: Byte; end;');
     Cl.AddTypeS('TSize', 'record CX,CY: LongInt; end;');
     Cl.AddTypeS('TSmallPoint', 'record X,Y: SmallInt; end;');
+    Cl.AddTypeS('TStyleElement', '(seFont, seClient, seBorder)');
+    Cl.AddTypeS('TStyleElements', 'set of TStyleElement');
     { TMargin }
     Cl.AddTypeS('TMarginSize', 'Integer');
     { TImageList }

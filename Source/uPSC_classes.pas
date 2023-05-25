@@ -199,6 +199,7 @@ begin
     IsAbstract := True;
     RegisterMethod('procedure SaveToStream(Stream: TStream)');
     RegisterMethod('procedure SaveToFile(FileName: string)');
+    RegisterProperty('Memory', 'LongInt', iptr);
   end;
 end;
 
@@ -219,9 +220,11 @@ procedure SIRegisterTRESOURCESTREAM(Cl: TPSPascalCompiler);
 begin
   with Cl.AddClassN(Cl.FindClass('TCustomMemoryStream'), 'TResourceStream') do
   begin
-  // var ReaType was changed from PChar to Integer by Leserg
-  RegisterMethod('constructor Create(Instance: THandle; const ResName: string; ResType: Integer)');
-  RegisterMethod('constructor CreateFromID(Instance: THandle; ResID: Integer; ResType: Integer)');
+    // var ReaType was changed from PChar to Integer by Leserg
+    RegisterMethod('constructor Create(Instance: THandle; const ResName: string; ResType: Integer)');
+    RegisterMethod('constructor CreateFromID(Instance: THandle; ResID: Integer; ResType: Integer)');
+    RegisterProperty('Size', 'LongInt', iptr);
+    RegisterProperty('Memory', 'LongInt', iptr);
   end;
 end;
 

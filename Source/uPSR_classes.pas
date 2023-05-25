@@ -248,12 +248,15 @@ end;
 
 {$IFNDEF PS_MINIVCL}
 { TCustomMemoryStream -------------------------------------------------------- }
+procedure TCustomMemoryStreamMemory_R(Self: TCustomMemoryStream; var T: Pointer); begin T := Self.Memory; end;
+
 procedure RIRegisterTCUSTOMMEMORYSTREAM(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TCUSTOMMEMORYSTREAM) do
   begin
     RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOSTREAM, 'SaveToStream');
     RegisterMethod(@TCUSTOMMEMORYSTREAM.SAVETOFILE, 'SaveToFile');
+    RegisterPropertyHelper(@TCustomMemoryStreamMemory_R,nil,'Memory');
   end;
 end;
 
@@ -270,12 +273,17 @@ begin
 end;
 
 { TResourceStream ------------------------------------------------------------ }
+procedure TResourceStreamMemory_R(Self: TResourceStream; var T: Pointer); begin T := Self.Memory; end;
+procedure TResourceStreamSize_R(Self: TResourceStream; var T: LongInt); begin t := Self.Size; end;
+
 procedure RIRegisterTRESOURCESTREAM(Cl: TPSRuntimeClassImporter);
 begin
   with Cl.Add(TRESOURCESTREAM) do
   begin
     RegisterConstructor(@TRESOURCESTREAM.CREATE, 'Create');
     RegisterConstructor(@TRESOURCESTREAM.CREATEFROMID, 'CreateFromID');
+    RegisterPropertyHelper(@TResourceStreamSize_R, nil, 'Size');
+    RegisterPropertyHelper(@TResourceStreamMemory_R,nil,'Memory');
   end;
 end;
 

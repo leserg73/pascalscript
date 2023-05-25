@@ -56,13 +56,17 @@ procedure TCONTROLSHOWHINT_W(Self: TCONTROL; T: BOOLEAN); begin Self.SHOWHINT :=
 procedure TCONTROLSHOWHINT_R(Self: TCONTROL; var T: BOOLEAN); begin T := Self.SHOWHINT; end;
 procedure TCONTROLENABLED_W(Self: TCONTROL; T: BOOLEAN); begin Self.ENABLED := T; end;
 procedure TCONTROLENABLED_R(Self: TCONTROL; var T: BOOLEAN); begin T := Self.ENABLED; end;
-procedure TCONTROLCLIENTRECT_R(Self: TCONTROL; var T: TRECT); begin T := Self.ClientRect; end;
-procedure TCONTROLCUSTOMHINT_W(Self: TControl; const T: TCustomHint); begin Self.CustomHint := T; end;
-procedure TCONTROLCUSTOMHINT_R(Self: TControl; var T: TCustomHint); begin T := Self.CustomHint; end;
-procedure TCONTROLBOUNDSRECT_W(Self: TControl; const T: TRect); begin Self.BoundsRect := T; end;
-procedure TCONTROLBOUNDSRECT_R(Self: TControl; var T: TRect); begin T := Self.BoundsRect; end;
-procedure TCONTROLMARGINS_W(Self: TControl; const T: TMargins); begin Self.Margins := T; end;
-procedure TCONTROLMARGINS_R(Self: TControl; var T: TMargins); begin T := Self.Margins; end;
+{$IFNDEF PS_MINIVCL}
+  procedure TCONTROLCLIENTRECT_R(Self: TCONTROL; var T: TRECT); begin T := Self.ClientRect; end;
+  procedure TCONTROLCUSTOMHINT_W(Self: TControl; const T: TCustomHint); begin Self.CustomHint := T; end;
+  procedure TCONTROLCUSTOMHINT_R(Self: TControl; var T: TCustomHint); begin T := Self.CustomHint; end;
+  procedure TCONTROLBOUNDSRECT_W(Self: TControl; const T: TRect); begin Self.BoundsRect := T; end;
+  procedure TCONTROLBOUNDSRECT_R(Self: TControl; var T: TRect); begin T := Self.BoundsRect; end;
+  procedure TCONTROLMARGINS_W(Self: TControl; const T: TMargins); begin Self.Margins := T; end;
+  procedure TCONTROLMARGINS_R(Self: TControl; var T: TMargins); begin T := Self.Margins; end;
+  procedure TCONTROLSTYLEELEMENTS_W(Self: TControl; const T: TStyleElements); begin Self.StyleElements := T; end;
+  procedure TCONTROLSTYLEELEMENTS_R(Self: TControl; var T: TStyleElements); begin T := Self.StyleElements; end;
+{$ENDIF}
 
 procedure RIRegisterTControl(Cl: TPSRuntimeClassImporter);
 begin
@@ -105,6 +109,7 @@ begin
       RegisterPropertyHelper(@TCONTROLCUSTOMHINT_R,@TCONTROLCUSTOMHINT_W,'CustomHint');
       RegisterPropertyHelper(@TCONTROLBOUNDSRECT_R,@TCONTROLBOUNDSRECT_W,'BoundsRect');
       RegisterPropertyHelper(@TCONTROLMARGINS_R,@TCONTROLMARGINS_W,'Margins');
+      RegisterPropertyHelper(@TCONTROLSTYLEELEMENTS_R,@TCONTROLSTYLEELEMENTS_W,'StyleElements');
     {$ENDIF}
   end;
 end;
