@@ -205,6 +205,7 @@ procedure TCanvasRoundRect(Self: TCanvas; X1, Y1, X2, Y2, X3, Y3 : integer); beg
 procedure TCanvasRoundRect2(Self: TCanvas; const Rect: TRect; CX, CY: Integer); begin self.RoundRect(Rect, CX, CY); end;
 procedure TCanvasTextRect(Self: TCanvas; Rect: TRect; X: Integer; Y: Integer; const Text: string); begin Self.TextRect(Rect, X, Y, Text); end;
 procedure TCanvasTextRect2(Self: TCanvas; var Rect: TRect; var Text: string; TextFormat: TTextFormat); begin Self.TextRect(Rect, Text, TextFormat); end;
+procedure TCanvasStretchDraw(Self: TCanvas; const Rect: TRect; Graphic: TGraphic); begin Self.StretchDraw(Rect, Graphic); end;
 
 procedure RIRegisterTCanvas(Cl: TPSRuntimeClassImporter);
 begin
@@ -243,6 +244,7 @@ begin
     RegisterMethod(@TCanvasRectangle2, 'Rectangle2');
     RegisterMethod(@TCanvasRoundRect, 'RoundRect');
     RegisterMethod(@TCanvasRoundRect2, 'RoundRect2');
+    RegisterMethod(@TCanvasStretchDraw, 'StretchDraw');
     RegisterMethod(@TCanvas.Refresh, 'Refresh');
     RegisterMethod(@TCanvas.TextHeight, 'TextHeight');
     RegisterMethod(@TCanvas.TextOut, 'TextOut');
