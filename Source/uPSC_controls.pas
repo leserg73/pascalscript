@@ -413,6 +413,10 @@ begin
     Cl.addTypeS('TAnchorKind', '(akLeft, akTop, akRight, akBottom)');
     Cl.addTypeS('TAnchors','set of TAnchorKind');
   {$ENDIF}
+  {$IFDEF FPC}
+    Cl.addTypeS('TAnchorKind', '(akLeft, akTop, akRight, akBottom)');
+    Cl.addTypeS('TAnchors','set of TAnchorKind');
+  {$ENDIF}
   Cl.AddTypeS('TModalResult', 'Integer');
   Cl.AddTypeS('TCursor', 'Integer');
   Cl.AddTypeS('TPoint', 'record X,Y: LongInt; end;');
@@ -520,5 +524,5 @@ begin
   {$ENDIF}
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 end.

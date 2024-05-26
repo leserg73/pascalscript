@@ -84,6 +84,6 @@ begin
   SIRegisterTComponent(Cl);
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 
 end.

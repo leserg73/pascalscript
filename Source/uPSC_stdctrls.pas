@@ -99,6 +99,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('Caption', 'string', iptrw);
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Font', 'TFont', iptrw);
@@ -149,6 +152,9 @@ begin
   begin
     RegisterProperty('Alignment', 'TAlignment', iptrw);
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('AutoSize', 'Boolean', iptrw);
@@ -228,6 +234,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('AutoSelect', 'Boolean', iptrw);
     RegisterProperty('AutoSize', 'Boolean', iptrw);
     RegisterProperty('BorderStyle', 'TBorderStyle', iptrw);
@@ -291,6 +300,9 @@ begin
       RegisterProperty('Lines', 'TStrings', iptrw);
     {$ENDIF}
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Alignment', 'TAlignment', iptrw);
@@ -362,6 +374,9 @@ begin
   begin
     RegisterProperty('Style', 'TComboBoxStyle', iptrw);
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Color', 'TColor', iptrw);
@@ -470,7 +485,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
-
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('Cancel', 'Boolean', iptrw);
     RegisterProperty('Caption', 'string', iptrw);
     RegisterProperty('Default', 'Boolean', iptrw);
@@ -550,6 +567,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('Caption', 'string', iptrw);
     RegisterProperty('Checked', 'Boolean', iptrw);
     RegisterProperty('Color', 'TColor', iptrw);
@@ -591,6 +611,9 @@ begin
   begin
     RegisterProperty('Alignment', 'TAlignment', iptrw);
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Caption', 'string', iptrw);
@@ -654,6 +677,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('BorderStyle', 'TBorderStyle', iptrw);
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Font', 'TFont', iptrw);
@@ -703,6 +729,9 @@ begin
   with Cl.AddClassN(Cl.FindClass('TWinControl'), 'TScrollBar') do
   begin
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Kind', 'TScrollBarKind', iptrw);
@@ -1767,6 +1796,7 @@ begin
   Cl.AddTypeS('TEditCharCase', '(ecNormal, ecUpperCase, ecLowerCase)');
   Cl.AddTypeS('TScrollStyle', '(ssNone, ssHorizontal, ssVertical, ssBoth)');
   Cl.AddTypeS('TComboBoxStyle', '(csDropDown, csSimple, csDropDownList, csOwnerDrawFixed, csOwnerDrawVariable)');
+  //Cl.AddTypeS('TDrawItemEvent', 'procedure(Control: TWinControl; Index: Integer; Rect: TRect; State: Byte)');
   Cl.AddTypeS('TMeasureItemEvent', 'procedure(Control: TWinControl; Index: Integer; var Height: Integer)');
   Cl.AddTypeS('TCheckBoxState', '(cbUnchecked, cbChecked, cbGrayed)');
   Cl.AddTypeS('TListBoxStyle', '(lbStandard, lbOwnerDrawFixed, lbOwnerDrawVariable)');
@@ -1869,5 +1899,5 @@ begin
   {$ENDIF}
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 end.

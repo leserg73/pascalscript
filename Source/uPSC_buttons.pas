@@ -40,6 +40,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('GroupIndex', 'Integer', iptrw);
     RegisterProperty('Down', 'Boolean', iptrw);
     RegisterProperty('Caption', 'string', iptrw);
@@ -77,6 +80,9 @@ begin
     RegisterMethod('constructor Create(AOwner: TComponent)'); //
 //    RegisterMethod('procedure Click');  
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Cancel', 'Boolean', iptrw);
@@ -135,5 +141,5 @@ begin
   SIRegisterTBITBTN(Cl);
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 end.

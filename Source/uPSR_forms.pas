@@ -450,6 +450,6 @@ begin
   {$ENDIF}
 end;
 
-// PS_MINIVCL changes by Martijn Laan (mlaan at wintax _dot_ nl)
+// PS_MINIVCL changes by Martijn Laan
 // FPC changes by Boguslaw brandys (brandys at o2 _dot_ pl)
 end.
