@@ -32,6 +32,10 @@ procedure SIRegisterTPANEL(Cl: TPSPascalCompiler);
 {$ENDIF}
 procedure SIRegisterTCUSTOMRADIOGROUP(Cl: TPSPascalCompiler);
 procedure SIRegisterTRADIOGROUP(Cl: TPSPascalCompiler);
+{$IFDEF DELPHI14UP}
+ procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
+ procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
+{$ENDIF}
 {$IFNDEF PS_MINIVCL}
   procedure SIRegister_TColorBox(Cl: TPSPascalCompiler);
   procedure SIRegister_TCustomColorBox(Cl: TPSPascalCompiler);
@@ -47,6 +51,9 @@ begin
   with Cl.AddClassN(Cl.FindClass('TGraphicControl'), 'TShape') do
   begin
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Brush', 'TBrush', iptrw);
@@ -76,6 +83,9 @@ begin
   with Cl.AddClassN(Cl.FindClass('TGraphicControl'), 'TImage') do
   begin
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Canvas', 'TCanvas', iptr);
@@ -112,6 +122,9 @@ begin
     {$IFDEF DELPHI4UP}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
+    {$IFDEF FPC}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
     RegisterProperty('Canvas', 'TCanvas', iptr);
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Font', 'TFont', iptrw);
@@ -144,6 +157,9 @@ begin
   with Cl.AddClassN(Cl.FindClass('TGraphicControl'), 'TBevel') do
   begin
     {$IFDEF DELPHI4UP}
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
+    {$ENDIF}
+    {$IFDEF FPC}
       RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Shape', 'TBevelShape', iptrw);
@@ -335,6 +351,45 @@ begin
   end;
 end;
 
+{$IFDEF DELPHI14UP}
+{ TCustomLinkLabel ----------------------------------------------------------- }
+procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
+begin
+  with Cl.AddClassN(Cl.FindClass('TWinControl'), 'TCustomLinkLabel') do
+  begin
+    RegisterProperty('Alignment', 'TAlignment', iptrw); //actual type: taLeftJustify..taRightJustify
+    RegisterProperty('AutoSize', 'Boolean', iptrw);
+    RegisterProperty('UseVisualStyle', 'Boolean', iptrw);
+    RegisterProperty('OnLinkClick', 'TSysLinkEvent', iptrw);  
+  end;
+end;
+
+{ TLinkLabel ----------------------------------------------------------------- }
+procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
+begin
+  with Cl.AddClassN(Cl.FindClass('TCustomLinkLabel'), 'TLinkLabel') do
+  begin
+    RegisterProperty('Anchors', 'TAnchors', iptrw);
+    RegisterProperty('Caption', 'string', iptrw);
+    RegisterProperty('Color', 'TColor', iptrw);
+    RegisterProperty('Font', 'TFont', iptrw);
+    RegisterProperty('ParentColor', 'Boolean', iptrw);
+    RegisterProperty('ParentFont', 'Boolean', iptrw);
+
+    {$IFNDEF PS_MINIVCL}
+    RegisterProperty('DragCursor', 'LongInt', iptrw);
+    RegisterProperty('DragMode', 'TDragMode', iptrw);
+    RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+    RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
+    RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
+    RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
+    RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
+    RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+    {$ENDIF}
+  end;
+end;
+{$ENDIF}
+
 {$IFNDEF PS_MINIVCL}
 { TColorBox ------------------------------------------------------------------ }
 procedure SIRegister_TColorBox(Cl: TPSPascalCompiler);
@@ -440,6 +495,10 @@ begin
     Cl.AddTypeS('TColorBoxStyle', 'set of TColorBoxStyles');
     //Cl.AddTypeS('TGetColorsEvent', 'procedure(Sender: TCustomColorBox; Items: TStrings)');
   {$ENDIF}
+  {$IFDEF DELPHI14UP}
+    Cl.AddTypeS('TSysLinkType', '(sltURL, sltID)');
+    Cl.AddTypeS('TSysLinkEvent', 'procedure(Sender: TObject; const Link: string; LinkType: TSysLinkType)');
+  {$ENDIF}
 end;
 
 (*----------------------------------------------------------------------------*)
@@ -467,6 +526,10 @@ begin
     SIRegisterTRADIOGROUP(Cl);
     SIRegister_TCustomColorBox(Cl);
     SIRegister_TColorBox(Cl);
+  {$ENDIF}
+  {$IFDEF DELPHI14UP}
+    SIRegisterTCUSTOMLINKLABEL(Cl);
+    SIRegisterTLINKLABEL(Cl);
   {$ENDIF}
 end;
 
