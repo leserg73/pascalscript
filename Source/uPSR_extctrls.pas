@@ -26,7 +26,7 @@ procedure RIRegisterTPANEL(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
 procedure RIRegisterTCUSTOMRADIOGROUP(Cl: TPSRuntimeClassImporter);
 procedure RIRegisterTRADIOGROUP(Cl: TPSRuntimeClassImporter);
-{$IFDEF DELPHI14UP}
+{$IFDEF DELPHI12UP}
   procedure RIRegisterTCUSTOMLINKLABEL(Cl: TPSRuntimeClassImporter);
   procedure RIRegisterTLINKLABEL(Cl: TPSRuntimeClassImporter);
 {$ENDIF}
@@ -156,12 +156,10 @@ begin
   Cl.Add(TRADIOGROUP);
 end;
 
-{$IFDEF DELPHI14UP}
+{$IFDEF DELPHI12UP}
 { TCustomLinkLabel ----------------------------------------------------------- }
 procedure TCUSTOMLINKLABELALIGNMENT_R(Self: TCUSTOMLINKLABEL; var T: TCustomLinkLabel.TLinkAlignment); begin T := Self.ALIGNMENT; end;
-procedure TCUSTOMLINKLABELALIGNMENT_W(Self: TCUSTOMLINKLABEL; T: TCustomLinkLabel.TLinkAlignment); begin
-Self.ALIGNMENT := T;
-end;
+procedure TCUSTOMLINKLABELALIGNMENT_W(Self: TCUSTOMLINKLABEL; T: TCustomLinkLabel.TLinkAlignment); begin Self.ALIGNMENT := T; end;
 procedure TCUSTOMLINKLABELAUTOSIZE_R(Self: TCUSTOMLINKLABEL; var T: Boolean); begin T := Self.AUTOSIZE; end;
 procedure TCUSTOMLINKLABELAUTOSIZE_W(Self: TCUSTOMLINKLABEL; T: Boolean); begin Self.AUTOSIZE := T; end;
 procedure TCUSTOMLINKLABELUSEVISUALSTYLE_R(Self: TCUSTOMLINKLABEL; var T: Boolean); begin T := Self.USEVISUALSTYLE; end;
@@ -185,7 +183,6 @@ procedure RIRegisterTLINKLABEL(Cl: TPSRuntimeClassImporter);
 begin
   Cl.Add(TLINKLABEL);
 end;
-
 {$ENDIF}
 
 {$IFNDEF PS_MINIVCL}
@@ -255,7 +252,7 @@ begin
     RIRegister_TCustomColorBox(Cl);
     RIRegister_TColorBox(Cl);
   {$ENDIF}
-  {$IFDEF DELPHI14UP}
+  {$IFDEF DELPHI12UP}
     RIRegisterTCUSTOMLINKLABEL(Cl);
     RIRegisterTLINKLABEL(Cl);
   {$ENDIF}

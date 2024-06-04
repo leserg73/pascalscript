@@ -139,7 +139,7 @@ begin
   with Cl.AddClassN(Cl.FindClass('TObject'), 'TStream') do
   begin
     {$IFNDEF DELPHI_SYDNEY_UP}
-    IsAbstract := True;
+      IsAbstract := True;
     {$ENDIF}
     RegisterMethod('function Read(Buffer: AnyString; Count: LongInt): LongInt');
     RegisterMethod('function Write(Buffer: AnyString; Count: LongInt): LongInt');

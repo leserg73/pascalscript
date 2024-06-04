@@ -181,13 +181,13 @@ begin
   with Cl.Add(TSTREAM) do
   begin
     {$IFNDEF DELPHI_SYDNEY_UP}
-    RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.READ, 'Read');
-    RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.WRITE, 'Write');
-    RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.SEEK, 'Seek');
+      RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.READ, 'Read');
+      RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.WRITE, 'Write');
+      RegisterVirtualAbstractMethod(TMemoryStream, @TMemoryStream.SEEK, 'Seek');
     {$ELSE}
-    RegisterVirtualMethod(@TStream.READ, 'Read');
-    RegisterVirtualMethod(@TStream.WRITE, 'Write');
-    RegisterVirtualMethod(@TStream.SEEK, 'Seek');
+      RegisterVirtualMethod(@TStream.READ, 'Read');
+      RegisterVirtualMethod(@TStream.WRITE, 'Write');
+      RegisterVirtualMethod(@TStream.SEEK, 'Seek');
     {$ENDIF}
     RegisterMethod(@TSTREAM.READBUFFER, 'ReadBuffer');
     RegisterMethod(@TSTREAM.WRITEBUFFER, 'WriteBuffer');

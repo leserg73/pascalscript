@@ -32,9 +32,9 @@ procedure SIRegisterTPANEL(Cl: TPSPascalCompiler);
 {$ENDIF}
 procedure SIRegisterTCUSTOMRADIOGROUP(Cl: TPSPascalCompiler);
 procedure SIRegisterTRADIOGROUP(Cl: TPSPascalCompiler);
-{$IFDEF DELPHI14UP}
- procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
- procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
+{$IFDEF DELPHI12UP}
+  procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
+  procedure SIRegisterTLINKLABEL(Cl: TPSPascalCompiler);
 {$ENDIF}
 {$IFNDEF PS_MINIVCL}
   procedure SIRegister_TColorBox(Cl: TPSPascalCompiler);
@@ -253,7 +253,7 @@ begin
   begin
     RegisterProperty('ActivePage', 'string', iptrw);
     {$IFDEF DELPHI4UP}
-    RegisterProperty('Anchors', 'TAnchors', iptrw);
+      RegisterProperty('Anchors', 'TAnchors', iptrw);
     {$ENDIF}
     RegisterProperty('Color', 'TColor', iptrw);
     RegisterProperty('Font', 'TFont', iptrw);
@@ -351,7 +351,7 @@ begin
   end;
 end;
 
-{$IFDEF DELPHI14UP}
+{$IFDEF DELPHI12UP}
 { TCustomLinkLabel ----------------------------------------------------------- }
 procedure SIRegisterTCUSTOMLINKLABEL(Cl: TPSPascalCompiler);
 begin
@@ -377,14 +377,14 @@ begin
     RegisterProperty('ParentFont', 'Boolean', iptrw);
 
     {$IFNDEF PS_MINIVCL}
-    RegisterProperty('DragCursor', 'LongInt', iptrw);
-    RegisterProperty('DragMode', 'TDragMode', iptrw);
-    RegisterProperty('ParentShowHint', 'Boolean', iptrw);
-    RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
-    RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
-    RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
-    RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
-    RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
+      RegisterProperty('DragCursor', 'LongInt', iptrw);
+      RegisterProperty('DragMode', 'TDragMode', iptrw);
+      RegisterProperty('ParentShowHint', 'Boolean', iptrw);
+      RegisterProperty('OnClick', 'TNotifyEvent', iptrw);
+      RegisterProperty('OnDragDrop', 'TDragDropEvent', iptrw);
+      RegisterProperty('OnDragOver', 'TDragOverEvent', iptrw);
+      RegisterProperty('OnEndDrag', 'TEndDragEvent', iptrw);
+      RegisterProperty('OnStartDrag', 'TStartDragEvent', iptrw);
     {$ENDIF}
   end;
 end;
@@ -495,7 +495,7 @@ begin
     Cl.AddTypeS('TColorBoxStyle', 'set of TColorBoxStyles');
     //Cl.AddTypeS('TGetColorsEvent', 'procedure(Sender: TCustomColorBox; Items: TStrings)');
   {$ENDIF}
-  {$IFDEF DELPHI14UP}
+  {$IFDEF DELPHI12UP}
     Cl.AddTypeS('TSysLinkType', '(sltURL, sltID)');
     Cl.AddTypeS('TSysLinkEvent', 'procedure(Sender: TObject; const Link: string; LinkType: TSysLinkType)');
   {$ENDIF}
@@ -527,7 +527,7 @@ begin
     SIRegister_TCustomColorBox(Cl);
     SIRegister_TColorBox(Cl);
   {$ENDIF}
-  {$IFDEF DELPHI14UP}
+  {$IFDEF DELPHI12UP}
     SIRegisterTCUSTOMLINKLABEL(Cl);
     SIRegisterTLINKLABEL(Cl);
   {$ENDIF}
